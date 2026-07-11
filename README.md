@@ -6,7 +6,7 @@ Frontend for [PromptCatalyst](https://promptcatalyst.ai), a full-stack AI platfo
 
 > This repository contains the **React frontend** only. The backend API is kept in a separate private repository.
 
-<!-- Add 2–3 screenshots or a short GIF in docs/screenshots and reference them here, e.g. ![Dashboard](docs/screenshots/dashboard.png) -->
+![PromptCatalyst app](docs/screenshots/app.jpg)
 
 ## Overview
 
