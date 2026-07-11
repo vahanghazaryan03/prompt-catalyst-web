@@ -1,0 +1,43 @@
+/* Command Highlighting */
+.command-input {
+  position: relative;
+}
+
+/* Only color the first word if it's a command */
+.command-input::first-word {
+  color: var(--command-color, inherit);
+  font-weight: 500;
+}
+
+/* Base colors for commands */
+.command-variations { --command-color: #3b82f6; }
+.command-shorten { --command-color: #10b981; }
+.command-extend { --command-color: #8b5cf6; }
+
+/* Command styles for chat bubbles */
+.command-tag {
+  display: inline-block;
+  border-width: 1px;
+  border-style: solid;
+  border-color: var(--border, rgba(0, 0, 0, 0.2));
+  border-radius: 0.25rem;
+  padding: 0.25rem 0.625rem;
+  margin-right: 0.5rem;
+  font-weight: 600;
+  font-size: 0.875rem;
+  letter-spacing: 0.01em;
+  background-color: var(--inputBackground, rgba(0, 0, 0, 0.03));
+  color: var(--text, #000);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+/* Override specific tag styles to use the same neutral colors */
+.command-tag-variations,
+.command-tag-shorten,
+.command-tag-extend,
+.command-tag-nextscene,
+.command-tag-edit {
+  border-color: var(--border, rgba(0, 0, 0, 0.2));
+  color: var(--text, #000);
+  background-color: var(--inputBackground, rgba(0, 0, 0, 0.03));
+}

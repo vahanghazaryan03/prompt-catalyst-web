@@ -1,0 +1,265 @@
+import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { 
+  ChevronDown, 
+  Clock, 
+  Trash2,
+  MessageSquare,
+  Settings,
+  Copy,
+  RotateCw
+} from 'lucide-react';
+import { useGenerate } from '../contexts/GenerateContext';
+import { useToast } from '../contexts/ToastContext';
+import LightboxModal from './LightboxModal';
+import LazyImage from './LazyImage';
+
+const GenerateHistory = () => {
+  const { generateHistory, removeFromHistory, clearHistory, updateSettings } = useGenerate();
+  const { addToast } = useToast();
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [selectedHistoryItem, setSelectedHistoryItem] = useState(null);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return new Intl.DateTimeFormat('en-US', {
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    }).format(date);
+  };
+
+  const handleCopyPrompt = (prompt) => {
+    navigator.clipboard.writeText(prompt);
+    addToast('Prompt copied to clipboard', 'success');
+  };
+
+  const handleRegenerate = (item) => {
+    updateSettings({
+      prompt: item.prompt,
+      ...item.settings
+    });
+    addToast('Settings applied', 'success');
+  };
+
+  const handleImageClick = (item, image, index) => {
+    setSelectedHistoryItem(item);
+    setSelectedImage(image);
+    setCurrentImageIndex(index);
+  };
+
+  const handleDownload = async (imageUrl, index) => {
+    try {
+      const response = await fetch(imageUrl);
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `generated-image-${index + 1}.png`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+      addToast('Image downloaded successfully!', 'success');
+    } catch (error) {
+      addToast('Failed to download image', 'error');
+    }
+  };
+
+  const handleNavigate = (newIndex) => {
+    if (selectedHistoryItem) {
+      setCurrentImageIndex(newIndex);
+      setSelectedImage(selectedHistoryItem.images[newIndex]);
+    }
+  };
+
+  // Only show a limited number of history items when collapsed
+  const visibleHistory = isExpanded ? generateHistory : generateHistory.slice(0, 3);
+
+  return (
+    <div className="border-t border-[#333]">
+      <button
+        onClick={() => setIsExpanded(!isExpanded)}
+        className="w-full flex items-center justify-between px-4 py-3 text-[var(--text)] hover:bg-[#1a1a1a] transition-colors"
+      >
+        <div className="flex items-center gap-2 text-[var(--text)]">
+          <Clock size={18} />
+          <span className="font-medium">Generation History</span>
+          <span className="text-sm text-[var(--text)]/60">
+            ({generateHistory.length})
+          </span>
+        </div>
+        <motion.div
+          initial={false}
+          animate={{ rotate: isExpanded ? 180 : 0 }}
+          transition={{ duration: 0.3, ease: [0.33, 1, 0.68, 1] }}
+        >
+          <ChevronDown size={18} />
+        </motion.div>
+      </button>
+
+      <AnimatePresence initial={false}>
+        {isExpanded && (
+          <motion.div
+            initial={{ height: 0 }}
+            animate={{ 
+              height: 'auto',
+              transition: {
+                height: {
+                  duration: 0.3,
+                  ease: [0.33, 1, 0.68, 1]
+                }
+              }
+            }}
+            exit={{ 
+              height: 0,
+              transition: {
+                height: {
+                  duration: 0.3,
+                  ease: [0.33, 1, 0.68, 1]
+                }
+              }
+            }}
+            className="overflow-hidden border-t border-[#333]"
+          >
+            {generateHistory.length > 0 ? (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ 
+                  opacity: 1,
+                  transition: {
+                    duration: 0.2,
+                    delay: 0.1
+                  }
+                }}
+                exit={{ opacity: 0 }}
+                className="max-h-96 overflow-y-auto"
+              >
+                {visibleHistory.map((item, index) => (
+                  <motion.div
+                    key={item.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ 
+                      opacity: 1, 
+                      y: 0,
+                      transition: {
+                        duration: 0.3,
+                        delay: index * 0.05,
+                        ease: [0.33, 1, 0.68, 1]
+                      }
+                    }}
+                    className="p-4 border-b border-[#333] hover:bg-[#1a1a1a] transition-colors text-[var(--text)]"
+                  >
+                    <div className="flex justify-between items-start mb-3">
+                      <div className="text-sm text-[var(--text)]/60">
+                        {formatDate(item.timestamp)}
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => handleRegenerate(item)}
+                          className="p-1.5 rounded hover:bg-[#252525] transition-colors text-[var(--text)]"
+                          title="Use these settings"
+                        >
+                          <RotateCw size={16} />
+                        </button>
+                        <button
+                          onClick={() => handleCopyPrompt(item.prompt)}
+                          className="p-1.5 rounded hover:bg-[#252525] transition-colors text-[var(--text)]"
+                          title="Copy prompt"
+                        >
+                          <Copy size={16} />
+                        </button>
+                        <button
+                          onClick={() => removeFromHistory(item.id)}
+                          className="p-1.5 rounded hover:bg-[#252525] transition-colors text-red-400"
+                          title="Remove from history"
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-3">
+                      {item.images.map((image, imgIndex) => (
+                        <div
+                          key={imgIndex}
+                          onClick={() => handleImageClick(item, image, imgIndex)}
+                          className="relative aspect-square rounded-lg overflow-hidden border border-[#333] hover:border-[var(--primary)]/30 transition-colors cursor-pointer"
+                        >
+                          <LazyImage
+                            src={image.url}
+                            alt={`Generated ${imgIndex + 1}`}
+                            className="w-full h-full"
+                            placeholderColor="#1a1a1a"
+                          />
+                        </div>
+                      ))}
+                    </div>
+
+                    <div className="flex flex-wrap gap-2 text-sm">
+                      <div className="flex items-center gap-1.5 text-[var(--text)]/60">
+                        <MessageSquare size={14} />
+                        <span className="truncate max-w-[200px]">
+                          {item.prompt}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-1.5 text-[var(--text)]/60">
+                        <Settings size={14} />
+                        <span>
+                          {item.settings.model}, {item.settings.size}
+                        </span>
+                      </div>
+                    </div>
+                  </motion.div>
+                ))}
+
+                {generateHistory.length > 0 && (
+                  <div className="p-4 border-t border-[#333] bg-[#1a1a1a]">
+                    <button
+                      onClick={clearHistory}
+                      className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-red-400 hover:bg-red-400/10 transition-colors text-sm mx-auto"
+                    >
+                      <Trash2 size={16} />
+                      Clear History
+                    </button>
+                  </div>
+                )}
+              </motion.div>
+            ) : (
+              <div className="p-8 text-center text-[var(--text)]">
+                <p>No generation history yet.</p>
+                <p className="text-sm mt-1 text-[var(--text)]/60">
+                  Generated images will appear here.
+                </p>
+              </div>
+            )}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Lightbox Modal */}
+      <AnimatePresence>
+        {selectedImage && selectedHistoryItem && (
+          <LightboxModal
+            images={selectedHistoryItem.images}
+            currentIndex={currentImageIndex}
+            onClose={() => {
+              setSelectedImage(null);
+              setSelectedHistoryItem(null);
+              setCurrentImageIndex(0);
+            }}
+            onDownload={handleDownload}
+            onCopyPrompt={() => handleCopyPrompt(selectedHistoryItem.prompt)}
+            onNavigate={handleNavigate}
+            prompt={selectedHistoryItem.prompt}
+          />
+        )}
+      </AnimatePresence>
+    </div>
+  );
+};
+
+export default GenerateHistory;

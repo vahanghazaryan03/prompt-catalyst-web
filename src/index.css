@@ -1,0 +1,4156 @@
+.user-dropdown-content {
+  z-index: 100;
+  position: relative;
+}
+
+.user-dropdown {
+  position: relative;
+  z-index: 101;
+}@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* User Dropdown z-index fixes */
+.user-dropdown-content {
+  z-index: 100;
+  position: relative;
+}
+
+.user-dropdown {
+  position: relative;
+  z-index: 101;
+}
+
+/* Mobile container fix for Generate tab */
+@media (max-width: 767px) {
+  .mobile-container {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+/* ============================================ */
+/* HELP PAGE CSS VARIABLE FALLBACKS */
+/* ============================================ */
+
+/* Ensure Help page has fallback CSS variables when theme context might be missing */
+.help-page-fallback {
+  --background: #171717;
+  --cardBackground: #1e1e1e;
+  --text: #f5f5f5;
+  --textSecondary: #888;
+  --border: #333;
+  --primary: #42f56f;
+  --primary-rgb: 66, 245, 111;
+  --dropdownHover: #2a2a2a;
+  --inputBackground: #1e1e1e;
+  --inputBorder: #555;
+  --card: #1e1e1e;
+}
+
+/* Light mode fallback */
+@media (prefers-color-scheme: light) {
+  .help-page-fallback {
+    --background: #ffffff;
+    --cardBackground: #f8fafc;
+    --text: #0f172a;
+    --textSecondary: #64748b;
+    --border: #e2e8f0;
+    --primary: #22c55e;
+    --primary-rgb: 34, 197, 94;
+    --dropdownHover: #f1f5f9;
+    --inputBackground: #ffffff;
+    --inputBorder: #cbd5e1;
+    --card: #f8fafc;
+  }
+}
+  
+  .mobile-container > * {
+    max-width: 100%;
+  }
+}
+
+/* Add this to ensure history content doesn't overflow on mobile */
+@media (max-width: 640px) {
+  .history-card {
+    max-width: 94vw;
+    word-break: break-word;
+    overflow-wrap: break-word;
+  }
+  
+  .history-card p,
+  .history-card div {
+    max-width: 100%;
+  }
+  
+  /* Ensure long words don't overflow containers */
+  p, span, div, h1, h2, h3, h4, h5, h6 {
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    -ms-word-break: break-all;
+    word-break: break-word;
+  }
+}
+
+@layer base {
+  :root {
+    --background: #171717;
+    --cardBackground: #1e1e1e;
+    --primary: #42f56f;
+    --primary-rgb: 66, 245, 111; /* RGB values for green */
+  --secondary: #31db8a;
+  --text: #f5f5f5;
+  --textSecondary: #888;
+  --textBrighter: #bbb;  /* New brighter text color */
+  --border: #333;
+  --inputBackground: #1e1e1e;
+  --inputBorder: #555;
+  --dropdownBackground: #1e1e1e;
+  --dropdownHover: #2a2a2a;
+  --tooltipBackground: #333;
+  --success: #42f56f;
+  --error: #ff4444;
+  --warning: #ffb700;
+  --info: #42a5f5;
+  --previewButtonBackground: #fcb023;
+  --previewButtonHover: #FF8C00;
+  --previewButtonDisabled: #cc7a00;
+  --previewButtonDisabledText: rgba(0, 0, 0, 0.7);
+  /* Custom Scrollbar Variables - Dark Theme */
+  --scrollbarTrack: rgba(255, 255, 255, 0.05);
+  --scrollbarThumb: rgba(255, 255, 255, 0.15);
+  --scrollbarThumbHover: rgba(255, 255, 255, 0.25);
+  /* Theme brightness variables for video controls */
+  --text-brightness: 1;
+  }
+  
+  /* Light theme brightness variable */
+body.theme-light {
+  --text-brightness: 0;
+  --primary-rgb: 34, 197, 94; /* RGB values for green-500 in light mode */
+  /* Light Theme Scrollbar Variables */
+  --scrollbarTrack: rgba(0, 0, 0, 0.05);
+  --scrollbarThumb: rgba(0, 0, 0, 0.15);
+  --scrollbarThumbHover: rgba(0, 0, 0, 0.25);
+}
+} /* End of @layer base */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.2s ease-out;
+}
+
+.animate-slideUp {
+  animation: slideUp 0.3s ease-out;
+}
+/* Add these new animations to your existing index.css file */
+
+/* Cat floating animation */
+@keyframes catFloat {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+/* Cat rotation animation */
+@keyframes catRotate {
+  0% { transform: rotate(-5deg); }
+  50% { transform: rotate(5deg); }
+  100% { transform: rotate(-5deg); }
+}
+
+/* Cat click animation */
+@keyframes catClick {
+  0% { transform: scale(1); }
+  50% { transform: scale(0.9); }
+  75% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+
+/* Particle animation */
+@keyframes particleBurst {
+  0% { 
+    transform: translate(0, 0) scale(0);
+    opacity: 1;
+  }
+  100% { 
+    transform: translate(var(--tx), var(--ty)) scale(1);
+    opacity: 0;
+  }
+}
+
+/* Message float animation */
+@keyframes messageFloat {
+  0% { 
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% { 
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Add these new classes */
+.cat-container {
+  animation: catFloat 3s ease-in-out infinite;
+  transition: transform 0.3s ease;
+}
+
+.cat-icon {
+  animation: catRotate 6s ease-in-out infinite;
+  transition: transform 0.3s ease;
+}
+
+.cat-clicked {
+  animation: catClick 0.5s cubic-bezier(0.36, 0, 0.66, -0.56) forwards;
+}
+
+.particle {
+  position: absolute;
+  pointer-events: none;
+  background: conic-gradient(from 0deg, var(--primary), var(--secondary), var(--primary));
+  border-radius: 50%;
+  opacity: 0;
+  z-index: 10;
+}
+
+/* Define 8 different particle positions */
+.particle:nth-child(1) { --tx: -20px; --ty: -20px; }
+.particle:nth-child(2) { --tx: 0px; --ty: -28px; }
+.particle:nth-child(3) { --tx: 20px; --ty: -20px; }
+.particle:nth-child(4) { --tx: 28px; --ty: 0px; }
+.particle:nth-child(5) { --tx: 20px; --ty: 20px; }
+.particle:nth-child(6) { --tx: 0px; --ty: 28px; }
+.particle:nth-child(7) { --tx: -20px; --ty: 20px; }
+.particle:nth-child(8) { --tx: -28px; --ty: 0px; }
+
+.particle.burst {
+  animation: particleBurst 0.5s ease-out forwards;
+}
+
+/* Enhanced hover effects */
+.cat-container:hover .cat-icon {
+  transform: scale(1.1);
+}
+
+.cat-container:hover .cat-glow {
+  opacity: 0.8;
+  transform: scale(1.1);
+}
+/* Add these new animations to your existing CSS */
+@keyframes catShake {
+  0%, 100% { transform: rotate(-5deg); }
+  25% { transform: rotate(5deg); }
+  50% { transform: rotate(-5deg); }
+  75% { transform: rotate(5deg); }
+}
+
+@keyframes bounceIn {
+  0% { 
+    transform: translate(-50%, 0) scale(0.3);
+    opacity: 0; 
+  }
+  50% { 
+    transform: translate(-50%, 0) scale(1.1);
+    opacity: 0.7; 
+  }
+  70% { 
+    transform: translate(-50%, 0) scale(0.9);
+    opacity: 0.8; 
+  }
+  100% { 
+    transform: translate(-50%, 0) scale(1);
+    opacity: 1; 
+  }
+}
+
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes rainbowText {
+  0% { color: #ff0000; }
+  17% { color: #ff8000; }
+  33% { color: #ffff00; }
+  50% { color: #00ff00; }
+  67% { color: #0000ff; }
+  83% { color: #8000ff; }
+  100% { color: #ff0000; }
+}
+
+.combo-shake {
+  animation: catShake 0.3s ease-in-out infinite;
+}
+
+.rainbow-text {
+  animation: rainbowText 2s linear infinite;
+}
+
+.rainbow-particle {
+  background: linear-gradient(
+    45deg,
+    #ff0000,
+    #ff8000,
+    #ffff00,
+    #00ff00,
+    #0000ff,
+    #8000ff
+  );
+  background-size: 600% 600%;
+  animation: rainbowMove 2s linear infinite;
+}
+
+@keyframes rainbowMove {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.combo-active .particle {
+  --scale: 1.2;
+  --speed: 0.7s;
+}
+
+/* Enhanced particle effects for combos */
+.combo-active .particle.burst {
+  animation: particleBurst var(--speed) ease-out forwards;
+}
+
+.combo-counter {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 20;
+  white-space: nowrap;
+}
+/* Sparkle effect for high combos */
+.sparkle {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background-color: var(--primary);
+  animation: sparkle 1s ease-in-out infinite;
+}
+
+@keyframes sparkle {
+  0%, 100% { transform: scale(0); opacity: 0; }
+  50% { transform: scale(1); opacity: 1; }
+}
+/* Additional combo-specific animations */
+@keyframes particleBurst {
+  0% { 
+    transform: translate(0, 0) scale(0);
+    opacity: 1;
+  }
+  100% { 
+    transform: translate(var(--tx), var(--ty)) scale(var(--scale, 1));
+    opacity: 0;
+  }
+}
+
+/* Combo milestone animations */
+@keyframes comboMilestone {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.5); }
+  100% { transform: scale(1); }
+}
+
+/* Special effects for max combo */
+@keyframes ultraCombo {
+  0%, 100% { filter: hue-rotate(0deg); }
+  50% { filter: hue-rotate(180deg); }
+}
+
+.max-combo .cat-icon {
+  animation: ultraCombo 1s linear infinite !important;
+}
+
+.particle.rainbow {
+  background: linear-gradient(
+    to right,
+    #ff0000,
+    #ff8000,
+    #ffff00,
+    #00ff00,
+    #0000ff,
+    #8000ff
+  );
+  animation: particleBurst var(--speed, 0.5s) ease-out forwards,
+             rainbowShift 1s linear infinite;
+}
+
+@keyframes rainbowShift {
+  0% { filter: hue-rotate(0deg); }
+  100% { filter: hue-rotate(360deg); }
+}
+
+/* Combo counter styles */
+.combo-counter {
+  position: absolute;
+  top: -2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  z-index: 10;
+}
+
+.combo-counter-number {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: var(--primary);
+  text-shadow: 0 0 10px rgba(66, 245, 111, 0.5);
+  animation: bounceIn 0.3s ease-out;
+}
+
+/* Enhanced glow effects for different combo levels */
+.combo-glow-1 {
+  background: linear-gradient(45deg, var(--primary), var(--secondary));
+  animation: glowPulse 1s ease-in-out infinite;
+}
+
+.combo-glow-2 {
+  background: linear-gradient(45deg, #ff0000, #00ff00, #0000ff);
+  animation: glowPulse 0.8s ease-in-out infinite;
+}
+
+.combo-glow-3 {
+  background: linear-gradient(45deg, #ff0000, #ff8000, #ffff00, #00ff00, #0000ff, #8000ff);
+  animation: glowPulse 0.6s ease-in-out infinite,
+             rainbowShift 2s linear infinite;
+}
+
+/* Message animations for combo state */
+.combo-message {
+  animation: bounceIn 0.3s ease-out, shake 0.5s ease-in-out infinite;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-2px); }
+  75% { transform: translateX(2px); }
+}
+input[type="range"]::-moz-range-thumb {
+  height: 20px;
+  width: 20px;
+  background-color: var(--primary);
+  border: none !important; /* Remove default white border */
+  border-radius: 9999px;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+input[type="range"]::-moz-range-thumb:hover {
+  opacity: 0.9;
+}
+/* Subtle scrollbar style for main chat */
+::-webkit-scrollbar {
+  width: 6px;  /* Subtle but usable width */
+  height: 6px;
+}
+/* Update the messages container styles */
+.messages-container {
+  @apply py-6 space-y-6 w-full;
+}
+/* Add these styles to your index.css file */
+
+/* Grid background pattern */
+.bg-grid-white {
+  background-image: linear-gradient(to right, rgba(255, 255, 255, 0.1) 1px, transparent 1px),
+                    linear-gradient(to bottom, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+}
+
+/* Hero section styles */
+.hero-gradient {
+  background: radial-gradient(circle at top left, 
+    color-mix(in srgb, var(--primary) 30%, transparent),
+    transparent 70%);
+}
+
+/* Card hover effects */
+.feature-card {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.feature-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.1);
+}
+
+/* FAQ accordion animations */
+/* Hero section */
+.hero-section {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(to bottom right, 
+    var(--primary), 
+    color-mix(in srgb, var(--primary) 80%, var(--background))
+  );
+}
+
+/* Search bar styles */
+.search-input {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.3s ease;
+}
+
+.search-input:focus {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+/* Feature card styles */
+.feature-card {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.feature-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(to right, var(--primary), transparent);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.feature-card:hover::before {
+  opacity: 1;
+}
+
+/* Quick start guide styles */
+.quick-start-step {
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.quick-start-step:hover {
+  transform: translateX(4px);
+}
+
+.step-number {
+  background: linear-gradient(45deg, var(--primary), var(--secondary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* FAQ accordion styles */
+.faq-item {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.faq-item:hover {
+  transform: translateX(4px);
+}
+
+.faq-question {
+  position: relative;
+  cursor: pointer;
+}
+
+.faq-answer {
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Grid background */
+.bg-grid {
+  background-size: 20px 20px;
+  background-image: 
+    linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+}
+
+/* Decorative elements */
+.dot-pattern {
+  background-image: radial-gradient(circle, var(--primary) 1px, transparent 1px);
+  background-size: 20px 20px;
+  opacity: 0.1;
+}
+
+/* Footer styles */
+.footer-link {
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.footer-link::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: var(--primary);
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.3s ease;
+}
+
+.footer-link:hover::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+.messages-container-centered {
+  @apply mx-auto;
+  max-width: min(98%, 1600px);
+}
+
+/* Update scrollbar styles to be more visible when at screen edge */
+::-webkit-scrollbar {
+  width: 8px;  /* Make it slightly wider */
+}
+
+::-webkit-scrollbar-track {
+  background: var(--scrollbarTrack);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--scrollbarThumb);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbarThumbHover);
+}
+
+/* Ensure the content doesn't touch the scrollbar */
+.messages-container-centered {
+  @apply mx-auto pr-4; /* Add right padding */
+  max-width: min(98%, 1600px);
+}
+/* Add these mobile optimizations to your index.css */
+
+/* Mobile Message Container */
+
+
+/* Enhanced touch targets for mobile */
+
+
+/* Landscape mode optimizations */
+/* Add these optimizations to your index.css */
+@media (max-width: 640px) {
+  /* Message content improvements */
+  .message-bubble {
+    @apply p-3 text-sm max-w-[90%] mx-2;
+    line-height: 1.5;
+  }
+
+  /* Adjust message groups spacing */
+  .message-group {
+    @apply mb-3 max-w-full px-2;
+  }
+
+  /* Message content container improvements */
+  .message-content-container {
+    @apply gap-2;
+  }
+  
+  .message-content-container-user {
+    @apply gap-1.5;
+  }
+
+  /* Modern card adjustments for mobile */
+  .modern-card {
+    @apply mx-2;
+  }
+  
+  .modern-card .p-4 {
+    @apply p-3;
+  }
+
+  /* Message actions optimization */
+  .message-actions {
+    @apply flex-wrap gap-1.5;
+  }
+
+  .message-action-button {
+    @apply py-1.5 px-2 text-xs;
+    min-height: 36px; /* Better touch target */
+  }
+
+  /* Message icon size adjustment */
+  .message-icon svg {
+    @apply w-4 h-4 mt-1;
+  }
+
+  /* Improve message metadata visibility */
+  .message-metadata {
+    @apply text-[10px] mt-1;
+  }
+}
+
+/* Landscape mode optimizations */
+@media (max-width: 640px) and (orientation: landscape) {
+  .messages-container {
+    @apply py-2;
+  }
+
+  .preview-image-container img {
+    max-height: 180px;
+  }
+}
+/* Input area mobile optimizations */
+@media (max-width: 640px) {
+  .input-area {
+    @apply sticky bottom-0 z-10;
+  }
+
+  /* Input field improvements */
+  .input-area input {
+    @apply text-base py-2.5;
+    min-height: 44px;
+  }
+
+  /* Action buttons in mobile input */
+  .input-actions-mobile {
+    @apply mt-2 flex justify-between items-center;
+  }
+
+  .input-action-button-mobile {
+    @apply w-12 h-12 flex items-center justify-center;
+  }
+
+  /* Send button adjustment */
+  button[type="submit"] {
+    @apply px-4;
+    min-height: 44px;
+  }
+}
+@media (max-width: 640px) {
+  /* Better touch targets for buttons */
+  .message-actions button {
+    @apply min-h-[40px] min-w-[40px];
+    touch-action: manipulation;
+  }
+
+  /* Improve button spacing */
+  .message-actions {
+    @apply gap-1 flex-wrap justify-start;
+  }
+
+  /* Button text size */
+  .message-action-button {
+    @apply text-xs;
+  }
+
+  /* Icon size in buttons */
+  .message-action-button svg {
+    @apply w-4 h-4;
+  }
+  
+  /* History view optimizations */
+  .history-card {
+    @apply mx-1;
+  }
+  
+  /* Make all buttons in the History tab more compact */
+  .message-action-button,
+  button {
+    @apply whitespace-nowrap;
+  }
+}
+@media (max-width: 640px) {
+  /* Smooth scrolling */
+  .messages-container {
+    @apply overscroll-y-contain;
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+  }
+
+  /* Optimize animations */
+  .modern-card,
+  .message-bubble,
+  .message-action-button {
+    @apply transform-gpu;
+  }
+
+  /* Reduce animation complexity on mobile */
+  .gradient-card::before {
+    @apply opacity-90;
+  }
+
+  /* Improve tap highlight behavior */
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
+}
+@media (max-width: 640px) {
+  /* Image preview container */
+  .preview-image-container {
+    @apply mx-2 mt-3;
+    max-height: 250px;
+  }
+
+  /* Loading states */
+  .typing-indicator {
+    @apply px-3 py-1.5;
+  }
+
+  .typing-dot {
+    @apply w-1 h-1;
+  }
+
+  /* Preview modal adjustments */
+  .preview-modal-container {
+    @apply p-2;
+  }
+}
+.message-wrapper-centered {
+  @apply mx-auto;
+  max-width: min(98%, 1600px);
+}
+
+.message-group-centered {
+  @apply mx-auto;
+  max-width: min(98%, 1600px);
+}
+
+/* Update message bubble styles */
+.message-bubble {
+  @apply p-4 rounded-2xl shadow-sm break-words;
+  max-width: 95%;
+}
+
+/* Update message content container */
+.message-content-container {
+  @apply flex items-end gap-3 w-full;
+  max-width: min(100%, 1600px);
+}
+::-webkit-scrollbar-track {
+  background: var(--scrollbarTrack);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: var(--scrollbarThumb);
+  border-radius: 3px;
+  transition: background-color 0.2s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: var(--scrollbarThumbHover);
+}
+
+/* Firefox scrollbar styling */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbarThumb) var(--scrollbarTrack);
+}
+
+/* Specific styling for messages container scrollbar */
+.messages-container {
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbarThumb) transparent;
+}
+
+.messages-container::-webkit-scrollbar {
+  width: 6px;
+}
+
+.messages-container::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.messages-container::-webkit-scrollbar-thumb {
+  background-color: var(--scrollbarThumb);
+  border-radius: 3px;
+  transition: background-color 0.2s ease;
+  opacity: 0.7;
+}
+
+.messages-container::-webkit-scrollbar-thumb:hover {
+  background-color: var(--scrollbarThumbHover);
+  opacity: 1;
+}
+
+/* Hide scrollbar when not needed */
+.messages-container::-webkit-scrollbar-thumb {
+  min-height: 20px;
+}
+@keyframes gradient {
+  0% { background-position: 100% 0; }
+  100% { background-position: -100% 0; }
+}
+
+.animate-gradient {
+  animation: gradient 2s linear infinite;
+}
+
+/* Hide default scrollbar when using custom scrollbar */
+.scrollbar-hide {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;  /* Chrome, Safari and Opera */
+}
+
+/* Preview Image Loading State */
+.preview-loading {
+  @apply relative w-full aspect-square bg-[var(--border)] rounded-lg overflow-hidden;
+}
+
+.preview-loading::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 200%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.1),
+    transparent
+  );
+  animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+/* Preview Image Container */
+.preview-image-container {
+  @apply relative mt-4 overflow-hidden rounded-lg;
+  background: var(--cardBackground);
+  transition: transform 0.3s ease;
+}
+
+.preview-image-container:hover {
+  transform: scale(1.02);
+}
+
+.preview-image-container img {
+  @apply w-full h-full object-cover;
+  aspect-ratio: 1 / 1;
+}
+
+/* Preview Modal Loading State */
+.preview-modal-loading {
+  @apply flex items-center justify-center p-4;
+}
+
+.preview-modal-loading .spinner {
+  @apply w-8 h-8 border-4 border-[var(--primary)] border-t-transparent rounded-full animate-spin;
+}
+
+/* Preview Button States */
+.preview-btn-enabled {
+  @apply opacity-100 hover:bg-[var(--previewButtonHover)] cursor-pointer;
+}
+
+.preview-btn-disabled {
+  @apply opacity-50 cursor-not-allowed;
+  background-color: var(--previewButtonDisabled) !important;
+  color: var(--previewButtonDisabledText) !important;
+}
+/* Add these styles to your index.css */
+
+/* Modern Message Bubbles */
+.message-bubble {
+  @apply max-w-[80%] p-4 rounded-2xl shadow-sm;
+}
+
+.message-bubble-user {
+  @apply bg-[var(--cardBackground)] border border-[var(--border)] text-[var(--text)];
+}
+
+.message-bubble-assistant {
+  @apply bg-[var(--cardBackground)] border border-[var(--border)];
+}
+
+/* Modern Cards */
+.modern-card {
+  @apply rounded-2xl border border-[var(--border)] overflow-hidden transition-all duration-200;
+  background: linear-gradient(to bottom right, var(--cardBackground), color-mix(in srgb, var(--cardBackground) 95%, var(--primary)));
+}
+
+.gradient-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.gradient-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(to right, var(--primary), var(--secondary));
+}
+
+/* Message Groups */
+.message-group {
+  @apply flex flex-col gap-2 mb-6;
+}
+
+.message-group-user {
+  @apply items-end;
+}
+
+.message-group-assistant {
+  @apply items-start;
+}
+
+/* Message Metadata */
+.message-metadata {
+  @apply flex items-center gap-2 text-xs text-[var(--textSecondary)] mt-1;
+}
+
+/* Typing Indicator */
+.typing-indicator {
+  @apply flex items-center gap-1 px-4 py-2 rounded-full bg-[var(--cardBackground)] border border-[var(--border)];
+}
+
+.typing-dot {
+  @apply w-1.5 h-1.5 rounded-full bg-[var(--primary)];
+  animation: typing 1.4s infinite ease-in-out;
+}
+
+.typing-dot:nth-child(1) { animation-delay: 200ms; }
+.typing-dot:nth-child(2) { animation-delay: 300ms; }
+.typing-dot:nth-child(3) { animation-delay: 400ms; }
+
+@keyframes typing {
+  0%, 60%, 100% { transform: translateY(0); }
+  30% { transform: translateY(-4px); }
+}
+
+/* Message Actions */
+.message-actions {
+  @apply flex items-center flex-wrap gap-2 mt-3;
+}
+
+.message-action-button {
+  @apply flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium
+    text-[var(--textSecondary)] hover:bg-[var(--dropdownHover)] hover:text-[var(--text)] 
+    transition-all duration-200 border border-[var(--border)];
+}
+/* Add to your index.css */
+
+/* Modern Select Styles */
+.settings-select {
+  position: relative;
+}
+
+.settings-select-trigger {
+  width: 100%;
+  padding: 0.625rem 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--border);
+  background-color: var(--cardBackground);
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: border-color 0.2s;
+}
+
+.settings-select-trigger:hover {
+  border-color: var(--primary);
+}
+
+.settings-select-content {
+  background-color: var(--cardBackground);
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  margin-top: 0.5rem;
+  padding: 0.25rem;
+}
+
+.settings-select-item {
+  padding: 0.625rem 1rem;
+  border-radius: 0.5rem;
+  color: var(--text);
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.settings-select-item:hover {
+  background-color: var(--dropdownHover);
+}
+
+/* Modern Slider Styles */
+.settings-slider {
+  position: relative;
+  padding: 1rem 0;
+}
+
+.settings-slider-track {
+  height: 0.5rem;
+  border-radius: 9999px;
+  background-color: var(--border);
+}
+
+.settings-slider-range {
+  height: 0.5rem;
+  border-radius: 9999px;
+  background: linear-gradient(to right, var(--primary), var(--secondary));
+}
+
+.settings-slider-thumb {
+  width: 1.25rem;
+  height: 1.25rem;
+  border-radius: 9999px;
+  background-color: white;
+  border: 2px solid var(--primary);
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.settings-slider-thumb:hover {
+  transform: scale(1.1);
+}
+
+.settings-slider-thumb:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--primary);
+}
+
+/* Slider Label */
+.settings-slider-label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+  color: var(--text);
+}
+
+/* Slider Value */
+.settings-slider-value {
+  font-size: 0.875rem;
+  color: var(--textSecondary);
+}
+
+/* Settings Card */
+.settings-card {
+  padding: 1rem;
+  border-radius: 0.75rem;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(8px);
+}
+
+/* Section Header */
+.settings-section-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding-bottom: 1rem;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.settings-section-icon {
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  background-color: rgba(66, 245, 111, 0.1);
+}
+
+.settings-section-icon svg {
+  width: 1.25rem;
+  height: 1.25rem;
+  color: var(--primary);
+}
+
+/* Parameter Group */
+.parameter-group {
+  padding: 1rem;
+  border-radius: 0.75rem;
+  border: 1px solid var(--border);
+  background-color: var(--background);
+}
+
+/* Label Styles */
+.settings-label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--textSecondary);
+  margin-bottom: 0.5rem;
+}
+
+/* Premium Feature Indicator */
+.premium-feature {
+  position: relative;
+}
+
+.premium-feature::after {
+  content: '✨ Premium';
+  position: absolute;
+  top: 0;
+  right: 0;
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 9999px;
+  background-color: rgba(66, 245, 111, 0.1);
+  color: var(--primary);
+  font-weight: 500;
+}
+
+/* Settings Section Animation */
+.settings-section {
+  transition: transform 0.3s;
+}
+
+.settings-section:hover {
+  transform: translateX(-0.25rem);
+}
+/* Add these updated styles to your index.css */
+
+/* Message Container */
+.messages-container {
+  @apply flex-1 overflow-y-auto p-6 space-y-6 w-full;
+}
+
+/* Message Groups */
+.message-group {
+  @apply flex flex-col gap-2 mb-6 max-w-full;
+}
+
+.message-group-user {
+  @apply items-end;
+}
+
+.message-group-assistant {
+  @apply items-start;
+}
+
+/* Message Content Container */
+.message-content-container {
+  @apply flex items-end gap-2.5 max-w-full w-full justify-end;
+}
+
+.message-content-container-user {
+  @apply justify-end gap-2;
+}
+
+.message-content-container-assistant {
+  @apply justify-start;
+}
+
+/* Message Bubbles */
+.message-bubble {
+  @apply p-4 rounded-3xl shadow-sm max-w-[min(80%,800px)] break-words;
+}
+
+.message-bubble-user {
+  @apply bg-gradient-to-br from-[var(--primary)] to-[var(--secondary)] text-black px-5;
+  border-radius: 24px;
+  padding-top: 0.625rem;    /* 10px */
+  padding-bottom: 0.625rem; /* 10px */
+}
+
+.message-bubble-assistant {
+  @apply bg-[var(--cardBackground)] border border-[var(--border)];
+}
+
+/* Message Icons */
+.message-icon {
+  @apply flex-shrink-0;
+}
+
+/* Message Metadata */
+.message-metadata {
+  @apply flex items-center gap-2 text-xs text-[var(--textSecondary)] mt-1 px-2;
+}
+/* Add these styles to your index.css */
+
+/* Gradient text animation */
+@keyframes gradient-text {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Enhanced card hover */
+.modern-card {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Pulse animation for subscription success message */
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.3);
+  }
+  50% {
+    transform: scale(1.03);
+    text-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+  }
+  100% {
+    transform: scale(1);
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.3);
+  }
+}
+
+/* Rainbow text for subscription success message */
+.pulse-animation {
+  animation: pulse 2s infinite ease-in-out;
+}
+
+
+/* Smooth hover transition for the refresh button */
+.refresh-btn-hover {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.refresh-btn-hover:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Video Mode Styles */
+body.video-mode {
+  --primary: #2563eb; /* Blue-600 for video mode */
+  --primary-rgb: 37, 99, 235; /* RGB values for blue */
+  --secondary: #3b82f6;
+  --prompt-font: 'monospace';
+}
+
+/* Video mode light theme override */
+body.video-mode.theme-light {
+  --primary: #2563eb; /* Blue-600 for light video mode */
+  --primary-rgb: 37, 99, 235; /* RGB values for blue */
+  --secondary: #3b82f6;
+}
+
+body.video-mode .video-icon {
+  color: var(--primary);
+}
+
+/* Video Mode Tab Indication */
+body.video-mode .header-tab-video-active {
+  background-color: var(--primary);
+  color: white;
+}
+
+/* Mode transition animations */
+.mode-transition * {
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease, opacity 0.3s ease;
+}
+
+.video-mode-enter {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+.video-mode-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 300ms, transform 300ms;
+}
+
+.video-mode-exit {
+  opacity: 1;
+}
+
+.video-mode-exit-active {
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 300ms, transform 300ms;
+}
+
+/* Light Theme Specific Styles */
+body.theme-light {
+  color-scheme: light;
+}
+
+body.theme-light .modern-card {
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+}
+
+body.theme-light .modern-card:hover {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+body.theme-light .message-bubble-user {
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+}
+
+body.theme-light .message-bubble-assistant {
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+}
+
+/* Dark Theme Specific Styles */
+body.theme-dark {
+  color-scheme: dark;
+}
+
+body.theme-dark .modern-card {
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.3), 0 1px 2px 0 rgba(0, 0, 0, 0.2);
+}
+
+body.theme-dark .modern-card:hover {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
+}
+
+/* Theme Transition */
+body {
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Light mode input focus states */
+body.theme-light input:focus,
+body.theme-light textarea:focus {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+/* Light mode button styles */
+body.theme-light .message-action-button {
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+body.theme-light .message-action-button:hover {
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+}
+
+/* Light mode scrollbar improvements */
+body.theme-light ::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.15);
+}
+
+body.theme-light ::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(0, 0, 0, 0.25);
+}
+
+/* Light mode animation player fixes */
+body.theme-light .animation-player-container * {
+  color: var(--text) !important;
+}
+
+body.theme-light .animation-player-container .text-xs {
+  color: var(--textSecondary) !important;
+}
+
+body.theme-light .animation-player-container .bg-\[var\(--primary\)\]\/10 p {
+  color: var(--text) !important;
+}
+
+body.theme-light .animation-player-container .bg-\[var\(--primary\)\]\/10 .text-xs {
+  color: var(--text) !important;
+  opacity: 0.8;
+}
+
+/* Dark mode animation player fixes */
+body.theme-dark .animation-player-container * {
+  color: var(--text) !important;
+}
+
+body.theme-dark .animation-player-container .text-xs {
+  color: var(--textSecondary) !important;
+}
+
+body.theme-dark .animation-player-container .bg-\[var\(--primary\)\]\/10 p {
+  color: var(--text) !important;
+}
+
+body.theme-dark .animation-player-container .bg-\[var\(--primary\)\]\/10 .text-xs {
+  color: var(--text) !important;
+  opacity: 0.8;
+}
+
+/* ============================================ */
+/* PREMIUM MODAL THEME FIXES */
+/* ============================================ */
+
+/* HIGHEST PRIORITY - Direct modal container targeting */
+body.theme-light div.premium-modal-container {
+  background-color: white !important;
+}
+
+body.theme-dark div.premium-modal-container {
+  background-color: #171717 !important;
+}
+
+/* Force all children to inherit proper background */
+body.theme-light .premium-modal-container * {
+  /* Removed overly broad border override */
+}
+
+body.theme-dark .premium-modal-container * {
+  /* Removed overly broad border override */
+}
+
+/* Preserve selected tier subtle borders - ONLY for selected cards */
+body.theme-light .premium-modal-container .pricing-card.border-green-500 {
+  border-color: #22c55e !important; /* green-500 for light mode */
+  box-shadow: 0 10px 15px -3px rgba(34, 197, 94, 0.18), 0 4px 6px -2px rgba(34, 197, 94, 0.12) !important;
+}
+
+body.theme-dark .premium-modal-container .pricing-card.border-green-500 {
+  border-color: #10b981 !important; /* Keep original green-500 for dark mode */
+  box-shadow: 0 10px 15px -3px rgba(16, 185, 129, 0.1), 0 4px 6px -2px rgba(16, 185, 129, 0.05) !important;
+}
+
+/* Ensure non-selected cards keep gray borders */
+body.theme-light .premium-modal-container .pricing-card.border-gray-200 {
+  border-color: #e5e7eb !important; /* gray-200 */
+  box-shadow: none !important;
+}
+
+body.theme-dark .premium-modal-container .pricing-card:not(.border-green-500) {
+  border-color: #374151 !important; /* gray-700 for dark mode */
+  box-shadow: none !important;
+}
+
+/* Hover states for non-selected cards */
+body.theme-light .premium-modal-container .pricing-card:not(.border-green-500):hover {
+  border-color: #4ade80 !important; /* green-400 hover */
+}
+
+body.theme-dark .premium-modal-container .pricing-card:not(.border-green-500):hover {
+  border-color: #166534 !important; /* green-800 */
+}
+
+/* Ensure selected tier background gradients work */
+body.theme-light .premium-modal-container .pricing-card[class*="from-green-50"] {
+  background: linear-gradient(to bottom right, #f0fdf4, #ecfdf5) !important;
+}
+
+body.theme-dark .premium-modal-container .pricing-card[class*="dark:from-green-900"] {
+  background: linear-gradient(to bottom right, rgba(20, 83, 45, 0.2), rgba(6, 78, 59, 0.2)) !important;
+}
+
+/* Force correct modal backgrounds for both themes */
+body.theme-light .premium-modal-container,
+body.theme-light [class*="bg-white"][class*="dark:bg-"],
+body.theme-light .bg-white {
+  background-color: white !important;
+  border-color: var(--border) !important;
+}
+
+body.theme-dark .premium-modal-container,
+body.theme-dark [class*="bg-white"][class*="dark:bg-"],
+body.theme-dark .bg-white {
+  background-color: #171717 !important;
+  border-color: var(--border) !important;
+}
+
+/* Modal backdrop theming */
+body.theme-light .premium-modal-backdrop,
+body.theme-light [class*="bg-black"] {
+  background-color: rgba(0, 0, 0, 0.4) !important;
+}
+
+body.theme-dark .premium-modal-backdrop,
+body.theme-dark [class*="bg-black"] {
+  background-color: rgba(0, 0, 0, 0.6) !important;
+}
+
+/* Header section background fixes */
+body.theme-light .premium-modal-container .bg-gradient-to-br {
+  background: linear-gradient(to bottom right, #f0fdf4, #ecfdf5, #f0fdf4) !important;
+}
+
+body.theme-dark .premium-modal-container .bg-gradient-to-br {
+  background: linear-gradient(to bottom right, #171717, #171717, #171717) !important;
+}
+
+/* Specific header section targeting */
+body.theme-light .premium-modal-container > div:first-child {
+  background: linear-gradient(to bottom right, #f0fdf4, #ecfdf5, #f0fdf4) !important;
+}
+
+body.theme-dark .premium-modal-container > div:first-child {
+  background: linear-gradient(to bottom right, #171717, #171717, #171717) !important;
+}
+
+/* Main content area background */
+body.theme-light .premium-modal-container > div:last-child {
+  background-color: white !important;
+}
+
+body.theme-dark .premium-modal-container > div:last-child {
+  background-color: #171717 !important;
+}
+
+/* Specific modal section backgrounds */
+body.theme-light .premium-modal-container .bg-white,
+body.theme-light .premium-modal-container [class*="bg-white"] {
+  background-color: white !important;
+}
+
+body.theme-dark .premium-modal-container .bg-white,
+body.theme-dark .premium-modal-container [class*="bg-white"] {
+  background-color: #171717 !important;
+}
+
+/* Override any hardcoded dark backgrounds in light mode */
+body.theme-light .premium-modal-container [class*="171717"],
+body.theme-light .premium-modal-container [style*="background-color: #171717"],
+body.theme-light .premium-modal-container [style*="background: #171717"] {
+  background-color: white !important;
+}
+
+/* Override any hardcoded light backgrounds in dark mode */
+body.theme-dark .premium-modal-container [style*="background-color: white"],
+body.theme-dark .premium-modal-container [style*="background: white"] {
+  background-color: #171717 !important;
+}
+
+/* Ensure modal overlay uses theme-appropriate backdrop */
+body.theme-light .fixed.inset-0.bg-black\/40 {
+  background-color: rgba(0, 0, 0, 0.4) !important;
+}
+
+body.theme-dark .fixed.inset-0.bg-black\/40 {
+  background-color: rgba(0, 0, 0, 0.6) !important;
+}
+
+/* Premium modal cards in light mode */
+body.theme-light .premium-modal-card {
+  background-color: var(--cardBackground) !important;
+  border-color: var(--border) !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+}
+
+body.theme-dark .premium-modal-card {
+  background-color: var(--cardBackground) !important;
+  border-color: var(--border) !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Premium modal text improvements */
+body.theme-light .premium-modal-text {
+  color: var(--text) !important;
+}
+
+body.theme-light .premium-modal-text-secondary {
+  color: var(--textSecondary) !important;
+}
+
+/* Premium pricing card improvements */
+body.theme-light .pricing-card {
+  background-color: var(--background) !important;
+  border-color: var(--border) !important;
+}
+
+body.theme-light .pricing-card:hover {
+  border-color: var(--primary) !important;
+  box-shadow: 0 4px 12px -2px rgba(34, 197, 94, 0.2) !important;
+}
+
+body.theme-light .pricing-card.selected {
+  background: linear-gradient(to bottom right, rgba(34, 197, 94, 0.1), rgba(74, 222, 128, 0.1)) !important;
+  border-color: var(--primary) !important;
+  box-shadow: 0 0 0 1px var(--primary), 0 8px 16px -4px rgba(34, 197, 94, 0.25) !important;
+}
+
+/* Premium feature icons in light mode */
+body.theme-light .feature-icon {
+  background: linear-gradient(135deg, rgba(34, 197, 94, 0.15), rgba(74, 222, 128, 0.15)) !important;
+}
+
+body.theme-light .feature-icon svg {
+  color: rgb(22, 163, 74) !important;
+}
+
+/* Comparison card in light mode */
+body.theme-light .comparison-card {
+  background: linear-gradient(to bottom right, rgba(255, 255, 255, 1), rgba(249, 250, 251, 1), rgba(34, 197, 94, 0.04)) !important;
+  border-color: var(--border) !important;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06) !important;
+}
+
+/* Current plan card improvements */
+body.theme-light .current-plan-card {
+  background: linear-gradient(to bottom right, rgba(34, 197, 94, 0.1), rgba(74, 222, 128, 0.1)) !important;
+  border-color: var(--primary) !important;
+  box-shadow: 0 0 0 1px var(--primary), 0 4px 8px -2px rgba(34, 197, 94, 0.2) !important;
+}
+
+/* Button styling in light mode */
+body.theme-light .premium-modal-button {
+  background: linear-gradient(to right, rgb(22, 163, 74), rgb(34, 197, 94)) !important;
+  color: black !important;
+  box-shadow: 0 4px 12px -2px rgba(34, 197, 94, 0.35) !important;
+}
+
+body.theme-light .premium-modal-button:hover {
+  box-shadow: 0 6px 16px -4px rgba(34, 197, 94, 0.45) !important;
+  transform: translateY(-1px) !important;
+}
+
+/* Info badges and labels */
+body.theme-light .info-badge {
+  background: linear-gradient(135deg, rgba(34, 197, 94, 0.15), rgba(74, 222, 128, 0.15)) !important;
+  color: rgb(22, 163, 74) !important;
+  border-color: rgba(34, 197, 94, 0.3) !important;
+}
+
+/* Success messages and highlights */
+body.theme-light .success-highlight {
+  background: linear-gradient(135deg, rgba(34, 197, 94, 0.12), rgba(74, 222, 128, 0.12)) !important;
+  border-color: rgba(34, 197, 94, 0.3) !important;
+  color: rgb(22, 163, 74) !important;
+}
+
+/* Toggle switch improvements */
+body.theme-light .billing-toggle {
+  background-color: rgba(156, 163, 175, 1) !important;
+}
+
+body.theme-light .billing-toggle.active {
+  background: linear-gradient(to right, rgb(22, 163, 74), rgb(34, 197, 94)) !important;
+}
+
+/* Tooltip improvements in light mode */
+body.theme-light .premium-tooltip {
+  background-color: rgb(55, 65, 81) !important;
+  color: white !important;
+  border-color: rgb(75, 85, 99) !important;
+}
+
+/* ============================================ */
+/* END PREMIUM MODAL LIGHT MODE IMPROVEMENTS */
+/* ============================================ */
+
+/* ============================================ */
+/* EXTEND MODAL & NEXT SCENE MODAL THEME FIXES */
+/* ============================================ */
+
+/* Extend Modal theme compatibility */
+.extend-modal-container {
+  background-color: var(--cardBackground) !important;
+  border-color: var(--border) !important;
+  color: var(--text) !important;
+}
+
+/* Force background colors for Extend Modal in different themes */
+body.theme-light .extend-modal-container {
+  background-color: #f8fafc !important; /* Light cardBackground */
+}
+
+body.theme-dark .extend-modal-container {
+  background-color: #1e1e1e !important; /* Dark cardBackground */
+}
+
+.extend-modal-container input,
+.extend-modal-container textarea {
+  background-color: var(--inputBackground) !important;
+  border-color: var(--inputBorder) !important;
+  color: var(--text) !important;
+}
+
+.extend-modal-container input::placeholder,
+.extend-modal-container textarea::placeholder {
+  color: var(--textSecondary) !important;
+  opacity: 0.8;
+}
+
+.extend-modal-container input:focus,
+.extend-modal-container textarea:focus {
+  border-color: var(--primary) !important;
+  box-shadow: 0 0 0 3px rgba(var(--primary-rgb), 0.1) !important;
+}
+
+.extend-modal-container label {
+  color: var(--text) !important;
+}
+
+.extend-modal-container button {
+  transition: all 0.2s ease !important;
+}
+
+/* Next Scene Modal theme compatibility */
+.next-scene-modal-container {
+  background-color: var(--cardBackground) !important;
+  border-color: var(--border) !important;
+  color: var(--text) !important;
+}
+
+.next-scene-modal-container input,
+.next-scene-modal-container textarea {
+  background-color: var(--inputBackground) !important;
+  border-color: var(--inputBorder) !important;
+  color: var(--text) !important;
+}
+
+.next-scene-modal-container input::placeholder,
+.next-scene-modal-container textarea::placeholder {
+  color: var(--textSecondary) !important;
+  opacity: 0.8;
+}
+
+.next-scene-modal-container input:focus,
+.next-scene-modal-container textarea:focus {
+  border-color: var(--primary) !important;
+  box-shadow: 0 0 0 3px rgba(var(--primary-rgb), 0.1) !important;
+}
+
+.next-scene-modal-container label {
+  color: var(--text) !important;
+}
+
+.next-scene-modal-container button {
+  transition: all 0.2s ease !important;
+}
+
+/* Light mode specific improvements for modals */
+body.theme-light .extend-modal-container,
+body.theme-light .next-scene-modal-container {
+  background-color: #f8fafc !important;
+  border-color: #e2e8f0 !important;
+  color: #0f172a !important;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;
+}
+
+body.theme-light .extend-modal-container input,
+body.theme-light .extend-modal-container textarea,
+body.theme-light .next-scene-modal-container input,
+body.theme-light .next-scene-modal-container textarea {
+  background-color: #ffffff !important;
+  border-color: #cbd5e1 !important;
+  color: #0f172a !important;
+}
+
+body.theme-light .extend-modal-container label,
+body.theme-light .next-scene-modal-container label {
+  color: #0f172a !important;
+}
+
+body.theme-light .extend-modal-container input:focus,
+body.theme-light .extend-modal-container textarea:focus,
+body.theme-light .next-scene-modal-container input:focus,
+body.theme-light .next-scene-modal-container textarea:focus {
+  box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.1) !important;
+}
+
+/* Dark mode specific improvements for modals */
+body.theme-dark .extend-modal-container,
+body.theme-dark .next-scene-modal-container {
+  background-color: #1e1e1e !important;
+  border-color: #333 !important;
+  color: #f5f5f5 !important;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2) !important;
+}
+
+body.theme-dark .extend-modal-container input,
+body.theme-dark .extend-modal-container textarea,
+body.theme-dark .next-scene-modal-container input,
+body.theme-dark .next-scene-modal-container textarea {
+  background-color: #1e1e1e !important;
+  border-color: #555 !important;
+  color: #f5f5f5 !important;
+}
+
+body.theme-dark .extend-modal-container label,
+body.theme-dark .next-scene-modal-container label {
+  color: #f5f5f5 !important;
+}
+
+body.theme-dark .extend-modal-container input:focus,
+body.theme-dark .extend-modal-container textarea:focus,
+body.theme-dark .next-scene-modal-container input:focus,
+body.theme-dark .next-scene-modal-container textarea:focus {
+  box-shadow: 0 0 0 3px rgba(66, 245, 111, 0.1) !important;
+}
+
+/* Modal backdrop theming */
+.modal-backdrop {
+  backdrop-filter: blur(4px);
+}
+
+body.theme-light .modal-backdrop {
+  background-color: rgba(0, 0, 0, 0.4) !important;
+}
+
+body.theme-dark .modal-backdrop {
+  background-color: rgba(0, 0, 0, 0.6) !important;
+}
+
+/* Ensure proper text color inheritance in modals */
+.extend-modal-container *,
+.next-scene-modal-container * {
+  color: inherit;
+}
+
+.extend-modal-container h1,
+.extend-modal-container h2,
+.extend-modal-container h3,
+.extend-modal-container label,
+.next-scene-modal-container h1,
+.next-scene-modal-container h2,
+.next-scene-modal-container h3,
+.next-scene-modal-container label {
+  color: var(--text) !important;
+}
+
+/* ============================================ */
+/* END EXTEND MODAL & NEXT SCENE MODAL FIXES */
+/* ============================================ */
+
+/* ============================================ */
+/* ANIMATION PLAYER COMPONENT THEME FIXES */
+/* ============================================ */
+
+/* Force all animation player text to use theme colors */
+.animation-player-container * {
+  color: inherit !important;
+}
+
+/* Ensure Custom Prompt text is always visible */
+.animation-player-container .text-sm,
+.animation-player-container p,
+.animation-player-container span {
+  color: var(--text) !important;
+}
+
+/* Fix any hardcoded text colors in animation details */
+body.theme-light .animation-player-container .text-sm,
+body.theme-light .animation-player-container p,
+body.theme-light .animation-player-container span {
+  color: var(--text) !important;
+}
+
+body.theme-dark .animation-player-container .text-sm,
+body.theme-dark .animation-player-container p,
+body.theme-dark .animation-player-container span {
+  color: var(--text) !important;
+}
+
+/* Video Player Controls Theme Support */
+.animation-player-container video::-webkit-media-controls-panel {
+  background-color: var(--cardBackground) !important;
+}
+
+.animation-player-container video::-webkit-media-controls-play-button,
+.animation-player-container video::-webkit-media-controls-mute-button,
+.animation-player-container video::-webkit-media-controls-volume-slider {
+  filter: brightness(0) saturate(100%) invert(var(--text-brightness, 1));
+}
+
+/* Custom Prompt section specific fixes */
+.animation-player-container [class*="bg-gradient-to-r"] p {
+  color: var(--text) !important;
+}
+
+.animation-player-container [class*="bg-gradient-to-r"] .text-xs {
+  color: var(--text) !important;
+  opacity: 0.8;
+}
+
+/* Animation details grid text colors */
+.animation-player-container .grid > div span {
+  color: var(--text) !important;
+}
+
+.animation-player-container .grid > div .text-xs {
+  color: var(--textSecondary) !important;
+}
+
+/* Video progress bar theming */
+body.theme-light .animation-player-container [class*="bg-white"] {
+  background-color: rgba(15, 23, 42, 0.2) !important;
+}
+
+body.theme-dark .animation-player-container [class*="bg-white"] {
+  background-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+/* Additional theme fixes for animation player */
+.animation-player-container .text-\[var\(--text\)\] {
+  color: var(--text) !important;
+}
+
+.animation-player-container .text-\[var\(--textSecondary\)\] {
+  color: var(--textSecondary) !important;
+}
+
+/* Fix for Custom Prompt container */
+.animation-player-container .bg-\[var\(--primary\)\]\/10 p {
+  color: var(--text) !important;
+}
+
+/* Ensure all text in animation details is visible */
+.animation-player-container .bg-\[var\(--background\)\]\/20 span {
+  color: var(--text) !important;
+}
+
+.animation-player-container .bg-\[var\(--background\)\]\/20 .text-xs {
+  color: var(--textSecondary) !important;
+}
+
+/* Video container background fix */
+.animation-player-container .bg-\[var\(--cardBackground\)\] {
+  background-color: var(--cardBackground) !important;
+}
+
+/* Border fixes */
+.animation-player-container .border-\[var\(--border\)\] {
+  border-color: var(--border) !important;
+}
+
+/* Critical: Force Custom Prompt text visibility in both themes */
+body.theme-dark .animation-player-container p.text-sm.leading-relaxed,
+body.theme-light .animation-player-container p.text-sm.leading-relaxed {
+  color: var(--text) !important;
+}
+
+/* Force visibility for all p elements in Custom Prompt section */
+body.theme-dark .animation-player-container .border-l-2.border-\[var\(--primary\)\] p,
+body.theme-light .animation-player-container .border-l-2.border-\[var\(--primary\)\] p {
+  color: var(--text) !important;
+}
+
+/* Additional safeguard for prompt text */
+.animation-player-container p.leading-relaxed {
+  color: var(--text) !important;
+}
+
+/* ============================================ */
+/* COMPREHENSIVE LIGHT MODE IMPROVEMENTS */
+/* ============================================ */
+
+/* ============================================ */
+/* VIDEO PLAYER TIME DISPLAY FIX */
+/* ============================================ */
+
+/* Force video time display to use proper theme colors */
+.video-time-display {
+  color: white !important;
+}
+
+/* Ensure it works in both themes specifically */
+body.theme-light .video-time-display {
+  color: white !important; /* White for light mode */
+}
+
+body.theme-dark .video-time-display {
+  color: white !important; /* White for dark mode */
+}
+
+/* Override any animation player container rules for time display */
+.animation-player-container .video-time-display {
+  color: white !important;
+}
+
+body.theme-light .animation-player-container .video-time-display {
+  color: white !important;
+}
+
+body.theme-dark .animation-player-container .video-time-display {
+  color: white !important;
+}
+
+/* ============================================ */
+/* END VIDEO PLAYER TIME DISPLAY FIX */
+/* ============================================ */
+
+/* ============================================ */
+/* COMPREHENSIVE LIGHT MODE IMPROVEMENTS */
+/* ============================================ */
+
+/* Light Mode Sidebar Label Improvements */
+body.theme-light .settings-label,
+body.theme-light .settings-section h3,
+body.theme-light .parameter-group label,
+body.theme-light .settings-slider-label,
+body.theme-light label {
+  color: var(--text) !important;
+  font-weight: 500 !important;
+}
+
+/* Light mode secondary text improvements */
+body.theme-light .settings-slider-value,
+body.theme-light .text-\[var\(--textSecondary\)\],
+body.theme-light .settings-description {
+  color: rgba(15, 23, 42, 0.7) !important;
+}
+
+/* Premium Features styling for light mode */
+body.theme-light .premium-feature-indicator,
+body.theme-light .premium-badge,
+body.theme-light .premium-features-enabled {
+  background: linear-gradient(135deg, var(--primary), var(--secondary)) !important;
+  color: white !important;
+  border: none !important;
+}
+
+/* Generate tabs background fix for light themes */
+body.theme-light .generate-tab,
+body.theme-light .tab-button,
+body.theme-light .generate-container,
+body.theme-light .generate-area {
+  background-color: var(--background) !important;
+  color: var(--text) !important;
+}
+
+body.theme-light .generate-tab.active,
+body.theme-light .tab-button.active {
+  background-color: var(--cardBackground) !important;
+  border-color: var(--border) !important;
+  color: var(--text) !important;
+}
+
+/* Settings drawer improvements for light mode */
+body.theme-light .settings-drawer,
+body.theme-light .video-settings-drawer {
+  background-color: var(--cardBackground) !important;
+  border-color: var(--border) !important;
+}
+
+body.theme-light .settings-card,
+body.theme-light .parameter-group {
+  background-color: var(--background) !important;
+  border-color: var(--border) !important;
+}
+
+/* Light mode form elements */
+body.theme-light .settings-select-trigger,
+body.theme-light .settings-input,
+body.theme-light input,
+body.theme-light select {
+  background-color: var(--inputBackground) !important;
+  border-color: var(--inputBorder) !important;
+  color: var(--text) !important;
+}
+
+/* Light mode dropdown */
+body.theme-light .settings-select-content,
+body.theme-light .dropdown-content {
+  background-color: var(--dropdownBackground) !important;
+  border-color: var(--border) !important;
+}
+
+body.theme-light .settings-select-item:hover,
+body.theme-light .dropdown-item:hover {
+  background-color: var(--dropdownHover) !important;
+}
+
+/* Fix section headers in light mode */
+body.theme-light .settings-section-header h3,
+body.theme-light .section-title {
+  color: var(--text) !important;
+  font-weight: 600 !important;
+}
+
+/* Fix parameter descriptions in light mode */
+body.theme-light .parameter-description,
+body.theme-light .text-sm.text-gray-500,
+body.theme-light .text-xs.text-gray-400 {
+  color: var(--textSecondary) !important;
+}
+
+/* Premium text specific fixes */
+body.theme-light .premium-text,
+body.theme-light .premium-indicator {
+  background: linear-gradient(135deg, var(--primary), var(--secondary)) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  background-clip: text !important;
+  font-weight: 600 !important;
+}
+
+/* Fix any remaining grey text in sidebars */
+body.theme-light .sidebar-text,
+body.theme-light .text-gray-500,
+body.theme-light .text-gray-400,
+body.theme-light .text-gray-600 {
+  color: var(--text) !important;
+}
+
+/* Video settings drawer specific fixes */
+body.theme-light .video-parameter-group,
+body.theme-light .video-settings-section {
+  background-color: var(--cardBackground) !important;
+  border-color: var(--border) !important;
+}
+
+/* Ensure all text in settings is properly colored */
+body.theme-light .settings-drawer *,
+body.theme-light .video-settings-drawer * {
+  color: inherit;
+}
+
+body.theme-light .settings-drawer h1,
+body.theme-light .settings-drawer h2,
+body.theme-light .settings-drawer h3,
+body.theme-light .settings-drawer h4,
+body.theme-light .video-settings-drawer h1,
+body.theme-light .video-settings-drawer h2,
+body.theme-light .video-settings-drawer h3,
+body.theme-light .video-settings-drawer h4 {
+  color: var(--text) !important;
+}
+
+/* Tab navigation fixes for light mode */
+body.theme-light .tab-nav,
+body.theme-light .tab-panel,
+body.theme-light .generate-tabs {
+  background-color: var(--background) !important;
+}
+
+body.theme-light .tab-nav-item {
+  color: var(--textSecondary) !important;
+}
+
+body.theme-light .tab-nav-item.active,
+body.theme-light .tab-nav-item:hover {
+  color: var(--text) !important;
+  background-color: var(--cardBackground) !important;
+}
+
+/* Additional utility overrides for stubborn Tailwind classes */
+body.theme-light .text-gray-500,
+body.theme-light .text-gray-400,
+body.theme-light .text-gray-600,
+body.theme-light .text-slate-500,
+body.theme-light .text-slate-400 {
+  color: var(--text) !important;
+}
+
+/* Force proper text colors in all contexts */
+body.theme-light [class*="text-gray"],
+body.theme-light [class*="text-slate"] {
+  color: var(--text) !important;
+}
+
+/* Ensure settings components use theme colors */
+body.theme-light .bg-gray-50,
+body.theme-light .bg-gray-100,
+body.theme-light .bg-slate-50,
+body.theme-light .bg-slate-100 {
+  background-color: var(--cardBackground) !important;
+}
+
+/* Force proper backgrounds */
+body.theme-light [class*="bg-gray"],
+body.theme-light [class*="bg-slate"] {
+  background-color: var(--cardBackground) !important;
+}
+
+/* Additional border color fixes */
+body.theme-light .border-gray-200,
+body.theme-light .border-gray-300,
+body.theme-light .border-slate-200 {
+  border-color: var(--border) !important;
+}
+
+/* ============================================ */
+/* SPECIFIC FIXES FOR DROPDOWN SELECTIONS */
+/* ============================================ */
+
+/* Target specific dropdown/select labels */
+body.theme-light .settings-label,
+body.theme-light .form-label,
+body.theme-light .select-label,
+body.theme-light .dropdown-label {
+  color: var(--text) !important;
+  font-weight: 500 !important;
+}
+
+/* Fix Purpose, Model, Style dropdowns specifically */
+body.theme-light [data-testid*="select"] label,
+body.theme-light .select-container label,
+body.theme-light .dropdown-container label,
+body.theme-light .parameter-label {
+  color: var(--text) !important;
+  font-weight: 500 !important;
+}
+
+/* Target any remaining light grey text in forms */
+body.theme-light .text-neutral-500,
+body.theme-light .text-neutral-400,
+body.theme-light .text-stone-500,
+body.theme-light .text-stone-400 {
+  color: var(--text) !important;
+}
+
+/* Target specific class patterns that might be used */
+body.theme-light [class*="text-neutral"],
+body.theme-light [class*="text-stone"],
+body.theme-light [class*="text-zinc"] {
+  color: var(--text) !important;
+}
+
+/* Ensure modal placeholders are properly colored */
+body.theme-light .extend-modal-container input::placeholder,
+body.theme-light .extend-modal-container textarea::placeholder,
+body.theme-light .next-scene-modal-container input::placeholder,
+body.theme-light .next-scene-modal-container textarea::placeholder {
+  color: var(--textSecondary) !important;
+  opacity: 0.7;
+}
+
+body.theme-dark .extend-modal-container input::placeholder,
+body.theme-dark .extend-modal-container textarea::placeholder,
+body.theme-dark .next-scene-modal-container input::placeholder,
+body.theme-dark .next-scene-modal-container textarea::placeholder {
+  color: var(--textSecondary) !important;
+  opacity: 0.8;
+}
+
+/* ============================================ */
+/* VIDEO GENERATE COMPONENT THEME FIXES */
+/* ============================================ */
+
+/* Ensure all text in VideoGenerate component uses theme colors */
+.video-generate-container {
+  color: var(--text);
+}
+
+/* Force theme-aware text colors for all text elements */
+.video-generate-container p,
+.video-generate-container span,
+.video-generate-container div,
+.video-generate-container label,
+.video-generate-container h1,
+.video-generate-container h2,
+.video-generate-container h3,
+.video-generate-container h4 {
+  color: inherit;
+}
+
+/* Ensure description text uses secondary color */
+.video-generate-container .description-text,
+.video-generate-container .text-description {
+  color: var(--textSecondary) !important;
+}
+
+/* Force button text to use theme colors */
+.video-generate-container button:not(.bg-blue-500):not(.bg-green-500) {
+  color: var(--text);
+}
+
+/* Ensure placeholder text is visible */
+.video-generate-container input::placeholder,
+.video-generate-container textarea::placeholder {
+  color: var(--textSecondary) !important;
+  opacity: 0.7;
+}
+
+/* ============================================ */
+/* VIDEO HISTORY COMPONENTS THEME FIXES */
+/* ============================================ */
+
+/* Ensure video history cards have proper theme colors */
+.video-history-card {
+  background-color: var(--cardBackground);
+  border-color: var(--border);
+  color: var(--text);
+}
+
+/* Fix video overlay colors for theme compatibility */
+.video-overlay {
+  background-color: var(--background);
+}
+
+/* Ensure video duration labels are readable */
+.video-duration-label {
+  background-color: var(--background);
+  color: var(--text);
+  border-color: var(--border);
+}
+
+/* Fix video action buttons */
+.video-action-button {
+  background-color: var(--cardBackground);
+  color: var(--text);
+  border-color: var(--border);
+}
+
+.video-action-button:hover {
+  background-color: var(--dropdownHover);
+}
+
+/* Video trash view specific fixes */
+.video-trash-card {
+  background-color: var(--cardBackground);
+  border-color: var(--border);
+  color: var(--text);
+}
+
+/* Force theme colors for all video components */
+.video-history-container * {
+  border-color: var(--border);
+}
+
+.video-history-container h3,
+.video-history-container p,
+.video-history-container span {
+  color: inherit;
+}
+
+/* Fix any input placeholders */
+body.theme-light input::placeholder,
+body.theme-light select::placeholder,
+body.theme-light textarea::placeholder {
+  color: var(--textSecondary) !important;
+  opacity: 0.7;
+}
+
+/* Premium Features background fix */
+body.theme-light .premium-features-header,
+body.theme-light .premium-status,
+body.theme-light .premium-banner {
+  background-color: var(--cardBackground) !important;
+  border-color: var(--border) !important;
+}
+
+body.theme-light .premium-features-enabled {
+  background: linear-gradient(135deg, var(--primary), var(--secondary)) !important;
+  color: white !important;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  border: none !important;
+}
+
+/* Target the specific premium text component */
+body.theme-light .premium-indicator-text,
+body.theme-light .premium-status-text {
+  background: linear-gradient(135deg, var(--primary), var(--secondary)) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  background-clip: text !important;
+}
+
+/* Ensure any wrapper around premium text also has proper background */
+body.theme-light .premium-wrapper,
+body.theme-light .premium-container {
+  background-color: var(--cardBackground) !important;
+}
+
+/* ============================================ */
+/* MODAL BUTTON IMPROVEMENTS */
+/* ============================================ */
+
+/* Enhanced button styling for modals */
+.extend-modal-container .gradient-button,
+.next-scene-modal-container .gradient-button {
+  background: linear-gradient(135deg, var(--primary), var(--secondary)) !important;
+  color: black !important;
+  border: none !important;
+  font-weight: 600 !important;
+  transform: translateY(0) !important;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.extend-modal-container .gradient-button:hover,
+.next-scene-modal-container .gradient-button:hover {
+  opacity: 0.9 !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 4px 12px rgba(var(--primary-rgb), 0.3) !important;
+}
+
+.extend-modal-container .gradient-button:active,
+.next-scene-modal-container .gradient-button:active {
+  transform: translateY(0) !important;
+}
+
+/* Force Extend button text to be black in both themes */
+.extend-modal-container button[type="submit"],
+.extend-modal-container .bg-gradient-to-r,
+body.theme-light .extend-modal-container button[type="submit"],
+body.theme-dark .extend-modal-container button[type="submit"] {
+  color: black !important;
+}
+
+.next-scene-modal-container button[type="submit"],
+.next-scene-modal-container .bg-gradient-to-r,
+body.theme-light .next-scene-modal-container button[type="submit"],
+body.theme-dark .next-scene-modal-container button[type="submit"] {
+  color: black !important;
+}
+
+/* Secondary button styling for modals */
+.extend-modal-container .secondary-button,
+.next-scene-modal-container .secondary-button {
+  background-color: var(--inputBackground) !important;
+  color: var(--text) !important;
+  border: 1px solid var(--inputBorder) !important;
+  transition: all 0.2s ease !important;
+}
+
+.extend-modal-container .secondary-button:hover,
+.next-scene-modal-container .secondary-button:hover {
+  background-color: var(--dropdownHover) !important;
+  border-color: var(--primary) !important;
+}
+
+/* ============================================ */
+/* VIDEO MODE LIGHT THEME OVERRIDES */
+/* ============================================ */
+
+/* Video mode premium modal styling in light theme */
+body.video-mode.theme-light .premium-modal-container .pricing-card.border-green-500 {
+  border-color: #2563eb !important; /* blue-600 for video mode */
+  box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.18), 0 4px 6px -2px rgba(37, 99, 235, 0.12) !important;
+}
+
+/* Video mode hover states for non-selected cards */
+body.video-mode.theme-light .premium-modal-container .pricing-card:not(.border-green-500):hover {
+  border-color: #3b82f6 !important; /* blue-500 hover */
+}
+
+/* Video mode pricing card styling */
+body.video-mode.theme-light .pricing-card:hover {
+  border-color: var(--primary) !important;
+  box-shadow: 0 4px 12px -2px rgba(37, 99, 235, 0.2) !important;
+}
+
+body.video-mode.theme-light .pricing-card.selected {
+  background: linear-gradient(to bottom right, rgba(37, 99, 235, 0.1), rgba(59, 130, 246, 0.1)) !important;
+  border-color: var(--primary) !important;
+  box-shadow: 0 0 0 1px var(--primary), 0 8px 16px -4px rgba(37, 99, 235, 0.25) !important;
+}
+
+/* Video mode feature icons */
+body.video-mode.theme-light .feature-icon {
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.15), rgba(59, 130, 246, 0.15)) !important;
+}
+
+body.video-mode.theme-light .feature-icon svg {
+  color: rgb(29, 78, 216) !important;
+}
+
+/* Video mode button styling */
+body.video-mode.theme-light .premium-modal-button {
+  background: linear-gradient(to right, rgb(29, 78, 216), rgb(37, 99, 235)) !important;
+  color: white !important;
+  box-shadow: 0 4px 12px -2px rgba(37, 99, 235, 0.35) !important;
+}
+
+body.video-mode.theme-light .premium-modal-button:hover {
+  box-shadow: 0 6px 16px -4px rgba(37, 99, 235, 0.45) !important;
+  transform: translateY(-1px) !important;
+}
+
+/* Video mode info badges */
+body.video-mode.theme-light .info-badge {
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.15), rgba(59, 130, 246, 0.15)) !important;
+  color: rgb(29, 78, 216) !important;
+  border-color: rgba(37, 99, 235, 0.3) !important;
+}
+
+/* Video mode success highlights */
+body.video-mode.theme-light .success-highlight {
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.12), rgba(59, 130, 246, 0.12)) !important;
+  border-color: rgba(37, 99, 235, 0.3) !important;
+  color: rgb(29, 78, 216) !important;
+}
+
+/* Video mode toggle switch */
+body.video-mode.theme-light .billing-toggle.active {
+  background: linear-gradient(to right, rgb(29, 78, 216), rgb(37, 99, 235)) !important;
+}
+
+/* Video mode current plan card */
+body.video-mode.theme-light .current-plan-card {
+  background: linear-gradient(to bottom right, rgba(37, 99, 235, 0.1), rgba(59, 130, 246, 0.1)) !important;
+  border-color: var(--primary) !important;
+  box-shadow: 0 0 0 1px var(--primary), 0 4px 8px -2px rgba(37, 99, 235, 0.2) !important;
+}
+
+/* Video mode comparison card */
+body.video-mode.theme-light .comparison-card {
+  background: linear-gradient(to bottom right, rgba(255, 255, 255, 1), rgba(249, 250, 251, 1), rgba(37, 99, 235, 0.04)) !important;
+  border-color: var(--border) !important;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06) !important;
+}
+
+/* Video mode modal backgrounds */
+body.video-mode.theme-light .premium-modal-container .bg-gradient-to-br {
+  background: linear-gradient(to bottom right, #eff6ff, #dbeafe, #eff6ff) !important;
+}
+
+body.video-mode.theme-light .premium-modal-container > div:first-child {
+  background: linear-gradient(to bottom right, #eff6ff, #dbeafe, #eff6ff) !important;
+}
+
+/* Video mode selected tier background gradients */
+body.video-mode.theme-light .premium-modal-container .pricing-card[class*="from-green-50"] {
+  background: linear-gradient(to bottom right, #eff6ff, #dbeafe) !important;
+}
+
+/* ============================================ */
+/* END VIDEO MODE LIGHT THEME OVERRIDES */
+/* ============================================ */
+
+/* ============================================ */
+/* MINIMAL PREMIUM MODAL STYLING */
+/* ============================================ */
+
+/* Ensure modal backgrounds are clean */
+.premium-modal-container {
+  background-color: var(--background) !important;
+}
+
+/* Override any remaining green elements except selected borders */
+.premium-modal-container .pricing-card {
+  background-color: var(--background) !important;
+  border-color: var(--border) !important;
+}
+
+/* Keep only selected tier green border */
+.premium-modal-container .pricing-card.border-green-500 {
+  border-color: #22c55e !important;
+  box-shadow: 0 0 0 1px #22c55e, 0 4px 6px -1px rgba(34, 197, 94, 0.1) !important;
+}
+
+/* Feature icons green styling - but not for informational icons */
+.premium-modal-container .feature-icon:not(.comparison-card .feature-icon) {
+  color: #22c55e !important; /* Brighter green-500 */
+}
+
+body.theme-dark .premium-modal-container .feature-icon:not(.comparison-card .feature-icon) {
+  color: #86efac !important; /* Brighter green-300 */
+}
+
+/* Ensure all perk icons are green */
+.premium-modal-container .text-green-500 {
+  color: #22c55e !important; /* Brighter green-500 */
+}
+
+body.theme-dark .premium-modal-container .text-green-300 {
+  color: #86efac !important; /* Brighter green-300 */
+}
+
+/* Ensure upgrade button text is always white */
+.premium-modal-container button[class*="bg-green"] {
+  color: white !important;
+}
+
+.premium-modal-container button[class*="bg-green"] span {
+  color: white !important;
+}
+
+/* Make pricing green in dark mode - only price numbers in pricing cards, not titles */
+body.theme-dark .premium-modal-container .pricing-card .text-3xl.font-bold {
+  color: #4ade80 !important; /* green-400 - darker/more saturated than icons */
+}
+
+body.theme-dark .premium-modal-container .comparison-card .text-sm.font-bold {
+  color: #4ade80 !important; /* green-400 for per-image pricing */
+}
+
+/* Keep pricing black in light mode - only in pricing cards */
+body.theme-light .premium-modal-container .pricing-card .text-3xl.font-bold {
+  color: #111827 !important; /* gray-900 for prices in light mode */
+}
+
+body.theme-light .premium-modal-container .comparison-card .text-sm.font-bold {
+  color: #111827 !important; /* gray-900 for per-image pricing in light mode */
+}
+
+/* Current plan card minimal styling */
+.premium-modal-container .current-plan-card {
+  background-color: var(--background) !important;
+  border-color: #22c55e !important;
+}
+
+/* Make header border more subtle in light mode */
+body.theme-light .premium-modal-container .border-b {
+  border-color: #e5e7eb !important; /* gray-200 - more subtle */
+}
+
+body.theme-dark .premium-modal-container .border-b {
+  border-color: #374151 !important; /* gray-700 - keep dark mode as is */
+}
+
+/* Make grey text elements lighter in dark mode */
+body.theme-dark .premium-modal-container .text-gray-500 {
+  color: #b3b8bd !important; /* Custom gray - balanced between original and too light */
+}
+
+body.theme-dark .premium-modal-container .text-gray-600 {
+  color: #b3b8bd !important; /* Custom gray - balanced between original and too light */
+}
+
+body.theme-dark .premium-modal-container .text-gray-400 {
+  color: #b3b8bd !important; /* Custom gray - balanced between original and too light */
+}
+
+body.theme-dark .premium-modal-container .text-gray-700 {
+  color: #b3b8bd !important; /* Custom gray - balanced between original and too light */
+}
+
+/* Ensure all secondary text is lighter in dark mode */
+body.theme-dark .premium-modal-container [class*="text-gray"] {
+  color: #b3b8bd !important; /* Custom gray for consistent balanced appearance */
+}
+
+/* Keep main text elements white in dark mode */
+body.theme-dark .premium-modal-container .text-gray-900 {
+  color: white !important; /* Keep main text white for contrast */
+}
+
+body.theme-dark .premium-modal-container .text-gray-800 {
+  color: white !important; /* Keep main text white for contrast */
+}
+
+/* Comparison card neutral styling */
+.premium-modal-container .comparison-card {
+  background-color: var(--cardBackground) !important;
+  border-color: var(--border) !important;
+}
+
+/* Ensure all text uses theme colors */
+.premium-modal-container h1,
+.premium-modal-container h2,
+.premium-modal-container h3,
+.premium-modal-container p,
+.premium-modal-container span {
+  color: var(--text) !important;
+}
+
+.premium-modal-container .text-gray-600,
+.premium-modal-container .text-gray-700,
+.premium-modal-container .text-gray-800 {
+  color: var(--textSecondary) !important;
+}
+
+/* Dark mode specific overrides */
+body.theme-dark .premium-modal-container .pricing-card.border-green-500 {
+  border-color: #10b981 !important;
+  box-shadow: 0 0 0 1px #10b981, 0 4px 6px -1px rgba(16, 185, 129, 0.1) !important;
+}
+
+/* ============================================ */
+/* END MINIMAL PREMIUM MODAL STYLING */
+/* ============================================ */
+
+/* ============================================ */
+/* TOOLTIP THEME FIXES */
+/* ============================================ */
+
+/* Enhanced tooltip styling */
+.input-area-tooltip {
+  background-color: var(--tooltipBackground) !important;
+  color: white !important;
+  border: 1px solid var(--border) !important;
+  transform-origin: bottom center !important;
+}
+
+/* Additional tooltip improvements for both themes */
+body.theme-light .input-area-tooltip {
+  background-color: #334155 !important;
+  color: white !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+}
+
+body.theme-dark .input-area-tooltip {
+  background-color: #333 !important;
+  color: white !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* ============================================ */
+/* END TOOLTIP THEME FIXES */
+/* ============================================ */
+
+/* ============================================ */
+/* WELCOME MESSAGE THEME FIXES */
+/* ============================================ */
+
+/* Welcome message container improvements */
+.welcome-message-container {
+  background-color: var(--cardBackground) !important;
+  border: 1px solid var(--border) !important;
+  color: var(--text) !important;
+}
+
+/* Force proper backgrounds for welcome message in both themes */
+body.theme-light .welcome-message-container {
+  background-color: rgba(248, 250, 252, 0.7) !important; /* More opaque for better readability */
+  backdrop-filter: blur(8px) !important; /* Slightly more blur for text clarity */
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
+}
+
+body.theme-dark .welcome-message-container {
+  background-color: rgba(30, 30, 30, 0.7) !important; /* More opaque for better readability */
+  backdrop-filter: blur(8px) !important; /* Slightly more blur for text clarity */
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Welcome message text improvements for light mode */
+body.theme-light .welcome-message-container .welcome-text-primary {
+  color: #0f172a !important; /* Very dark for high contrast */
+}
+
+body.theme-light .welcome-message-container .welcome-text-secondary {
+  color: #475569 !important; /* Darker gray for better readability - was #64748b */
+}
+
+body.theme-light .welcome-message-container .welcome-text-description {
+  color: #334155 !important; /* Even darker for descriptions */
+}
+
+/* Welcome message title with adaptive single color */
+.welcome-title {
+  color: var(--primary) !important;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+body.theme-light .welcome-title {
+  color: #16a34a !important; /* Darker green for light theme */
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+body.theme-dark .welcome-title {
+  color: #4ade80 !important; /* Lighter green for dark theme */
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* Welcome message text improvements for dark mode */
+body.theme-dark .welcome-message-container .welcome-text-primary {
+  color: #f5f5f5 !important;
+}
+
+body.theme-dark .welcome-message-container .welcome-text-secondary {
+  color: #d1d5db !important; /* Lighter gray for better readability - was #888 */
+}
+
+body.theme-dark .welcome-message-container .welcome-text-description {
+  color: #9ca3af !important; /* Lighter for descriptions */
+}
+
+/* Feature card backgrounds in welcome message - balanced opacity */
+body.theme-light .welcome-feature-card {
+  background-color: rgba(255, 255, 255, 0.4) !important;
+  border: 1px solid rgba(226, 232, 240, 0.5) !important;
+}
+
+body.theme-light .welcome-feature-card:hover {
+  background-color: rgba(241, 245, 249, 0.6) !important;
+}
+
+body.theme-dark .welcome-feature-card {
+  background-color: rgba(23, 23, 23, 0.4) !important;
+  border: 1px solid rgba(51, 51, 51, 0.5) !important;
+}
+
+body.theme-dark .welcome-feature-card:hover {
+  background-color: rgba(42, 42, 42, 0.6) !important;
+}
+
+/* Icon containers in welcome message - different colors */
+body.theme-light .welcome-icon-container {
+  background-color: rgba(34, 197, 94, 0.15) !important;
+}
+
+body.theme-dark .welcome-icon-container {
+  background-color: rgba(66, 245, 111, 0.15) !important;
+}
+
+/* Individual icon color variations */
+/* First icon - Blue */
+body.theme-light .welcome-feature-card:nth-child(1) .welcome-icon-container {
+  background-color: rgba(59, 130, 246, 0.15) !important;
+}
+body.theme-light .welcome-feature-card:nth-child(1) .welcome-icon-container svg {
+  color: #2563eb !important;
+}
+body.theme-dark .welcome-feature-card:nth-child(1) .welcome-icon-container {
+  background-color: rgba(96, 165, 250, 0.15) !important;
+}
+body.theme-dark .welcome-feature-card:nth-child(1) .welcome-icon-container svg {
+  color: #60a5fa !important;
+}
+
+/* Second icon - Purple */
+body.theme-light .welcome-feature-card:nth-child(2) .welcome-icon-container {
+  background-color: rgba(147, 51, 234, 0.15) !important;
+}
+body.theme-light .welcome-feature-card:nth-child(2) .welcome-icon-container svg {
+  color: #9333ea !important;
+}
+body.theme-dark .welcome-feature-card:nth-child(2) .welcome-icon-container {
+  background-color: rgba(168, 85, 247, 0.15) !important;
+}
+body.theme-dark .welcome-feature-card:nth-child(2) .welcome-icon-container svg {
+  color: #a855f7 !important;
+}
+
+/* Third icon - Orange */
+body.theme-light .welcome-feature-card:nth-child(3) .welcome-icon-container {
+  background-color: rgba(249, 115, 22, 0.15) !important;
+}
+body.theme-light .welcome-feature-card:nth-child(3) .welcome-icon-container svg {
+  color: #ea580c !important;
+}
+body.theme-dark .welcome-feature-card:nth-child(3) .welcome-icon-container {
+  background-color: rgba(251, 146, 60, 0.15) !important;
+}
+body.theme-dark .welcome-feature-card:nth-child(3) .welcome-icon-container svg {
+  color: #fb923c !important;
+}
+
+/* Fourth icon - Pink */
+body.theme-light .welcome-feature-card:nth-child(4) .welcome-icon-container {
+  background-color: rgba(236, 72, 153, 0.15) !important;
+}
+body.theme-light .welcome-feature-card:nth-child(4) .welcome-icon-container svg {
+  color: #db2777 !important;
+}
+body.theme-dark .welcome-feature-card:nth-child(4) .welcome-icon-container {
+  background-color: rgba(244, 114, 182, 0.15) !important;
+}
+body.theme-dark .welcome-feature-card:nth-child(4) .welcome-icon-container svg {
+  color: #f472b6 !important;
+}
+
+/* Fifth icon - Teal */
+body.theme-light .welcome-feature-card:nth-child(5) .welcome-icon-container {
+  background-color: rgba(20, 184, 166, 0.15) !important;
+}
+body.theme-light .welcome-feature-card:nth-child(5) .welcome-icon-container svg {
+  color: #0d9488 !important;
+}
+body.theme-dark .welcome-feature-card:nth-child(5) .welcome-icon-container {
+  background-color: rgba(45, 212, 191, 0.15) !important;
+}
+body.theme-dark .welcome-feature-card:nth-child(5) .welcome-icon-container svg {
+  color: #2dd4bf !important;
+}
+
+/* Sixth icon - Indigo */
+body.theme-light .welcome-feature-card:nth-child(6) .welcome-icon-container {
+  background-color: rgba(99, 102, 241, 0.15) !important;
+}
+body.theme-light .welcome-feature-card:nth-child(6) .welcome-icon-container svg {
+  color: #4f46e5 !important;
+}
+body.theme-dark .welcome-feature-card:nth-child(6) .welcome-icon-container {
+  background-color: rgba(129, 140, 248, 0.15) !important;
+}
+body.theme-dark .welcome-feature-card:nth-child(6) .welcome-icon-container svg {
+  color: #818cf8 !important;
+}
+
+/* Button styling in welcome message */
+body.theme-light .welcome-cta-button {
+  background: linear-gradient(to right, #16a34a, #22c55e) !important;
+  color: white !important;
+  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.15) !important;
+}
+
+body.theme-dark .welcome-cta-button {
+  background: linear-gradient(to right, #42f56f, #31db8a) !important;
+  color: black !important;
+  box-shadow: 0 4px 12px rgba(66, 245, 111, 0.15) !important;
+}
+
+/* Ensure proper backdrop in welcome message - almost invisible */
+.welcome-backdrop {
+  background-color: rgba(0, 0, 0, 0.02) !important; /* Almost invisible backdrop */
+  backdrop-filter: blur(2px) !important; /* Minimal blur to see behind clearly */
+}
+
+body.theme-light .welcome-backdrop {
+  background-color: rgba(0, 0, 0, 0.01) !important; /* Practically transparent */
+}
+
+body.theme-dark .welcome-backdrop {
+  background-color: rgba(0, 0, 0, 0.05) !important; /* Very light backdrop */
+}
+
+/* ============================================ */
+/* END WELCOME MESSAGE THEME FIXES */
+/* ============================================ */
+
+/* ============================================ */
+/* HELP PAGE THEME IMPROVEMENTS */
+/* ============================================ */
+
+/* Help page container improvements */
+.help-page-container {
+  background-color: var(--background) !important;
+  color: var(--text) !important;
+}
+
+/* Help page header improvements */
+body.theme-light .help-page-header {
+  background-color: var(--background) !important;
+  border-color: var(--border) !important;
+}
+
+body.theme-dark .help-page-header {
+  background-color: var(--background) !important;
+  border-color: var(--border) !important;
+}
+
+/* Help page navigation improvements */
+body.theme-light .help-navigation {
+  background-color: var(--cardBackground) !important;
+}
+
+body.theme-dark .help-navigation {
+  background-color: var(--cardBackground) !important;
+}
+
+/* Help page search improvements */
+body.theme-light .help-search-input {
+  background-color: var(--inputBackground) !important;
+  border-color: var(--inputBorder) !important;
+  color: var(--text) !important;
+}
+
+body.theme-dark .help-search-input {
+  background-color: var(--inputBackground) !important;
+  border-color: var(--inputBorder) !important;
+  color: var(--text) !important;
+}
+
+/* Help page search focus states */
+body.theme-light .help-search-input:focus {
+  border-color: var(--primary) !important;
+  box-shadow: 0 0 0 3px rgba(var(--primary-rgb), 0.1) !important;
+}
+
+body.theme-dark .help-search-input:focus {
+  border-color: var(--primary) !important;
+  box-shadow: 0 0 0 3px rgba(var(--primary-rgb), 0.1) !important;
+}
+
+/* Help page card improvements */
+body.theme-light .help-card {
+  background-color: var(--cardBackground) !important;
+  border-color: var(--border) !important;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06) !important;
+}
+
+body.theme-dark .help-card {
+  background-color: var(--cardBackground) !important;
+  border-color: var(--border) !important;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.3), 0 1px 2px 0 rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Help page card hover states */
+body.theme-light .help-card:hover {
+  border-color: rgba(var(--primary-rgb), 0.5) !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+}
+
+body.theme-dark .help-card:hover {
+  border-color: rgba(var(--primary-rgb), 0.5) !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Help page code blocks */
+body.theme-light .help-code-block {
+  background-color: #f8fafc !important;
+  border-color: var(--border) !important;
+  color: #0f172a !important;
+}
+
+body.theme-dark .help-code-block {
+  background-color: #171717 !important;
+  border-color: var(--border) !important;
+  color: #f5f5f5 !important;
+}
+
+/* Help page tip boxes */
+body.theme-light .help-tip-box {
+  background-color: rgba(var(--primary-rgb), 0.05) !important;
+  border-color: rgba(var(--primary-rgb), 0.2) !important;
+}
+
+body.theme-dark .help-tip-box {
+  background-color: rgba(var(--primary-rgb), 0.05) !important;
+  border-color: rgba(var(--primary-rgb), 0.2) !important;
+}
+
+/* Help page footer improvements */
+body.theme-light .help-footer {
+  background-color: var(--cardBackground) !important;
+  border-color: var(--border) !important;
+}
+
+body.theme-dark .help-footer {
+  background-color: var(--cardBackground) !important;
+  border-color: var(--border) !important;
+}
+
+/* Help page mobile navigation */
+body.theme-light .help-mobile-nav {
+  background-color: var(--cardBackground) !important;
+  border-color: var(--border) !important;
+}
+
+body.theme-dark .help-mobile-nav {
+  background-color: var(--cardBackground) !important;
+  border-color: var(--border) !important;
+}
+
+/* Help page button improvements */
+body.theme-light .help-button {
+  background-color: var(--cardBackground) !important;
+  color: var(--text) !important;
+  border-color: var(--border) !important;
+}
+
+body.theme-dark .help-button {
+  background-color: var(--cardBackground) !important;
+  color: var(--text) !important;
+  border-color: var(--border) !important;
+}
+
+/* Help page button hover states */
+body.theme-light .help-button:hover {
+  background-color: var(--dropdownHover) !important;
+  border-color: var(--primary) !important;
+}
+
+body.theme-dark .help-button:hover {
+  background-color: var(--dropdownHover) !important;
+  border-color: var(--primary) !important;
+}
+
+/* Help page text improvements */
+body.theme-light .help-text-primary {
+  color: var(--text) !important;
+}
+
+body.theme-light .help-text-secondary {
+  color: var(--textSecondary) !important;
+}
+
+body.theme-dark .help-text-primary {
+  color: var(--text) !important;
+}
+
+body.theme-dark .help-text-secondary {
+  color: var(--textSecondary) !important;
+}
+
+/* Help page link improvements */
+body.theme-light .help-link {
+  color: var(--primary) !important;
+}
+
+body.theme-light .help-link:hover {
+  color: rgba(var(--primary-rgb), 0.8) !important;
+}
+
+body.theme-dark .help-link {
+  color: var(--primary) !important;
+}
+
+body.theme-dark .help-link:hover {
+  color: rgba(var(--primary-rgb), 0.8) !important;
+}
+
+/* Help page backdrop improvements */
+body.theme-light .help-backdrop {
+  background-color: rgba(255, 255, 255, 0.95) !important;
+  backdrop-filter: blur(8px) !important;
+}
+
+body.theme-dark .help-backdrop {
+  background-color: rgba(23, 23, 23, 0.95) !important;
+  backdrop-filter: blur(8px) !important;
+}
+
+/* Email popup improvements for help page */
+body.theme-light .email-popup-container {
+  background-color: var(--cardBackground) !important;
+  border-color: var(--border) !important;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;
+}
+
+body.theme-dark .email-popup-container {
+  background-color: var(--cardBackground) !important;
+  border-color: var(--border) !important;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Search results improvements for help page */
+body.theme-light .help-search-results {
+  background-color: var(--cardBackground) !important;
+  border-color: var(--border) !important;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
+}
+
+body.theme-dark .help-search-results {
+  background-color: var(--cardBackground) !important;
+  border-color: var(--border) !important;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Help page section improvements */
+body.theme-light .help-section {
+  background-color: var(--background) !important;
+}
+
+body.theme-dark .help-section {
+  background-color: var(--background) !important;
+}
+
+/* Help page gradient improvements */
+body.theme-light .help-gradient {
+  background: linear-gradient(to bottom right, rgba(var(--primary-rgb), 0.05), transparent) !important;
+}
+
+body.theme-dark .help-gradient {
+  background: linear-gradient(to bottom right, rgba(var(--primary-rgb), 0.05), transparent) !important;
+}
+
+/* ============================================ */
+/* END HELP PAGE THEME IMPROVEMENTS */
+/* ============================================ */
+
+/* ============================================ */
+/* HELP PAGE ADDITIONAL TARGETED FIXES */
+/* ============================================ */
+
+/* Force proper theme variables for Help page - Critical fixes */
+body:has(.help-page-container) {
+  background-color: var(--background);
+}
+
+/* Help page CSS variable inheritance fixes */
+.help-page-container,
+.help-page-container * {
+  --card: var(--cardBackground);
+}
+
+/* Ensure Help page uses theme variables correctly */
+body.theme-light .help-page-container {
+  --background: #ffffff;
+  --cardBackground: #f8fafc;
+  --text: #0f172a;
+  --textSecondary: #64748b;
+  --border: #e2e8f0;
+  --primary: #22c55e;
+  --primary-rgb: 34, 197, 94;
+  --dropdownHover: #f1f5f9;
+  --inputBackground: #ffffff;
+  --inputBorder: #cbd5e1;
+}
+
+body.theme-dark .help-page-container {
+  --background: #171717;
+  --cardBackground: #1e1e1e;
+  --text: #f5f5f5;
+  --textSecondary: #888;
+  --border: #333;
+  --primary: #42f56f;
+  --primary-rgb: 66, 245, 111;
+  --dropdownHover: #2a2a2a;
+  --inputBackground: #1e1e1e;
+  --inputBorder: #555;
+}
+
+/* Force all Help page elements to inherit proper colors */
+body .help-page-container h1,
+body .help-page-container h2,
+body .help-page-container h3,
+body .help-page-container h4,
+body .help-page-container p,
+body .help-page-container span,
+body .help-page-container div {
+  color: inherit;
+}
+
+/* Help page text gradient fixes */
+body.theme-light .help-page-container .bg-clip-text {
+  background: linear-gradient(to right, #0f172a, #64748b) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+}
+
+body.theme-dark .help-page-container .bg-clip-text {
+  background: linear-gradient(to right, #f5f5f5, #888) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+}
+
+/* ============================================ */
+/* USER DROPDOWN POSITIONING FIXES */
+/* ============================================ */
+
+/* Ensure user dropdown is always on top */
+.user-dropdown-content {
+  z-index: 9999 !important;
+  position: relative;
+}
+
+.user-dropdown {
+  position: relative;
+  z-index: 9999 !important;
+}
+
+/* Enhanced dropdown shadow for better visibility */
+.user-dropdown-menu {
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 
+              0 10px 10px -5px rgba(0, 0, 0, 0.04),
+              0 0 0 1px rgba(0, 0, 0, 0.05) !important;
+}
+
+body.theme-dark .user-dropdown-menu {
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 
+              0 10px 10px -5px rgba(0, 0, 0, 0.2),
+              0 0 0 1px rgba(255, 255, 255, 0.05) !important;
+}
+
+/* Ensure dropdown appears above all other content */
+.user-dropdown-container {
+  position: relative;
+  z-index: 9999 !important;
+}
+
+/* Desktop dropdown specific positioning */
+@media (min-width: 768px) {
+  .user-dropdown-desktop {
+    position: absolute;
+    right: 0;
+    top: 100%;
+    margin-top: 8px;
+    z-index: 9999;
+    transform: translateZ(0);
+  }
+  
+  /* Ensure dropdown doesn't overflow viewport */
+  .user-dropdown-desktop {
+    max-height: calc(100vh - 80px);
+    overflow-y: auto;
+  }
+}
+
+/* ============================================ */
+/* FINAL TARGETED FIXES */
+/* ============================================ */
+
+/* Fix the specific textBrighter class used in dropdowns */
+body.theme-light .text-\[var\(--textBrighter\)\] {
+  color: var(--text) !important;
+}
+
+/* Fix the specific footer background in Settings */
+body.theme-light .bg-zinc-900\/95,
+body.theme-light .bg-zinc-930\/90,
+body.theme-light .bg-zinc-910\/95 {
+  background-color: var(--cardBackground) !important;
+}
+
+/* Fix any remaining zinc backgrounds */
+body.theme-light [class*="bg-zinc"] {
+  background-color: var(--cardBackground) !important;
+}
+
+/* Fix zinc borders */
+body.theme-light .border-zinc-800,
+body.theme-light .border-zinc-700,
+body.theme-light .border-zinc-600 {
+  border-color: var(--border) !important;
+}
+
+/* Force all labels in light mode to be readable */
+body.theme-light label,
+body.theme-light .label,
+body.theme-light .form-label,
+body.theme-light .field-label {
+  color: var(--text) !important;
+  font-weight: 500 !important;
+}
+
+/* Target any remaining Tailwind utility classes that might cause issues */
+body.theme-light .text-gray-400,
+body.theme-light .text-gray-500,
+body.theme-light .text-gray-600,
+body.theme-light .text-slate-400,
+body.theme-light .text-slate-500,
+body.theme-light .text-neutral-400,
+body.theme-light .text-neutral-500,
+body.theme-light .text-stone-400,
+body.theme-light .text-stone-500,
+body.theme-light .text-zinc-400,
+body.theme-light .text-zinc-500 {
+  color: var(--text) !important;
+}
+
+/* Final modal improvements */
+body.theme-light .extend-modal-container,
+body.theme-light .next-scene-modal-container {
+  background-color: white !important;
+}
+
+body.theme-dark .extend-modal-container,
+body.theme-dark .next-scene-modal-container {
+  background-color: #1e1e1e !important;
+}
+
+/* Additional Help page body class targeting */
+body.theme-light {
+  --help-background: #ffffff;
+  --help-card: #f8fafc;
+  --help-text: #0f172a;
+  --help-text-secondary: #64748b;
+  --help-border: #e2e8f0;
+}
+
+body.theme-dark {
+  --help-background: #171717;
+  --help-card: #1e1e1e;
+  --help-text: #f5f5f5;
+  --help-text-secondary: #888;
+  --help-border: #333;
+}
+
+/* ============================================ */
+/* LIMIT REACHED MESSAGE DARK THEME FIXES */
+/* ============================================ */
+
+/* Fix text colors in LimitReachedMessage component for dark theme */
+body.theme-dark .bg-gradient-to-r.from-violet-500\/10 h3 {
+  color: var(--text) !important;
+}
+
+body.theme-dark .bg-gradient-to-r.from-violet-500\/10 p {
+  color: var(--textSecondary) !important;
+}
+
+/* Target the heading specifically */
+body.theme-dark .text-lg.font-semibold.text-gray-900 {
+  color: var(--text) !important;
+}
+
+/* Target the description text specifically */
+body.theme-dark .text-gray-600 {
+  color: var(--textSecondary) !important;
+}
+
+/* Target the secondary button text */
+body.theme-dark .text-gray-200 {
+  color: var(--textSecondary) !important;
+}
+
+/* More specific targeting for the LimitReachedMessage container */
+body.theme-dark .bg-gradient-to-r.from-violet-500\/10.via-purple-500\/10 * {
+  color: inherit;
+}
+
+body.theme-dark .bg-gradient-to-r.from-violet-500\/10.via-purple-500\/10 h3.text-lg {
+  color: var(--text) !important;
+}
+
+body.theme-dark .bg-gradient-to-r.from-violet-500\/10.via-purple-500\/10 p.mt-4 {
+  color: var(--textSecondary) !important;
+}
+
+/* Force all text elements in limit reached message to use theme colors */
+body.theme-dark [class*="bg-gradient-to-r"][class*="from-violet-500"] h3,
+body.theme-dark [class*="bg-gradient-to-r"][class*="from-violet-500"] p,
+body.theme-dark [class*="bg-gradient-to-r"][class*="from-violet-500"] span {
+  color: var(--text) !important;
+}
+
+/* Ensure description text uses secondary color */
+body.theme-dark [class*="bg-gradient-to-r"][class*="from-violet-500"] p.mt-4 {
+  color: var(--textSecondary) !important;
+}
+
+/* Override any Tailwind dark mode classes in the limit message */
+body.theme-dark .text-gray-900.dark\:text-gray-100 {
+  color: var(--text) !important;
+}
+
+body.theme-dark .text-gray-600.dark\:text-gray-300 {
+  color: var(--textSecondary) !important;
+}
+
+/* Button text fixes for LimitReachedMessage in dark theme */
+body.theme-dark [class*="bg-gradient-to-r"][class*="from-violet-500"] button {
+  color: white !important;
+}
+
+/* Specifically target Create Account and Sign In buttons */
+body.theme-dark .bg-gradient-to-r.from-violet-500.to-purple-500 {
+  color: white !important;
+}
+
+body.theme-dark .bg-white\/10.text-gray-200 {
+  color: white !important;
+}
+
+/* Additional button text targeting */
+body.theme-dark [class*="bg-gradient-to-r"][class*="from-violet-500"] .inline-flex {
+  color: white !important;
+}
+
+body.theme-dark [class*="bg-white\/10"][class*="text-gray-200"] {
+  color: white !important;
+}
+
+/* Ensure all button text is white regardless of button type */
+body.theme-dark [class*="bg-gradient-to-r"][class*="from-violet-500"] button *,
+body.theme-dark [class*="bg-white\/10"] button * {
+  color: white !important;
+}
+
+/* Fix perks list text in dark theme */
+body.theme-dark [class*="bg-gradient-to-r"][class*="from-violet-500"] ul li {
+  color: var(--text) !important;
+}
+
+/* Target the upgrade benefits list specifically */
+body.theme-dark .space-y-2.text-gray-600 li {
+  color: var(--text) !important;
+}
+
+/* Target all list items in the limit reached message */
+body.theme-dark [class*="bg-gradient-to-r"][class*="from-violet-500"] .space-y-2 li {
+  color: var(--text) !important;
+}
+
+/* Additional targeting for perk items */
+body.theme-dark [class*="bg-gradient-to-r"][class*="from-violet-500"] .flex.items-center {
+  color: var(--text) !important;
+}
+
+/* Ensure sparkle icons and text are properly colored */
+body.theme-dark [class*="bg-gradient-to-r"][class*="from-violet-500"] .flex.items-center.gap-2 {
+  color: var(--text) !important;
+}
+
+/* Make sparkle icons purple in dark theme */
+body.theme-dark [class*="bg-gradient-to-r"][class*="from-violet-500"] .w-4.h-4 {
+  color: #a855f7 !important; /* purple-500 */
+}
+
+/* Target sparkle icons more specifically */
+body.theme-dark [class*="bg-gradient-to-r"][class*="from-violet-500"] svg.w-4.h-4 {
+  color: #a855f7 !important; /* purple-500 */
+}
+
+/* Alternative targeting for Lucide icons */
+body.theme-dark [class*="bg-gradient-to-r"][class*="from-violet-500"] .lucide {
+  color: #a855f7 !important; /* purple-500 */
+}
+
+/* Broader targeting for any small icons in perks list */
+body.theme-dark [class*="bg-gradient-to-r"][class*="from-violet-500"] li svg {
+  color: #a855f7 !important; /* purple-500 */
+}
+
+/* ============================================ */
+/* END LIMIT REACHED MESSAGE DARK THEME FIXES */
+/* ============================================ */
+
+/* ============================================ */
+/* PREMIUM MEMBER RESTRICTION TEXT FIXES */
+/* ============================================ */
+
+/* Fix yellow text visibility in light theme for premium restrictions */
+/* Only target the specific premium restriction text, not all yellow text */
+body.theme-light .premium-restriction-text {
+  color: #7c3aed !important; /* violet-600 - premium purple */
+}
+
+body.theme-dark .premium-restriction-text {
+  color: #fbbf24 !important; /* yellow-400 */
+}
+
+/* Crown icon color matching - only for premium restriction text */
+body.theme-light .premium-restriction-text + .lucide,
+body.theme-light .premium-restriction-text .lucide {
+  color: #7c3aed !important; /* Match premium purple */
+}
+
+body.theme-dark .premium-restriction-text + .lucide,
+body.theme-dark .premium-restriction-text .lucide {
+  color: #fbbf24 !important; /* Match text color */
+}
+
+/* More specific targeting for the Crown icon in the premium restriction */
+body.theme-light .premium-restriction-text svg {
+  color: #7c3aed !important; /* Premium purple */
+}
+
+body.theme-dark .premium-restriction-text svg {
+  color: #fbbf24 !important;
+}
+
+/* Additional targeting for any premium restriction elements */
+body.theme-light .premium-restriction-text,
+body.theme-light .premium-restriction-text * {
+  color: #7c3aed !important; /* Premium purple */
+}
+
+body.theme-dark .premium-restriction-text,
+body.theme-dark .premium-restriction-text * {
+  color: #fbbf24 !important;
+}
+
+/* ============================================ */
+/* END PREMIUM MEMBER RESTRICTION TEXT FIXES */
+/* ============================================ */
+
+/* ============================================ */
+/* TOPUP MODAL THEME FIXES */
+/* ============================================ */
+
+/* Fix TopUp modal to use theme variables instead of Tailwind dark: classes */
+.topup-modal-container {
+  background-color: var(--cardBackground) !important;
+  border-color: var(--border) !important;
+  color: var(--text) !important;
+}
+
+/* Force background colors for TopUp Modal in different themes */
+body.theme-light .topup-modal-container {
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+}
+
+body.theme-dark .topup-modal-container {
+  background-color: #1e1e1e !important;
+  color: #f5f5f5 !important;
+}
+
+/* Fix all text colors in TopUp modal */
+.topup-modal-container h1,
+.topup-modal-container h2,
+.topup-modal-container h3,
+.topup-modal-container p {
+  color: var(--text) !important;
+}
+
+/* Ensure modal headings are always high contrast */
+body.theme-light .topup-modal-container h2.font-bold {
+  color: #0f172a !important;
+  opacity: 1 !important;
+}
+
+body.theme-dark .topup-modal-container h2.font-bold {
+  color: #f5f5f5 !important;
+  opacity: 1 !important;
+}
+
+/* Fix span text colors but exclude badges */
+.topup-modal-container span:not(.bg-violet-500):not(.bg-indigo-600) {
+  color: var(--text) !important;
+}
+
+/* Ensure badge text is always white - more specific targeting */
+.topup-modal-container .bg-violet-500,
+.topup-modal-container .bg-indigo-600 {
+  color: white !important;
+}
+
+.topup-modal-container .bg-violet-500 *,
+.topup-modal-container .bg-indigo-600 * {
+  color: white !important;
+}
+
+/* Force white text on badges regardless of theme */
+body.theme-light .topup-modal-container .bg-violet-500,
+body.theme-light .topup-modal-container .bg-indigo-600,
+body.theme-dark .topup-modal-container .bg-violet-500,
+body.theme-dark .topup-modal-container .bg-indigo-600 {
+  color: white !important;
+}
+
+/* Force white text on badge content regardless of theme */
+body.theme-light .topup-modal-container .bg-violet-500 *,
+body.theme-light .topup-modal-container .bg-indigo-600 *,
+body.theme-dark .topup-modal-container .bg-violet-500 *,
+body.theme-dark .topup-modal-container .bg-indigo-600 * {
+  color: white !important;
+}
+
+/* Override any text-white classes that might be affected */
+body.theme-light .topup-modal-container .text-white,
+body.theme-dark .topup-modal-container .text-white {
+  color: white !important;
+}
+
+/* Most specific targeting for badge spans with exact class combinations */
+.topup-modal-container span.bg-violet-500.text-white,
+.topup-modal-container span.bg-indigo-600.text-white {
+  color: white !important;
+}
+
+body.theme-light .topup-modal-container span.bg-violet-500.text-white,
+body.theme-light .topup-modal-container span.bg-indigo-600.text-white,
+body.theme-dark .topup-modal-container span.bg-violet-500.text-white,
+body.theme-dark .topup-modal-container span.bg-indigo-600.text-white {
+  color: white !important;
+}
+
+/* Force white on any text inside badge spans */
+.topup-modal-container span.bg-violet-500.text-white *,
+.topup-modal-container span.bg-indigo-600.text-white * {
+  color: white !important;
+}
+
+/* Nuclear option - force white text on badges with maximum specificity */
+.topup-modal-container span[class*="bg-violet-500"],
+.topup-modal-container span[class*="bg-indigo-600"] {
+  color: white !important;
+}
+
+.topup-modal-container span[class*="bg-violet-500"] *,
+.topup-modal-container span[class*="bg-indigo-600"] * {
+  color: white !important;
+}
+
+body.theme-light .topup-modal-container span[class*="bg-violet-500"],
+body.theme-light .topup-modal-container span[class*="bg-indigo-600"],
+body.theme-dark .topup-modal-container span[class*="bg-violet-500"],
+body.theme-dark .topup-modal-container span[class*="bg-indigo-600"] {
+  color: white !important;
+}
+
+body.theme-light .topup-modal-container span[class*="bg-violet-500"] *,
+body.theme-light .topup-modal-container span[class*="bg-indigo-600"] *,
+body.theme-dark .topup-modal-container span[class*="bg-violet-500"] *,
+body.theme-dark .topup-modal-container span[class*="bg-indigo-600"] * {
+  color: white !important;
+}
+
+/* Override specific Tailwind text color classes */
+body.theme-light .topup-modal-container .text-gray-900 {
+  color: #0f172a !important;
+}
+
+/* But make sure credit titles are always high contrast - but exclude price elements */
+body.theme-light .topup-modal-container .text-gray-900.font-bold:not([class*="text-violet"]) {
+  color: #0f172a !important;
+  opacity: 1 !important;
+}
+
+body.theme-dark .topup-modal-container .text-gray-900.font-bold:not([class*="text-violet"]),
+body.theme-dark .topup-modal-container .text-white.font-bold:not([class*="text-violet"]) {
+  color: #f5f5f5 !important;
+  opacity: 1 !important;
+}
+
+body.theme-light .topup-modal-container .text-gray-600 {
+  color: #475569 !important;
+}
+
+body.theme-light .topup-modal-container .text-gray-500 {
+  color: #64748b !important;
+}
+
+body.theme-light .topup-modal-container .text-gray-400 {
+  color: #64748b !important;
+}
+
+body.theme-dark .topup-modal-container .text-gray-900,
+body.theme-dark .topup-modal-container .text-white {
+  color: #f5f5f5 !important;
+}
+
+body.theme-dark .topup-modal-container .text-gray-600 {
+  color: #d1d5db !important;
+}
+
+body.theme-dark .topup-modal-container .text-gray-500 {
+  color: #9ca3af !important;
+}
+
+body.theme-dark .topup-modal-container .text-gray-400 {
+  color: #9ca3af !important;
+}
+
+/* Fix credit package card backgrounds */
+body.theme-light .topup-modal-container .border-gray-200 {
+  border-color: #e5e7eb !important;
+  background-color: #ffffff !important;
+}
+
+body.theme-dark .topup-modal-container .border-gray-200,
+body.theme-dark .topup-modal-container .border-gray-700 {
+  border-color: #374151 !important;
+  background-color: var(--cardBackground) !important;
+}
+
+/* Fix popular package styling */
+body.theme-light .topup-modal-container .bg-violet-50\/50 {
+  background-color: rgba(139, 92, 246, 0.05) !important;
+}
+
+body.theme-dark .topup-modal-container .bg-violet-50\/50,
+body.theme-dark .topup-modal-container .bg-violet-900\/10 {
+  background-color: rgba(139, 92, 246, 0.1) !important;
+}
+
+/* Fix best value package styling */
+body.theme-light .topup-modal-container .bg-indigo-50\/50 {
+  background-color: rgba(99, 102, 241, 0.05) !important;
+}
+
+body.theme-dark .topup-modal-container .bg-indigo-50\/50,
+body.theme-dark .topup-modal-container .bg-indigo-900\/10 {
+  background-color: rgba(99, 102, 241, 0.1) !important;
+}
+
+/* Fix close button styling */
+body.theme-light .topup-modal-container .text-gray-400 {
+  color: #6b7280 !important;
+}
+
+body.theme-light .topup-modal-container .hover\:text-gray-600:hover {
+  color: #374151 !important;
+}
+
+body.theme-light .topup-modal-container .bg-gray-100\/80 {
+  background-color: rgba(243, 244, 246, 0.8) !important;
+}
+
+body.theme-light .topup-modal-container .hover\:bg-gray-200:hover {
+  background-color: #e5e7eb !important;
+}
+
+body.theme-dark .topup-modal-container .text-gray-400,
+body.theme-dark .topup-modal-container .text-gray-500 {
+  color: #9ca3af !important;
+}
+
+body.theme-dark .topup-modal-container .hover\:text-gray-300:hover {
+  color: #d1d5db !important;
+}
+
+body.theme-dark .topup-modal-container .bg-gray-100\/80,
+body.theme-dark .topup-modal-container .bg-gray-800\/80 {
+  background-color: rgba(55, 65, 81, 0.8) !important;
+}
+
+body.theme-dark .topup-modal-container .hover\:bg-gray-200:hover,
+body.theme-dark .topup-modal-container .hover\:bg-gray-700:hover {
+  background-color: #4b5563 !important;
+}
+
+/* Fix default package button styling */
+body.theme-light .topup-modal-container .bg-gray-100 {
+  background-color: #f3f4f6 !important;
+  color: #111827 !important;
+}
+
+body.theme-light .topup-modal-container .hover\:bg-gray-200:hover {
+  background-color: #e5e7eb !important;
+}
+
+body.theme-dark .topup-modal-container .bg-gray-100,
+body.theme-dark .topup-modal-container .bg-gray-800 {
+  background-color: #374151 !important;
+  color: #f9fafb !important;
+}
+
+body.theme-dark .topup-modal-container .hover\:bg-gray-200:hover,
+body.theme-dark .topup-modal-container .hover\:bg-gray-700:hover {
+  background-color: #4b5563 !important;
+}
+
+/* Fix package button text colors */
+body.theme-dark .topup-modal-container .text-gray-900 {
+  color: #f9fafb !important;
+}
+
+body.theme-dark .topup-modal-container .text-white {
+  color: #ffffff !important;
+}
+
+/* Fix border colors in feature lists */
+body.theme-light .topup-modal-container .border-gray-200 {
+  border-color: #e5e7eb !important;
+}
+
+body.theme-dark .topup-modal-container .border-gray-200,
+body.theme-dark .topup-modal-container .border-gray-700 {
+  border-color: #374151 !important;
+}
+
+/* Fix header section background */
+body.theme-light .topup-modal-container .bg-gradient-to-br {
+  background: linear-gradient(to bottom right, rgba(139, 92, 246, 0.03), rgba(217, 70, 239, 0.03), rgba(139, 92, 246, 0.03)) !important;
+}
+
+body.theme-dark .topup-modal-container .bg-gradient-to-br {
+  background: linear-gradient(to bottom right, rgba(139, 92, 246, 0.05), rgba(217, 70, 239, 0.05), rgba(139, 92, 246, 0.05)) !important;
+}
+
+/* Ensure violet accent colors remain consistent */
+.topup-modal-container .text-violet-500,
+.topup-modal-container .text-violet-600,
+.topup-modal-container .text-violet-400 {
+  color: #8b5cf6 !important;
+}
+
+.topup-modal-container .bg-violet-500\/10 {
+  background-color: rgba(139, 92, 246, 0.1) !important;
+}
+
+/* Fix Top Up Credits badge visibility in light mode */
+body.theme-light .topup-modal-container .bg-violet-500\/10 {
+  background-color: rgba(139, 92, 246, 0.15) !important;
+}
+
+body.theme-light .topup-modal-container .text-violet-500 {
+  color: #7c3aed !important; /* violet-700 for better contrast in light mode */
+}
+
+body.theme-dark .topup-modal-container .text-violet-500 {
+  color: #a78bfa !important; /* violet-400 for better visibility in dark mode */
+}
+
+/* Keep gradient buttons unchanged (they should work in both themes) */
+.topup-modal-container .bg-gradient-to-r {
+  /* Gradient buttons maintain their original colors */
+}
+
+/* Force white text for Most Popular and Best Value package buttons */
+.topup-modal-container .bg-gradient-to-r.from-violet-500,
+.topup-modal-container .bg-gradient-to-r.from-indigo-500 {
+  color: white !important;
+}
+
+.topup-modal-container .bg-gradient-to-r.from-violet-500 *,
+.topup-modal-container .bg-gradient-to-r.from-indigo-500 * {
+  color: white !important;
+}
+
+/* Ensure gradient button text is white in both themes */
+body.theme-light .topup-modal-container .bg-gradient-to-r.from-violet-500,
+body.theme-light .topup-modal-container .bg-gradient-to-r.from-indigo-500,
+body.theme-dark .topup-modal-container .bg-gradient-to-r.from-violet-500,
+body.theme-dark .topup-modal-container .bg-gradient-to-r.from-indigo-500 {
+  color: white !important;
+}
+
+body.theme-light .topup-modal-container .bg-gradient-to-r.from-violet-500 *,
+body.theme-light .topup-modal-container .bg-gradient-to-r.from-indigo-500 *,
+body.theme-dark .topup-modal-container .bg-gradient-to-r.from-violet-500 *,
+body.theme-dark .topup-modal-container .bg-gradient-to-r.from-indigo-500 * {
+  color: white !important;
+}
+
+/* Fix main content area background */
+body.theme-light .topup-modal-container > div:last-child {
+  background-color: #ffffff !important;
+}
+
+body.theme-dark .topup-modal-container > div:last-child {
+  background-color: #1e1e1e !important;
+}
+
+/* Override any remaining hardcoded backgrounds */
+body.theme-light .topup-modal-container [class*="bg-white"] {
+  background-color: #ffffff !important;
+}
+
+body.theme-dark .topup-modal-container [class*="bg-white"],
+body.theme-dark .topup-modal-container [class*="bg-gray-900"] {
+  background-color: #1e1e1e !important;
+}
+
+/* Credit package card specific styling */
+.topup-credit-package {
+  background-color: var(--background) !important;
+  border-color: var(--border) !important;
+  color: var(--text) !important;
+}
+
+/* Override credit package backgrounds for different themes */
+body.theme-light .topup-credit-package {
+  background-color: #ffffff !important;
+}
+
+body.theme-dark .topup-credit-package {
+  background-color: var(--cardBackground) !important;
+}
+
+/* Fix popular and best value package borders */
+body.theme-light .topup-credit-package.border-violet-500 {
+  border-color: #8b5cf6 !important;
+}
+
+body.theme-light .topup-credit-package.border-indigo-600 {
+  border-color: #4f46e5 !important;
+}
+
+body.theme-dark .topup-credit-package.border-violet-500 {
+  border-color: #8b5cf6 !important;
+}
+
+body.theme-dark .topup-credit-package.border-indigo-600 {
+  border-color: #4f46e5 !important;
+}
+
+/* Ensure credit package text is always readable - but exclude price elements */
+.topup-credit-package .text-xl:not([class*="text-violet"]):not([class*="font-bold"]) {
+  color: var(--text) !important;
+}
+
+/* Specifically target the credits title to ensure visibility - but exclude price elements */
+body.theme-light .topup-credit-package .text-xl.font-bold:not([class*="text-violet"]),
+body.theme-light .topup-credit-package .text-2xl.font-bold:not([class*="text-violet"]) {
+  color: #0f172a !important;
+}
+
+body.theme-dark .topup-credit-package .text-xl.font-bold:not([class*="text-violet"]),
+body.theme-dark .topup-credit-package .text-2xl.font-bold:not([class*="text-violet"]) {
+  color: #f5f5f5 !important;
+}
+
+/* Override any gray text classes on credit titles - but exclude price elements */
+body.theme-light .topup-credit-package .text-gray-900:not([class*="text-violet"]) {
+  color: #0f172a !important;
+}
+
+body.theme-dark .topup-credit-package .text-gray-900:not([class*="text-violet"]) {
+  color: #f5f5f5 !important;
+}
+
+/* Fix credit package price colors - make them pink/purple */
+body.theme-light .topup-credit-package .text-violet-600 {
+  color: #c026d3 !important; /* fuchsia-600 for light theme */
+}
+
+body.theme-light .topup-credit-package .text-violet-400 {
+  color: #e879f9 !important; /* fuchsia-400 for light theme */
+}
+
+body.theme-dark .topup-credit-package .text-violet-600,
+body.theme-dark .topup-credit-package .text-violet-400 {
+  color: #f0abfc !important; /* fuchsia-300 for dark theme */
+}
+
+/* Also target any price text in the modal */
+body.theme-light .topup-modal-container .text-violet-600 {
+  color: #c026d3 !important; /* fuchsia-600 */
+}
+
+body.theme-light .topup-modal-container .text-violet-400 {
+  color: #e879f9 !important; /* fuchsia-400 */
+}
+
+body.theme-dark .topup-modal-container .text-violet-600,
+body.theme-dark .topup-modal-container .text-violet-400 {
+  color: #f0abfc !important; /* fuchsia-300 */
+}
+
+/* Fix feature list text in credit packages */
+.topup-credit-package .text-xs {
+  color: var(--textSecondary) !important;
+}
+
+/* Fix feature list background and borders for popular and best value packages - make transparent */
+body.theme-light .topup-credit-package.bg-violet-50\/50 .border-t,
+body.theme-light .topup-credit-package.bg-indigo-50\/50 .border-t {
+  border-color: rgba(139, 92, 246, 0.15) !important;
+  background-color: transparent !important;
+}
+
+body.theme-dark .topup-credit-package.bg-violet-50\/50 .border-t,
+body.theme-dark .topup-credit-package.bg-violet-900\/10 .border-t {
+  border-color: rgba(139, 92, 246, 0.2) !important;
+  background-color: transparent !important;
+}
+
+body.theme-dark .topup-credit-package.bg-indigo-50\/50 .border-t,
+body.theme-dark .topup-credit-package.bg-indigo-900\/10 .border-t {
+  border-color: rgba(99, 102, 241, 0.2) !important;
+  background-color: transparent !important;
+}
+
+/* Fix feature list container styling for popular packages */
+body.theme-dark .topup-credit-package .border-t.border-gray-200,
+body.theme-dark .topup-credit-package .border-t.border-gray-700 {
+  background-color: transparent !important;
+}
+
+/* Make feature list blend better with card background - remove backgrounds completely */
+body.theme-light .topup-credit-package .mt-3.pt-3,
+body.theme-dark .topup-credit-package .mt-3.pt-3 {
+  background-color: transparent !important;
+  border-radius: 0 0 1rem 1rem;
+}
+
+/* Remove backgrounds for popular package feature lists completely */
+body.theme-dark .topup-credit-package[class*="bg-violet"] .mt-3.pt-3.border-t {
+  background-color: transparent !important;
+  border-top-color: rgba(139, 92, 246, 0.2) !important;
+}
+
+body.theme-dark .topup-credit-package[class*="bg-indigo"] .mt-3.pt-3.border-t {
+  background-color: transparent !important;
+  border-top-color: rgba(99, 102, 241, 0.2) !important;
+}
+
+/* Also remove backgrounds for light theme popular packages */
+body.theme-light .topup-credit-package[class*="bg-violet"] .mt-3.pt-3.border-t {
+  background-color: transparent !important;
+  border-top-color: rgba(139, 92, 246, 0.15) !important;
+}
+
+body.theme-light .topup-credit-package[class*="bg-indigo"] .mt-3.pt-3.border-t {
+  background-color: transparent !important;
+  border-top-color: rgba(99, 102, 241, 0.15) !important;
+}
+
+/* Ensure feature list text remains readable on transparent background */
+body.theme-dark .topup-credit-package[class*="bg-violet"] .text-xs,
+body.theme-dark .topup-credit-package[class*="bg-indigo"] .text-xs {
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+body.theme-light .topup-credit-package[class*="bg-violet"] .text-xs,
+body.theme-light .topup-credit-package[class*="bg-indigo"] .text-xs {
+  color: rgba(0, 0, 0, 0.7) !important;
+}
+
+body.theme-light .topup-credit-package .text-gray-600 {
+  color: #475569 !important;
+}
+
+body.theme-dark .topup-credit-package .text-gray-600,
+body.theme-dark .topup-credit-package .text-gray-400 {
+  color: #9ca3af !important;
+}
+
+/* Fix ChevronRight icon colors */
+.topup-credit-package .text-violet-500 {
+  color: #8b5cf6 !important;
+}
+
+/* ============================================ */
+/* END TOPUP MODAL THEME FIXES */
+/* ============================================ */
+

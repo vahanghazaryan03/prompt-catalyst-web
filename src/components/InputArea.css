@@ -1,0 +1,80 @@
+/* Fade in animation for edit mode */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.2s ease-out;
+}
+
+/* Line clamp utility */
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.adaptive-textarea {
+  resize: none;
+  overflow-y: hidden; /* Hide scrollbar by default */
+  overflow-x: hidden;
+  min-height: 46px;
+  max-height: 150px;
+  height: auto;
+  scrollbar-width: thin;
+  transition: height 0.2s ease;
+}
+
+.adaptive-textarea.show-scrollbar {
+  overflow-y: auto; /* Show scrollbar when needed */
+}
+
+/* Hide scroll navigation buttons by default */
+.scroll-buttons {
+  display: none;
+}
+
+/* Only show scroll buttons when textarea has scrollbar */
+.adaptive-textarea.show-scrollbar ~ .scroll-buttons,
+.adaptive-textarea.show-scrollbar + .scroll-buttons {
+  display: flex;
+}
+
+/* Custom scrollbar styling */
+.adaptive-textarea::-webkit-scrollbar {
+  width: 6px;
+}
+
+.adaptive-textarea::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.adaptive-textarea::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 3px;
+}
+
+.adaptive-textarea::-webkit-scrollbar-thumb:hover {
+  background: var(--textSecondary);
+}
+
+/* Liquid loading animation keyframes */
+@keyframes liquidGradient {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes liquidWave {
+  0% { transform: translateY(2px); }
+  50% { transform: translateY(5px); }
+  100% { transform: translateY(0px); }
+}

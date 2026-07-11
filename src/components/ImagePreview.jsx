@@ -1,0 +1,47 @@
+import React from 'react';
+
+export const ImagePreview = ({ file, onRemove }) => {
+  const [previewUrl, setPreviewUrl] = React.useState(null);
+
+  React.useEffect(() => {
+    if (!file) return;
+
+    const url = URL.createObjectURL(file);
+    setPreviewUrl(url);
+
+    return () => URL.revokeObjectURL(url);
+  }, [file]);
+
+  if (!previewUrl) return null;
+
+  return (
+    <div className="relative group">
+      <img
+        src={previewUrl}
+        alt="Preview"
+        className="w-full h-48 object-cover rounded-lg"
+      />
+      <button
+        onClick={(e) => {
+          e.stopPropagation();
+          onRemove();
+        }}
+        className="absolute top-2 right-2 bg-black/50 hover:bg-black/70 text-white p-1.5 rounded-full 
+                   opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          className="h-5 w-5"
+          viewBox="0 0 20 20"
+          fill="currentColor"
+        >
+          <path
+            fillRule="evenodd"
+            d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+            clipRule="evenodd"
+          />
+        </svg>
+      </button>
+    </div>
+  );
+};

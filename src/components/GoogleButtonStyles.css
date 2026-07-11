@@ -1,0 +1,32 @@
+/* Google Button Styling */
+
+/* This helps with the overlay technique */
+.google-btn-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.01; /* Nearly invisible but still clickable */
+  z-index: 10; /* Above our custom button */
+  overflow: hidden;
+}
+
+/* Force Google's button to take the full width and height of our container */
+.google-btn-container > div,
+.google-btn-container iframe,
+.google-btn-container div[role="button"] {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* Hide text in Google's button but keep it interactive */
+.google-btn-container div[role="button"] > div > div {
+  opacity: 0;
+}
+
+/* Make sure Google's button doesn't have any border or background that could interfere */
+.google-btn-container div[role="button"] {
+  border: none !important;
+  background: transparent !important;
+}
