@@ -6,7 +6,13 @@ Frontend for [PromptCatalyst](https://promptcatalyst.ai), a full-stack AI platfo
 
 > This repository contains the **React frontend** only. The backend API is kept in a separate private repository.
 
-![PromptCatalyst app](docs/screenshots/app.jpg)
+*Image generation — multi-model selector (Flux, Seedream, Juggernaut…) with a live result:*
+
+![Image generation](docs/screenshots/generate.jpg)
+
+*The Prompt Lab optimizing a subject into ready-to-use image prompts:*
+
+![Prompt Lab](docs/screenshots/prompt-lab.jpg)
 
 ## Overview
 
