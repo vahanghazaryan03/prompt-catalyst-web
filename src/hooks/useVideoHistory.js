@@ -3,6 +3,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import apiService from '../services/api';
 import useVideoStore from '../contexts/VideoStore';
+import { logger } from '../utils/logger';
 
 // Global cache for video history
 if (!window.videoHistoryCache) {
@@ -22,7 +23,7 @@ const saveVideoHistory = (history) => {
     localStorage.setItem('text_to_video_history', JSON.stringify(history));
     return true;
   } catch (error) {
-    console.error('Failed to save video history to localStorage:', error);
+    logger.error('Failed to save video history to localStorage:', error);
     
     // Try to save a minimal version if the full save fails
     try {
@@ -40,7 +41,7 @@ const saveVideoHistory = (history) => {
       localStorage.setItem('text_to_video_history', JSON.stringify(minimalHistory));
       return true;
     } catch (e) {
-      console.error('Failed to save even minimal video history:', e);
+      logger.error('Failed to save even minimal video history:', e);
       return false;
     }
   }
@@ -52,7 +53,7 @@ const loadVideoHistory = () => {
     const saved = localStorage.getItem('text_to_video_history');
     return saved ? JSON.parse(saved) : [];
   } catch (error) {
-    console.error('Failed to load video history from localStorage:', error);
+    logger.error('Failed to load video history from localStorage:', error);
     return [];
   }
 };
@@ -239,13 +240,13 @@ export function useVideoHistory() {
             // Record end time and log performance
             window.videoHistoryCache.loadEndTime = Date.now();
             const loadTime = window.videoHistoryCache.loadEndTime - window.videoHistoryCache.loadStartTime;
-            console.log(`Video history loaded in ${loadTime}ms with ${updatedHistory.length} items`);
+            logger.debug(`Video history loaded in ${loadTime}ms with ${updatedHistory.length} items`);
             
             setLoading(false);
             return;
           }
         } catch (serverError) {
-          console.error('Failed to fetch videos from server:', serverError);
+          logger.error('Failed to fetch videos from server:', serverError);
           setError('Failed to fetch videos from server. Please try again.');
         }
       }
@@ -257,7 +258,7 @@ export function useVideoHistory() {
       
       setLoading(false);
     } catch (err) {
-      console.error('Video history load error:', err);
+      logger.error('Video history load error:', err);
       setError(err.message || 'Failed to load video history');
       setHistory([]);
       
@@ -332,7 +333,7 @@ export function useVideoHistory() {
         // Update the video object with the thumbnail
         processedVideo.thumbnail = thumbnailDataUrl;
       } catch (error) {
-        console.error('Failed to convert dataUrl to thumbnail:', error);
+        logger.error('Failed to convert dataUrl to thumbnail:', error);
         // Don't set thumbnail if conversion fails
       }
     }
@@ -396,7 +397,7 @@ export function useVideoHistory() {
     const videoToTrash = history.find(video => video.id === id);
     
     if (!videoToTrash) {
-      console.warn(`Video with ID ${id} not found for trashing`);
+      logger.warn(`Video with ID ${id} not found for trashing`);
       return;
     }
     

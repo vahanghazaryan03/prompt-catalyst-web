@@ -4,6 +4,7 @@
  */
 
 import { assetCache, preloadManager, cacheDB } from './index';
+import { logger } from '../logger';
 
 class CacheDebugger {
   constructor() {
@@ -18,16 +19,16 @@ class CacheDebugger {
     const preloadStats = preloadManager.getStats();
     
     console.group(this.logPrefix + ' Cache Statistics');
-    console.log('Memory Cache:', stats.memory.cached, 'items');
+    logger.debug('Memory Cache:', stats.memory.cached, 'items');
     if (stats.persistent) {
-      console.log('Persistent Cache:', stats.persistent.totalAssets, 'assets');
-      console.log('Total Size:', stats.persistent.sizeMB, 'MB');
-      console.log('Images:', stats.persistent.imageCount);
-      console.log('Videos:', stats.persistent.videoCount);
+      logger.debug('Persistent Cache:', stats.persistent.totalAssets, 'assets');
+      logger.debug('Total Size:', stats.persistent.sizeMB, 'MB');
+      logger.debug('Images:', stats.persistent.imageCount);
+      logger.debug('Videos:', stats.persistent.videoCount);
     }
-    console.log('Preload Queue:', preloadStats.queueLength, 'items');
-    console.log('Currently Preloading:', preloadStats.isPreloading);
-    console.log('Loaded Sets:', preloadStats.loadedSets);
+    logger.debug('Preload Queue:', preloadStats.queueLength, 'items');
+    logger.debug('Currently Preloading:', preloadStats.isPreloading);
+    logger.debug('Loaded Sets:', preloadStats.loadedSets);
     console.groupEnd();
   }
 
@@ -35,7 +36,7 @@ class CacheDebugger {
    * Force preload all assets for testing
    */
   async preloadAll() {
-    console.log(this.logPrefix, 'Starting full preload...');
+    logger.debug(this.logPrefix, 'Starting full preload...');
     const start = Date.now();
     
     await preloadManager.preloadCritical();
@@ -43,7 +44,7 @@ class CacheDebugger {
     preloadManager.queueModePreload(true);  // Videos
     
     const elapsed = Date.now() - start;
-    console.log(this.logPrefix, `Full preload completed in ${elapsed}ms`);
+    logger.debug(this.logPrefix, `Full preload completed in ${elapsed}ms`);
     await this.logStats();
   }
 
@@ -51,9 +52,9 @@ class CacheDebugger {
    * Clear all caches
    */
   async clearAll() {
-    console.log(this.logPrefix, 'Clearing all caches...');
+    logger.debug(this.logPrefix, 'Clearing all caches...');
     await assetCache.clearCache(true); // Include IndexedDB
-    console.log(this.logPrefix, 'All caches cleared');
+    logger.debug(this.logPrefix, 'All caches cleared');
   }
 
   /**
@@ -76,9 +77,9 @@ class CacheDebugger {
       try {
         await assetCache.getAsset(url);
         const elapsed = Date.now() - start;
-        console.log(`✓ ${url.split('/').pop()}: ${elapsed}ms`);
+        logger.debug(`✓ ${url.split('/').pop()}: ${elapsed}ms`);
       } catch (error) {
-        console.error(`✗ ${url.split('/').pop()}:`, error.message);
+        logger.error(`✗ ${url.split('/').pop()}:`, error.message);
       }
     }
     
@@ -107,7 +108,7 @@ class CacheDebugger {
       }
     };
     
-    console.log(this.logPrefix, 'Cache monitoring started');
+    logger.debug(this.logPrefix, 'Cache monitoring started');
   }
 
   /**
@@ -117,7 +118,7 @@ class CacheDebugger {
     if (!this.isMonitoring) return;
     
     this.isMonitoring = false;
-    console.log(this.logPrefix, 'Cache monitoring results:', this.stats);
+    logger.debug(this.logPrefix, 'Cache monitoring results:', this.stats);
     this.stats = null;
   }
 
@@ -144,10 +145,10 @@ class CacheDebugger {
         lastAccessed: new Date(asset.lastAccessed).toISOString()
       }));
       
-      console.log(this.logPrefix, 'Cache export:', exportData);
+      logger.debug(this.logPrefix, 'Cache export:', exportData);
       return exportData;
     } catch (error) {
-      console.error(this.logPrefix, 'Export failed:', error);
+      logger.error(this.logPrefix, 'Export failed:', error);
       return null;
     }
   }
@@ -162,7 +163,7 @@ if (process.env.NODE_ENV === 'development') {
   window.assetCache = assetCache;
   window.preloadManager = preloadManager;
   
-  console.log(
+  logger.debug(
     '%c[AssetCache] Debugging tools available on window.cacheDebugger',
     'color: #10b981; font-weight: bold;'
   );

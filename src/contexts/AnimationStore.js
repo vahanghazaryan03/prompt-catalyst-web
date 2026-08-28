@@ -1,6 +1,7 @@
 // Updated src/contexts/AnimationStore.js
 import { create } from 'zustand';
 import { cleanupStorage } from '../utils/animationStorage';
+import { logger } from '../utils/logger';
 
 // Keys for session storage backup
 const SESSION_KEYS = {
@@ -29,7 +30,7 @@ const getSessionImage = () => {
     const saved = sessionStorage.getItem(SESSION_KEYS.UPLOADED_IMAGE);
     return saved ? JSON.parse(saved) : null;
   } catch (e) {
-    console.error('Error parsing uploaded image from session storage:', e);
+    logger.error('Error parsing uploaded image from session storage:', e);
     return null;
   }
 };
@@ -52,7 +53,7 @@ const saveSessionImage = (imageData) => {
       };
       sessionStorage.setItem(SESSION_KEYS.UPLOADED_IMAGE, JSON.stringify(imageInfo));
     } catch (e) {
-      console.warn('Session storage quota exceeded for image, using fallback storage', e);
+      logger.warn('Session storage quota exceeded for image, using fallback storage', e);
       // Just continue without storing in session
     }
   } else {
@@ -66,7 +67,7 @@ const getSessionVideo = () => {
     const saved = sessionStorage.getItem(SESSION_KEYS.GENERATED_VIDEO);
     return saved ? JSON.parse(saved) : null;
   } catch (e) {
-    console.error('Error parsing generated video from session storage:', e);
+    logger.error('Error parsing generated video from session storage:', e);
     return null;
   }
 };
@@ -77,7 +78,7 @@ const getSessionPreset = () => {
     const saved = sessionStorage.getItem(SESSION_KEYS.SELECTED_PRESET);
     return saved ? JSON.parse(saved) : null;
   } catch (e) {
-    console.error('Error parsing selected preset from session storage:', e);
+    logger.error('Error parsing selected preset from session storage:', e);
     return null;
   }
 };
@@ -88,7 +89,7 @@ const getTrashedAnimations = () => {
     const saved = localStorage.getItem(LOCAL_STORAGE_KEYS.TRASHED_ANIMATIONS);
     return saved ? JSON.parse(saved) : [];
   } catch (e) {
-    console.error('Error parsing trashed animations from local storage:', e);
+    logger.error('Error parsing trashed animations from local storage:', e);
     return [];
   }
 };
@@ -98,7 +99,7 @@ const saveTrashedAnimations = (trashedItems) => {
   try {
     localStorage.setItem(LOCAL_STORAGE_KEYS.TRASHED_ANIMATIONS, JSON.stringify(trashedItems));
   } catch (e) {
-    console.warn('Local storage quota exceeded for trashed animations', e);
+    logger.warn('Local storage quota exceeded for trashed animations', e);
     // Try to save with minimal data if full save fails
     try {
       // Create minimal version with only essential data
@@ -117,7 +118,7 @@ const saveTrashedAnimations = (trashedItems) => {
       }));
       localStorage.setItem(LOCAL_STORAGE_KEYS.TRASHED_ANIMATIONS, JSON.stringify(minimalTrashedItems));
     } catch (fallbackError) {
-      console.error('Failed to store trashed animations even with minimal data', fallbackError);
+      logger.error('Failed to store trashed animations even with minimal data', fallbackError);
       // Continue without storing
     }
   }
@@ -218,7 +219,7 @@ const useAnimationStore = create((set, get) => ({
       }
     } catch (error) {
       // If storage fails, just keep in memory
-      console.warn('Failed to save preset to session storage:', error);
+      logger.warn('Failed to save preset to session storage:', error);
     }
   },
   
@@ -229,7 +230,7 @@ const useAnimationStore = create((set, get) => ({
       sessionStorage.setItem(SESSION_KEYS.CUSTOM_PROMPT, prompt);
     } catch (error) {
       // If storage fails, just keep in memory
-      console.warn('Failed to save prompt to session storage:', error);
+      logger.warn('Failed to save prompt to session storage:', error);
     }
   },
   
@@ -249,7 +250,7 @@ const useAnimationStore = create((set, get) => ({
       sessionStorage.setItem(SESSION_KEYS.DURATION, duration);
     } catch (error) {
       // If storage fails, just keep in memory
-      console.warn('Failed to save duration to session storage:', error);
+      logger.warn('Failed to save duration to session storage:', error);
     }
   },
   
@@ -264,7 +265,7 @@ const useAnimationStore = create((set, get) => ({
       sessionStorage.setItem(SESSION_KEYS.RESOLUTION, resolution);
     } catch (error) {
       // If storage fails, just keep in memory
-      console.warn('Failed to save resolution to session storage:', error);
+      logger.warn('Failed to save resolution to session storage:', error);
     }
   },
   
@@ -294,7 +295,7 @@ const useAnimationStore = create((set, get) => ({
       sessionStorage.setItem(SESSION_KEYS.RESOLUTION, newResolution);
     } catch (error) {
       // If storage fails, just keep in memory
-      console.warn('Failed to save AI model/settings to session storage:', error);
+      logger.warn('Failed to save AI model/settings to session storage:', error);
     }
   },
   
@@ -317,7 +318,7 @@ const useAnimationStore = create((set, get) => ({
       }
     } catch (error) {
       // If storage fails, just keep in memory
-      console.warn('Failed to save generation state to session storage:', error);
+      logger.warn('Failed to save generation state to session storage:', error);
     }
   },
   
@@ -350,7 +351,7 @@ const useAnimationStore = create((set, get) => ({
       }
     } catch (error) {
       // Handle storage quota error gracefully
-      console.warn('Session storage error when saving video:', error.message);
+      logger.warn('Session storage error when saving video:', error.message);
       
       // Still update the in-memory state even if storage fails
       set({ generatedVideo: video });
@@ -384,7 +385,7 @@ const useAnimationStore = create((set, get) => ({
           sessionStorage.setItem(SESSION_KEYS.GENERATED_VIDEO, JSON.stringify(minimalVideo));
         }
       } catch (secondError) {
-        console.error('Failed to save video even after cleanup:', secondError);
+        logger.error('Failed to save video even after cleanup:', secondError);
         // Just continue with in-memory state
       }
     }
@@ -437,7 +438,7 @@ const useAnimationStore = create((set, get) => ({
       // Keep existing AI model in session storage
       // sessionStorage.setItem(SESSION_KEYS.AI_MODEL, 'kling-1.6');
     } catch (error) {
-      console.warn('Error clearing session storage during reset:', error);
+      logger.warn('Error clearing session storage during reset:', error);
     }
   },
   
@@ -470,7 +471,7 @@ const useAnimationStore = create((set, get) => ({
         sessionStorage.removeItem(key);
       });
     } catch (error) {
-      console.warn('Error clearing session storage during full reset:', error);
+      logger.warn('Error clearing session storage during full reset:', error);
     }
   },
   
@@ -484,7 +485,7 @@ const useAnimationStore = create((set, get) => ({
     try {
       localStorage.setItem(LOCAL_STORAGE_KEYS.TRASH_VIEW, newTrashState.toString());
     } catch (error) {
-      console.warn('Failed to save trash view state to local storage:', error);
+      logger.warn('Failed to save trash view state to local storage:', error);
     }
   },
   
@@ -534,7 +535,7 @@ const useAnimationStore = create((set, get) => ({
     saveTrashedAnimations(updatedTrashedAnimations);
     localStorage.setItem(LOCAL_STORAGE_KEYS.TRASH_VIEW, 'false');
     } catch (error) {
-    console.warn('Failed to save trash state to local storage:', error);
+    logger.warn('Failed to save trash state to local storage:', error);
     }
     } else {
     set({ trashedAnimations: updatedTrashedAnimations });
@@ -556,7 +557,7 @@ const useAnimationStore = create((set, get) => ({
       try {
         localStorage.setItem(LOCAL_STORAGE_KEYS.TRASH_VIEW, 'false');
       } catch (error) {
-        console.warn('Failed to update trash view state in local storage:', error);
+        logger.warn('Failed to update trash view state in local storage:', error);
       }
     }
   }

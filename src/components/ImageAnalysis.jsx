@@ -4,6 +4,7 @@ import { useCredit } from '../contexts/CreditContext';
 import { useToast } from '../contexts/ToastContext';
 import { ImagePreview } from './ImagePreview';
 import apiService from '../services/api';
+import { logger } from '../utils/logger';
 
 export const ImageAnalysis = ({ onAnalysisComplete }) => {
   const [isUploading, setIsUploading] = useState(false);
@@ -176,7 +177,7 @@ export const ImageAnalysis = ({ onAnalysisComplete }) => {
       
       setTimeout(handleRemoveFile, 1500);
     } catch (error) {
-      console.error('Image analysis error:', error);
+      logger.error('Image analysis error:', error);
       
       // Check for credit limit or premium errors
       if (error.response?.status === 429 || 

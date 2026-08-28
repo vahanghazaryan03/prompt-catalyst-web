@@ -7,6 +7,7 @@ import { useCredit } from '../contexts/CreditContext';
 import apiService from '../services/api';
 import useVideoStore from '../contexts/VideoStore';
 import { useVideoHistory } from './useVideoHistory';
+import { logger } from '../utils/logger';
 
 // Global state for tracking active polling
 if (!window._videoPollingState) {
@@ -254,7 +255,7 @@ export const useTextToVideo = () => {
           document.body.removeChild(thumbnailVideoRef.current);
           thumbnailVideoRef.current = null;
         } catch (thumbnailError) {
-          console.error('Error generating thumbnail:', thumbnailError);
+          logger.error('Error generating thumbnail:', thumbnailError);
           // Generate fallback thumbnail
           try {
             const promptText = statusResponse.prompt || videoPrompt || 'Video';

@@ -3,6 +3,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { useToast } from '../contexts/ToastContext';
 import apiService from '../services/api';
+import { logger } from '../utils/logger';
 
 const CACHE_KEY = 'styleReferencesCache';
 const CACHE_EXPIRY_KEY = 'styleReferencesCacheExpiry';
@@ -35,7 +36,7 @@ export const StyleReferences = ({ onPremiumClick }) => {
       localStorage.setItem(CACHE_KEY, JSON.stringify(data));
       localStorage.setItem(CACHE_EXPIRY_KEY, (Date.now() + CACHE_DURATION).toString());
     } catch (error) {
-      console.error('Error setting cache:', error);
+      logger.error('Error setting cache:', error);
     }
   }, []);
 
@@ -43,7 +44,7 @@ export const StyleReferences = ({ onPremiumClick }) => {
     try {
       return JSON.parse(localStorage.getItem(CACHE_KEY));
     } catch (error) {
-      console.error('Error getting cache:', error);
+      logger.error('Error getting cache:', error);
       return null;
     }
   }, []);
@@ -67,7 +68,7 @@ export const StyleReferences = ({ onPremiumClick }) => {
       setCache(styleReferenceCodes);
       setError(null);
     } catch (err) {
-      console.error('Error fetching style references:', err);
+      logger.error('Error fetching style references:', err);
       setError('Failed to load style references');
       
       const cachedData = getCache();
@@ -91,7 +92,7 @@ export const StyleReferences = ({ onPremiumClick }) => {
       await navigator.clipboard.writeText(code);
       addToast('Code copied to clipboard!', 'success');
     } catch (err) {
-      console.error('Failed to copy code:', err);
+      logger.error('Failed to copy code:', err);
       addToast('Failed to copy code', 'error');
     }
   }, [addToast]);

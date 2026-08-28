@@ -14,6 +14,7 @@ import {
   PencilRuler
 } from 'lucide-react';
 import { formatDistanceToNow, format } from 'date-fns';
+import { logger } from '../utils/logger';
 
 const EditHistory = ({ 
   editItem,
@@ -51,7 +52,7 @@ const EditHistory = ({
       a.click();
       document.body.removeChild(a);
     } catch (error) {
-      console.error('Download failed:', error);
+      logger.error('Download failed:', error);
     }
   }, [editItem.id]);
 

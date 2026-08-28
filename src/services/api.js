@@ -1,6 +1,7 @@
 // src/services/api.js
 import axios from 'axios';
 import tokenService from './tokenService';
+import { logger } from '../utils/logger';
 
 const API_BASE_URL = 'https://catalystmedia.ai/promptcatalystfreedemo';
 
@@ -238,7 +239,7 @@ submitCommunityPrompt: async (formData) => {
     });
     return response.data;
   } catch (error) {
-    console.error('Failed to submit community prompt:', error);
+    logger.error('Failed to submit community prompt:', error);
     throw error;
   }
 },
@@ -251,7 +252,7 @@ register: async (email, password, username) => {
     });
     return response.data;
   } catch (error) {
-    console.log('Registration error details:', {
+    logger.debug('Registration error details:', {
       error: error.response?.data?.error,
       field: error.response?.data?.field
     });
@@ -269,7 +270,7 @@ initiateCreditPurchase: async (packageId) => {
     const response = await api.post('/initiate-credit-purchase', { packageId });
     return response.data;
   } catch (error) {
-    console.error('Failed to initiate credit purchase:', error);
+    logger.error('Failed to initiate credit purchase:', error);
     throw error;
   }
 },
@@ -278,7 +279,7 @@ initiateStripeCheckout: async () => {
     const response = await api.post('/admin-post.php?action=stripe_checkout');
     return response.data;
   } catch (error) {
-    console.error('Failed to initiate Stripe checkout:', error);
+    logger.error('Failed to initiate Stripe checkout:', error);
     throw error;
   }
 },
@@ -292,7 +293,7 @@ handleSubscriptionSuccess: async (sessionId) => {
     });
     return response.data;
   } catch (error) {
-    console.error('Failed to verify successful subscription:', error);
+    logger.error('Failed to verify successful subscription:', error);
     throw error;
   }
 },
@@ -307,7 +308,7 @@ checkSubscriptionStatus: async () => {
       userId: response.data.user_id
     };
   } catch (error) {
-    console.error('Failed to check subscription status:', error);
+    logger.error('Failed to check subscription status:', error);
     throw error;
   }
 },
@@ -326,7 +327,7 @@ checkSubscriptionStatus: async () => {
         roles: response.data.roles || [] // Add this line to include roles
       };
     } catch (error) {
-      console.error('Premium status check failed:', error);
+      logger.error('Premium status check failed:', error);
       
       // For new users, handle 403 errors differently
       if (isNewUser && error.response?.status === 403) {
@@ -345,7 +346,7 @@ checkSubscriptionStatus: async () => {
             }
           }
         } catch (e) {
-          console.error('Error extracting email from token:', e);
+          logger.error('Error extracting email from token:', e);
         }
         
         // Return minimal user data
@@ -375,7 +376,7 @@ checkSubscriptionStatus: async () => {
         is_premium: response.data.is_premium
       };
     } catch (error) {
-      console.error('Failed to fetch credits:', error);
+      logger.error('Failed to fetch credits:', error);
       throw error;
     }
   },
@@ -384,7 +385,7 @@ checkSubscriptionStatus: async () => {
       const response = await api.post('/forgot-password', { email });
       return response.data;
     } catch (error) {
-      console.error('Failed to process forgot password request:', error);
+      logger.error('Failed to process forgot password request:', error);
       // Map specific error responses
       if (error.response?.status === 404) {
         throw new Error('invalid_email');
@@ -407,7 +408,7 @@ checkSubscriptionStatus: async () => {
 
         return response.data;
     } catch (error) {
-        console.error('Password reset error');
+        logger.error('Password reset error');
 
         // Enhanced error handling
         if (error.response?.status === 400) {
@@ -454,7 +455,7 @@ checkSubscriptionStatus: async () => {
       
       return response.data;
     } catch (error) {
-      console.error('Failed to generate prompt with DeepSeek:', error);
+      logger.error('Failed to generate prompt with DeepSeek:', error);
       throw error;
     }
   },
@@ -490,7 +491,7 @@ checkSubscriptionStatus: async () => {
       
       return response.data;
     } catch (error) {
-      console.error('Failed to generate prompt:', error);
+      logger.error('Failed to generate prompt:', error);
       throw error;
     }
   },
@@ -537,7 +538,7 @@ checkSubscriptionStatus: async () => {
       
       return response.data;
     } catch (error) {
-      console.error('Failed to generate next scene:', error);
+      logger.error('Failed to generate next scene:', error);
       throw error;
     }
   },
@@ -577,7 +578,7 @@ checkSubscriptionStatus: async () => {
       const response = await api.post('/generate-video-prompt', apiParams);
       return response.data;
     } catch (error) {
-      console.error('Failed to generate video prompt:', error);
+      logger.error('Failed to generate video prompt:', error);
       throw error;
     }
   },
@@ -590,7 +591,7 @@ checkSubscriptionStatus: async () => {
       });
       return response.data;
     } catch (error) {
-      console.error('Failed to generate variations:', error);
+      logger.error('Failed to generate variations:', error);
       throw error;
     }
   },
@@ -603,7 +604,7 @@ checkSubscriptionStatus: async () => {
       });
       return response.data;
     } catch (error) {
-      console.error('Failed to generate extended prompt:', error);
+      logger.error('Failed to generate extended prompt:', error);
       throw error;
     }
   },
@@ -613,7 +614,7 @@ checkSubscriptionStatus: async () => {
       const response = await api.post('/generate-shortened', { prompt });
       return response.data;
     } catch (error) {
-      console.error('Failed to generate shortened prompt:', error);
+      logger.error('Failed to generate shortened prompt:', error);
       throw error;
     }
   },
@@ -626,7 +627,7 @@ checkSubscriptionStatus: async () => {
       });
       return response.data;
     } catch (error) {
-      console.error('Failed to edit prompt:', error);
+      logger.error('Failed to edit prompt:', error);
       throw error;
     }
   },
@@ -636,7 +637,7 @@ checkSubscriptionStatus: async () => {
       const response = await api.post('/generate-random-prompts');
       return response.data;
     } catch (error) {
-      console.error('Failed to generate random prompts:', error);
+      logger.error('Failed to generate random prompts:', error);
       throw error;
     }
   },
@@ -659,7 +660,7 @@ checkSubscriptionStatus: async () => {
       // Return the response data
       return response.data;
     } catch (error) {
-      console.error('Failed to generate video from text:', error);
+      logger.error('Failed to generate video from text:', error);
       
       // Handle specific error types
       if (error.response?.status === 429) {
@@ -730,7 +731,7 @@ checkSubscriptionStatus: async () => {
             return data; // Return directly since we're not using axios response format
           }
         } catch (attemptError) {
-          console.warn(`Video status check attempt ${attempts}/${maxAttempts} failed:`, attemptError);
+          logger.warn(`Video status check attempt ${attempts}/${maxAttempts} failed:`, attemptError);
           
           if (attempts >= maxAttempts) {
             throw attemptError; // Re-throw the last error if we've exhausted all attempts
@@ -743,7 +744,7 @@ checkSubscriptionStatus: async () => {
       
       return response.data;
     } catch (error) {
-      console.error('Failed to check text-to-video status:', error);
+      logger.error('Failed to check text-to-video status:', error);
       
       // Handle specific errors
       if (error.message && (error.message.includes('Network Error') || error.message.includes('CORS'))) {
@@ -778,7 +779,7 @@ checkSubscriptionStatus: async () => {
       
       return response.data;
     } catch (error) {
-      console.error('Failed to fetch user text-to-videos:', error);
+      logger.error('Failed to fetch user text-to-videos:', error);
       throw error;
     }
   },
@@ -856,7 +857,7 @@ generateImage: async ({ prompt, width, height, model, numberResults, rawMode }) 
           creditsUsed: response.data.creditsUsed
       };
   } catch (error) {
-      console.error('Failed to generate image:', error);
+      logger.error('Failed to generate image:', error);
       // Enhance error handling for premium features
       if (error.response?.status === 403) {
           throw new Error('This model requires a premium subscription');
@@ -945,7 +946,7 @@ generateAnimation: async (imageFile, prompt, movementId, duration, metadata = {}
       return response.data;
     }
   } catch (error) {
-    console.error('Failed to generate animation:', error);
+    logger.error('Failed to generate animation:', error);
     
     // Handle CORS errors specifically
     if (error.message && (error.message.includes('Network Error') || error.message.includes('CORS'))) {
@@ -985,14 +986,14 @@ checkAnimationStatus: async (requestId) => {
         }
       });
     } catch (directError) {
-      console.warn('Direct animation status check failed, trying with API instance:', directError);
+      logger.warn('Direct animation status check failed, trying with API instance:', directError);
       // Fall back to the api instance
       response = await api.get(`/animation-status/${requestId}?${cacheBuster}`);
     }
     
     return response.data;
   } catch (error) {
-    console.error('Failed to check animation status:', error);
+    logger.error('Failed to check animation status:', error);
     
     // Handle CORS errors specifically
     if (error.message && (error.message.includes('Network Error') || error.message.includes('CORS'))) {
@@ -1033,7 +1034,7 @@ checkAnimationStatus: async (requestId) => {
         isRateLimit: true
       };
     }
-    console.error('Failed to generate preview:', error);
+    logger.error('Failed to generate preview:', error);
     throw error;
   }
 },
@@ -1051,7 +1052,7 @@ checkAnimationStatus: async (requestId) => {
       });
       return response.data;
     } catch (error) {
-      console.error('Failed to analyze image:', error);
+      logger.error('Failed to analyze image:', error);
       throw error;
     }
   },
@@ -1068,7 +1069,7 @@ checkAnimationStatus: async (requestId) => {
       });
       return response.data;
     } catch (error) {
-      console.error('Failed to suggest animation prompt:', error);
+      logger.error('Failed to suggest animation prompt:', error);
       throw error;
     }
   },
@@ -1104,7 +1105,7 @@ checkAnimationStatus: async (requestId) => {
       
       return response.data;
     } catch (error) {
-      console.error('Failed to edit image:', {
+      logger.error('Failed to edit image:', {
         status: error.response?.status,
         statusText: error.response?.statusText,
         data: error.response?.data,
@@ -1133,7 +1134,7 @@ checkAnimationStatus: async (requestId) => {
       const response = await api.get('/api/weekly-prompts-new');
       return response.data;
     } catch (error) {
-      console.error('Failed to fetch weekly prompts:', error);
+      logger.error('Failed to fetch weekly prompts:', error);
       throw error;
     }
   },
@@ -1145,7 +1146,7 @@ checkAnimationStatus: async (requestId) => {
       const response = await api.get('/api/weekly-video-prompts');
       return response.data;
     } catch (error) {
-      console.error('Failed to fetch weekly video prompts:', error);
+      logger.error('Failed to fetch weekly video prompts:', error);
       throw error;
     }
   },
@@ -1175,7 +1176,7 @@ checkAnimationStatus: async (requestId) => {
       
       return response.data;
     } catch (error) {
-      console.error('Failed to fetch simplified video prompts:', error);
+      logger.error('Failed to fetch simplified video prompts:', error);
       throw error;
     }
   },
@@ -1185,7 +1186,7 @@ checkAnimationStatus: async (requestId) => {
       const response = await api.get('/api/style-references');
       return response.data;
     } catch (error) {
-      console.error('Failed to fetch style references:', error);
+      logger.error('Failed to fetch style references:', error);
       throw error;
     }
   },
@@ -1196,7 +1197,7 @@ checkAnimationStatus: async (requestId) => {
       const response = await api.post('/verify-subscription', { receipt });
       return response.data;
     } catch (error) {
-      console.error('Failed to verify subscription:', error);
+      logger.error('Failed to verify subscription:', error);
       throw error;
     }
   },
@@ -1215,7 +1216,7 @@ checkAnimationStatus: async (requestId) => {
       });
       return response.data;
     } catch (error) {
-      console.error('Failed to upload image:', error);
+      logger.error('Failed to upload image:', error);
       throw error;
     }
   },

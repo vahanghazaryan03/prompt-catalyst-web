@@ -7,6 +7,7 @@ import useVideoStore from '../contexts/VideoStore';
 import { useToast } from '../contexts/ToastContext';
 import { createVideoThumbnail, createFallbackThumbnail, compressDataUrl } from '../utils/animationStorage';
 import VideoTrashView from './VideoTrashView';
+import { logger } from '../utils/logger';
 
 // Component for displaying a video card in the history
 const VideoCard = ({ video, onSelect, onDelete, onDownload, isSelected }) => {
@@ -107,7 +108,7 @@ const VideoCard = ({ video, onSelect, onDelete, onDownload, isSelected }) => {
           try {
             thumbnail = await compressDataUrl(thumbnail, 0.6, 320, 180);
           } catch (compressionError) {
-            console.warn('Failed to compress thumbnail:', compressionError);
+            logger.warn('Failed to compress thumbnail:', compressionError);
           }
         }
         
@@ -140,13 +141,13 @@ const VideoCard = ({ video, onSelect, onDelete, onDownload, isSelected }) => {
               });
             }
           } catch (storageError) {
-            console.warn('Failed to save thumbnail to history:', storageError);
+            logger.warn('Failed to save thumbnail to history:', storageError);
           }
         } else {
           throw new Error('Failed to create thumbnail');
         }
       } catch (error) {
-        console.error('Error generating thumbnail:', error);
+        logger.error('Error generating thumbnail:', error);
         setThumbnailError(true);
         
         // Create a fallback thumbnail with video prompt text

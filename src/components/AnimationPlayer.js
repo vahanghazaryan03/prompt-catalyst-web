@@ -26,6 +26,7 @@ import { useVideoPlayer } from '../hooks/useAnimationThumbnail';
 import { useToast } from '../contexts/ToastContext';
 import { createFallbackThumbnail } from '../utils/animationStorage';
 import { formatAiModelName } from '../utils/promptUtils';
+import { logger } from '../utils/logger';
 
 const AnimationPlayer = ({ 
   animation,
@@ -383,7 +384,7 @@ const AnimationPlayer = ({
         // Check if this specific video has received feedback
         setFeedbackGiven(!!parsedData[animation.id]);
       } catch (error) {
-        console.error('Error checking feedback status:', error);
+        logger.error('Error checking feedback status:', error);
         setFeedbackGiven(false);
       }
     }
@@ -409,7 +410,7 @@ const AnimationPlayer = ({
       // Update state
       setFeedbackGiven(state);
     } catch (error) {
-      console.error('Error saving feedback state:', error);
+      logger.error('Error saving feedback state:', error);
     }
   }, []);
   
@@ -475,7 +476,7 @@ const AnimationPlayer = ({
             }
               // Log if neither method is available
             else {
-                console.error('AnimationPlayer: Neither onClose nor setGeneratedVideo are available');
+                logger.error('AnimationPlayer: Neither onClose nor setGeneratedVideo are available');
               }
             }}
             className="p-1.5 rounded-full bg-[var(--background)]/50 text-[var(--text)] hover:bg-red-500/80 hover:text-white transition-colors shadow-lg hover:shadow-red-500/30" 

@@ -2,6 +2,7 @@ import React from 'react';
 import { useGenerate } from '../contexts/GenerateContext';
 import GenerateHistory from './GenerateHistory';
 import { useEditSettings } from '../hooks/useEditSettings';
+import { logger } from '../utils/logger';
 
 // This container component isolates the context usage
 // to prevent unnecessary re-renders of the GenerateHistory component
@@ -50,7 +51,7 @@ const GenerateHistoryContainer = ({ onRegeneratePrompt }) => {
         reader.readAsDataURL(blob);
       })
       .catch(error => {
-        console.error('Error preparing image for editing:', error);
+        logger.error('Error preparing image for editing:', error);
       });
   };
   

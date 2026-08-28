@@ -25,6 +25,7 @@ import {
   Info,
   Edit
 } from 'lucide-react';
+import { logger } from '../utils/logger';
 
 // Constants for localStorage keys
 const PREVIEW_STATE_KEY = 'history_preview_state';
@@ -137,7 +138,7 @@ export const HistoryView = ({
       const savedState = localStorage.getItem(PREVIEW_STATE_KEY);
       return savedState ? JSON.parse(savedState) : {};
     } catch (error) {
-      console.error('Error loading preview state:', error);
+      logger.error('Error loading preview state:', error);
       return {};
     }
   });
@@ -227,7 +228,7 @@ export const HistoryView = ({
         return Date.now() - timestamp <= 24 * 60 * 60 * 1000; // 24 hours
       }
     } catch (error) {
-      console.error('Error checking local cache:', error);
+      logger.error('Error checking local cache:', error);
     }
     
     // Check history entries
@@ -265,7 +266,7 @@ export const HistoryView = ({
             entry.previewUrls && entry.previewUrls[prompt]
           );
         } catch (error) {
-          console.error('Error checking preview existence:', error);
+          logger.error('Error checking preview existence:', error);
           return false;
         }
       };
@@ -298,7 +299,7 @@ export const HistoryView = ({
     try {
       localStorage.setItem(PREVIEW_STATE_KEY, JSON.stringify(showingPreviews));
     } catch (error) {
-      console.error('Error saving preview state:', error);
+      logger.error('Error saving preview state:', error);
     }
   }, [showingPreviews]);
   
@@ -368,7 +369,7 @@ export const HistoryView = ({
       ) || previewExistsInCache(prompt, history);
       
       if (hasExistingPreviewUrl) {
-        console.log(`Using existing preview for ${prompt}`);
+        logger.debug(`Using existing preview for ${prompt}`);
       }
       
       return {
@@ -448,7 +449,7 @@ export const HistoryView = ({
       
       addToast('History backup exported successfully', 'success');
     } catch (error) {
-      console.error('Error exporting history:', error);
+      logger.error('Error exporting history:', error);
       addToast('Failed to export history backup', 'error');
     }
   };
@@ -516,7 +517,7 @@ export const HistoryView = ({
           // Show success message
           addToast(`Successfully imported ${importCount} history items`, 'success');
         } catch (error) {
-          console.error('Error parsing import file:', error);
+          logger.error('Error parsing import file:', error);
           addToast('Invalid backup file format', 'error');
         }
       };
@@ -530,7 +531,7 @@ export const HistoryView = ({
       // Reset the file input so the same file can be selected again
       event.target.value = '';
     } catch (error) {
-      console.error('Error importing history:', error);
+      logger.error('Error importing history:', error);
       addToast('Failed to import history backup', 'error');
     }
   };

@@ -33,6 +33,7 @@ import MessageActions from './MessageActions';
 import apiService from '../services/api';
 import useVideoStore from '../contexts/VideoStore';
 import useTextToVideo from '../hooks/useTextToVideo';
+import { logger } from '../utils/logger';
 
 // Video durations
 const VIDEO_DURATIONS = [
@@ -261,7 +262,7 @@ const VideoGenerate = ({ onViewChange, onPremiumClick, onTopUpClick, setMessages
             isVideoMode: true,
             promptType: 'nextscene'
           });
-          console.log('Next Scene Details:', details); // Debug log to see what's being passed
+          logger.debug('Next Scene Details:', details); // Debug log to see what's being passed
           break;
         case 'shorten':
           handleSubmit(currentPrompt, {
@@ -341,7 +342,7 @@ const VideoGenerate = ({ onViewChange, onPremiumClick, onTopUpClick, setMessages
       if (!isGenerating && window._videoPollingState && 
           window._videoPollingState.isPollingActive && 
           window._videoPollingState.activeRequestId) {
-        console.log('Possible stuck video - checking status');
+        logger.debug('Possible stuck video - checking status');
         // Run a single status check
         if (videoStatusCheck && typeof videoStatusCheck === 'function') {
           videoStatusCheck(window._videoPollingState.activeRequestId);
@@ -615,7 +616,7 @@ const VideoGenerate = ({ onViewChange, onPremiumClick, onTopUpClick, setMessages
                               prompt={videoPrompt}
                               onVariations={() => handleOperations('variations')}
                               onNextScene={(details) => {
-                                console.log('VideoGenerate - onNextScene received details:', details);
+                                logger.debug('VideoGenerate - onNextScene received details:', details);
                                 handleOperations('nextscene', details);
                               }}
                               onShorten={() => handleOperations('shorten')}
@@ -903,7 +904,7 @@ const VideoGenerate = ({ onViewChange, onPremiumClick, onTopUpClick, setMessages
                       timestamp: generatedVideo.timestamp || new Date().toISOString()
                     }}
                     onClose={() => {
-                      console.log('Close video clicked, clearing generated video');
+                      logger.debug('Close video clicked, clearing generated video');
                       setGeneratedVideo(null);
                     }}
                     onDownload={() => handleDownloadVideo(generatedVideo)}

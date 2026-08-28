@@ -6,6 +6,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { stripMidjourneyParams } from '../utils/promptUtils';
 import LimitReachedMessage from './LimitReachedMessage';
 import PreviewErrorState from './PreviewErrorState';
+import { logger } from '../utils/logger';
 const PREVIEW_CACHE_PREFIX = 'preview_';
 const PREVIEW_CACHE_EXPIRY = 24 * 60 * 60 * 1000; // 24 hours
 
@@ -52,7 +53,7 @@ export const PreviewImage = ({
     try {
       localStorage.removeItem(getCacheKey(prompt));
     } catch (error) {
-      console.error('Error clearing cache:', error);
+      logger.error('Error clearing cache:', error);
     }
   };
 
@@ -88,7 +89,7 @@ export const PreviewImage = ({
   
       return null;
     } catch (error) {
-      console.error('Error reading from cache:', error);
+      logger.error('Error reading from cache:', error);
       return null;
     }
   };
@@ -120,7 +121,7 @@ export const PreviewImage = ({
         localStorage.setItem('promptCollections', JSON.stringify(collections));
       }
     } catch (error) {
-      console.error('Error writing to cache:', error);
+      logger.error('Error writing to cache:', error);
     }
   };
 
@@ -153,7 +154,7 @@ export const PreviewImage = ({
         }
       });
     } catch (error) {
-      console.error('Error clearing preview cache:', error);
+      logger.error('Error clearing preview cache:', error);
     }
   };
 
@@ -278,7 +279,7 @@ export const PreviewImage = ({
         onPreviewGenerated(prompt, imageUrl);
       }
     } catch (error) {
-      console.error('Preview generation error:', error);
+      logger.error('Preview generation error:', error);
       
       // Only handle non-limit errors here
       if (componentMounted.current && 
@@ -330,7 +331,7 @@ export const PreviewImage = ({
   }, [prompt, shouldGenerate, initialUrl, globalGenerationInProgress]);
 
   const handleImageError = () => {
-    console.error('Image load error');
+    logger.error('Image load error');
     setError('Failed to load preview image');
     clearCache(prompt);
     

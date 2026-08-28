@@ -2,6 +2,7 @@
 import React, { Component } from 'react';
 import { cleanupStorage } from '../utils/animationStorage';
 import { AlertTriangle, RefreshCw } from 'lucide-react';
+import { logger } from '../utils/logger';
 
 /**
  * Error boundary component specifically for handling storage-related errors
@@ -26,8 +27,8 @@ class AnimationErrorBoundary extends Component {
 
   componentDidCatch(error, info) {
     // Log the error to console
-    console.error('Animation component error:', error);
-    console.error('Error info:', info);
+    logger.error('Animation component error:', error);
+    logger.error('Error info:', info);
     
     // Clean up storage if the error is storage-related
     if (error.message && (
@@ -35,7 +36,7 @@ class AnimationErrorBoundary extends Component {
         error.message.includes('storage') ||
         error.message.includes('localStorage') ||
         error.message.includes('sessionStorage'))) {
-      console.log('Storage error detected, attempting cleanup');
+      logger.debug('Storage error detected, attempting cleanup');
       cleanupStorage();
     }
   }
@@ -52,7 +53,7 @@ class AnimationErrorBoundary extends Component {
         }
       });
     } catch (e) {
-      console.warn('Error during storage cleanup:', e);
+      logger.warn('Error during storage cleanup:', e);
     }
     
     // Reset error state

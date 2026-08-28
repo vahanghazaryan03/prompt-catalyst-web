@@ -1,5 +1,6 @@
 import { useState, useRef, useCallback } from 'react';
 import { searchContent } from '../utils/search';
+import { logger } from '../../../utils/logger';
 
 export const useDocSearch = (sections) => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -17,16 +18,16 @@ export const useDocSearch = (sections) => {
     if (query.trim()) {
       searchTimeoutRef.current = setTimeout(() => {
         try {
-          console.log('Executing search for:', query.trim());
-          console.log('Available sections:', sections.map(s => s.id).join(', '));
+          logger.debug('Executing search for:', query.trim());
+          logger.debug('Available sections:', sections.map(s => s.id).join(', '));
           
           const results = searchContent(query.trim(), sections);
-          console.log('Search completed with results:', results.length);
+          logger.debug('Search completed with results:', results.length);
           
           setSearchResults(results);
           setShowResults(true);
         } catch (error) {
-          console.error('Search error:', error);
+          logger.error('Search error:', error);
           setSearchResults([]);
           setShowResults(true);
         }

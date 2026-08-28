@@ -45,6 +45,7 @@ import { useEditSettings } from '../hooks/useEditSettings';
 import ContentContainer from './layout/ContentContainer';
 import ModelOption from './ModelOption';
 import { analyzeImageForEditing, formatDimensions as formatEditDimensions } from '../utils/editImageUtils';
+import { logger } from '../utils/logger';
 
 // Constants stay the same
 const MODELS = [
@@ -361,7 +362,7 @@ const Generate = ({
   }, [activePrompt, handleSubmit, onViewChange, resetPrompt, setMessages]);
 
   const handleError = useCallback((err) => {
-    console.error('Image generation error:', err);
+    logger.error('Image generation error:', err);
     
     // Always stop generating state when handling errors
     setIsGenerating(false);
@@ -543,7 +544,7 @@ const Generate = ({
         img.onerror = () => {
           // If loading with crossOrigin fails, try without it
           // This will create a tainted canvas but might still work for some cases
-          console.log('Trying fallback download method for:', imageUrl);
+          logger.debug('Trying fallback download method for:', imageUrl);
           img.crossOrigin = null;
           img.src = imageUrl;
         };
@@ -590,12 +591,12 @@ const Generate = ({
             }
           }, 'image/png');
         } catch (canvasError) {
-          console.error('Canvas export error:', canvasError);
+          logger.error('Canvas export error:', canvasError);
           throw canvasError;
         }
       } catch (err) {
         // Method 2: Fall back to direct anchor approach
-        console.log('Canvas method failed, trying direct download approach');
+        logger.debug('Canvas method failed, trying direct download approach');
         const a = document.createElement('a');
         a.href = imageUrl;
         a.target = '_blank';
@@ -614,7 +615,7 @@ const Generate = ({
         addToast('Opening image in a new tab. Right-click and select "Save image as..."', 'info');
       }
     } catch (error) {
-      console.error('Download error:', error);
+      logger.error('Download error:', error);
       
       // Final fallback - open in new tab
       window.open(imageUrl, '_blank');
@@ -669,7 +670,7 @@ const Generate = ({
         reader.readAsDataURL(blob);
       })
       .catch(error => {
-        console.error('Error preparing image for animation:', error);
+        logger.error('Error preparing image for animation:', error);
         addToast('Failed to prepare image for animation', 'error');
       });
   }
@@ -716,7 +717,7 @@ const Generate = ({
       reader.readAsDataURL(blob);
       
     } catch (error) {
-      console.error('Error preparing image for editing:', error);
+      logger.error('Error preparing image for editing:', error);
       
       // Fall back to the original method without analysis
       try {
@@ -743,7 +744,7 @@ const Generate = ({
         addToast('Image ready for editing (using default dimensions)', 'success');
         
       } catch (fallbackError) {
-        console.error('Fallback image preparation also failed:', fallbackError);
+        logger.error('Fallback image preparation also failed:', fallbackError);
         addToast('Failed to prepare image for editing', 'error');
       }
     }
@@ -833,8 +834,8 @@ const Generate = ({
           (isCurrentModelSpecial && isNewModelSpecial && currentModel !== newModel)
         )) {
         // Log for debugging
-        console.log(`Resetting aspect ratio when switching from ${currentModel} to ${newModel}`);
-        console.log(`Current ratio: ${selectedAspectRatio}, isSpecialOnly: ${isCurrentRatioSpecialOnly}`);
+        logger.debug(`Resetting aspect ratio when switching from ${currentModel} to ${newModel}`);
+        logger.debug(`Current ratio: ${selectedAspectRatio}, isSpecialOnly: ${isCurrentRatioSpecialOnly}`);
         
         // Use default ratio for the new model
         handleAspectRatioChange(getDefaultRatioForModel(newModel));

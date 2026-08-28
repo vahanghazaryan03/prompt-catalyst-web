@@ -6,6 +6,7 @@ import { useWeeklyPrompts } from '../contexts/WeeklyPromptsContext';
 import MessageActions from './MessageActions';
 import { stripMidjourneyParams } from '../utils/promptUtils';
 import { format } from 'date-fns';
+import { logger } from '../utils/logger';
 
 // Helper component to handle video playback in each card
 const VideoThumbnail = ({ videoUrl }) => {
@@ -20,7 +21,7 @@ const VideoThumbnail = ({ videoUrl }) => {
         videoRef.current.pause();
       } else {
         videoRef.current.play().catch(err => {
-          console.error("Failed to play video:", err);
+          logger.error("Failed to play video:", err);
         });
       }
       setIsPlaying(!isPlaying);
@@ -37,7 +38,7 @@ const VideoThumbnail = ({ videoUrl }) => {
         className={`w-full h-full object-cover rounded-t-lg ${!isLoaded ? 'opacity-0' : 'opacity-100'}`}
         onLoadedData={() => setIsLoaded(true)}
         onError={(e) => {
-          console.error("Error loading video:", e);
+          logger.error("Error loading video:", e);
           e.target.src = '/placeholder-video.mp4';
           e.target.onerror = null;
         }}

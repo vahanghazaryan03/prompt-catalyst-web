@@ -10,6 +10,7 @@ import { isConversationalInput, generateConversationalResponse } from '../utils/
 import SimpleInputHintTooltip from './SimpleInputHintTooltip';
 import InputLengthWarning from './InputLengthWarning';
 import CommandsDropup from './CommandsDropup';
+import { logger } from '../utils/logger';
 import './InputArea.css';
 
 
@@ -20,7 +21,7 @@ export const InputArea = ({ onSubmit, isSettingsOpen, isVideoMode, disabled, onC
   
   // Debug state changes
   useEffect(() => {
-    console.log('InputArea: isCommandsDropdownOpen changed to:', isCommandsDropdownOpen);
+    logger.debug('InputArea: isCommandsDropdownOpen changed to:', isCommandsDropdownOpen);
   }, [isCommandsDropdownOpen]);
   const [input, setInput] = useState('');
   const [isCommandActive, setIsCommandActive] = useState(false);
@@ -1180,7 +1181,7 @@ export const InputArea = ({ onSubmit, isSettingsOpen, isVideoMode, disabled, onC
                 ref={commandButtonRef}
                 id="command-button-mobile" /* Add ID for direct DOM access */
                 onClick={() => {
-                  console.log('Mobile command button clicked!');
+                  logger.debug('Mobile command button clicked!');
                   setIsCommandsDropdownOpen(!isCommandsDropdownOpen);
                 }}
                 className="h-10 w-10 flex items-center justify-center text-[var(--textSecondary)] hover:text-[var(--text)] hover:bg-[var(--dropdownHover)] rounded-full transition-colors duration-200"

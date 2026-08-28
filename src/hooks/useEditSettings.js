@@ -1,5 +1,6 @@
 import { useEffect, useCallback, useMemo, useRef } from 'react';
 import { useEditHistory } from '../contexts/EditContext';
+import { logger } from '../utils/logger';
 
 export const useEditSettings = () => {
   // Ref to track active blob URLs for cleanup
@@ -213,7 +214,7 @@ export const useEditSettings = () => {
         });
         
       } catch (error) {
-        console.error('Failed to recreate blob URL from dataUrl:', error);
+        logger.error('Failed to recreate blob URL from dataUrl:', error);
       }
     }
     

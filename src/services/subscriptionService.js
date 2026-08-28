@@ -1,6 +1,7 @@
 // subscriptionService.js
 import apiService from './api';
 import tokenService from './tokenService';
+import { logger } from '../utils/logger';
 
 const WORDPRESS_URL = 'https://catalystmedia.ai';
 
@@ -45,7 +46,7 @@ const subscriptionService = {
                 try {
                     data = JSON.parse(text);
                 } catch (e) {
-                    console.error('Response is not JSON:', text);
+                    logger.error('Response is not JSON:', text);
                     throw new Error('Invalid server response format');
                 }
             }
@@ -70,7 +71,7 @@ const subscriptionService = {
                 throw new Error('Invalid response from server');
             }
         } catch (error) {
-            console.error('Failed to initiate Stripe checkout:', error);
+            logger.error('Failed to initiate Stripe checkout:', error);
             throw error;
         }
     },
@@ -97,7 +98,7 @@ const subscriptionService = {
     
             return { success: true };
         } catch (error) {
-            console.error('Failed to process subscription:', error);
+            logger.error('Failed to process subscription:', error);
             throw error;
         }
     },
@@ -112,7 +113,7 @@ const subscriptionService = {
                 subscriptionType: response.subscription_type 
             };
         } catch (error) {
-            console.error('Failed to check subscription status:', error);
+            logger.error('Failed to check subscription status:', error);
             throw error;
         }
     },
@@ -140,7 +141,7 @@ const subscriptionService = {
                 message: data.message
             };
         } catch (error) {
-            console.error('Failed to verify email status:', error);
+            logger.error('Failed to verify email status:', error);
             throw error;
         }
     }

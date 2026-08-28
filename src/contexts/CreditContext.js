@@ -2,6 +2,7 @@
 import React, { createContext, useContext, useState, useCallback, useEffect, useRef } from 'react';
 import apiService from '../services/api';
 import { useAuth } from './AuthContext';
+import { logger } from '../utils/logger';
 
 const CreditContext = createContext();
 
@@ -28,7 +29,7 @@ export function CreditProvider({ children }) {
     try {
       // Check if we should skip the refresh
       if (!force && !shouldRefresh()) {
-        console.log('Credit refresh throttled');
+        logger.debug('Credit refresh throttled');
         return lastCreditsUpdate.current;
       }
 
@@ -63,7 +64,7 @@ export function CreditProvider({ children }) {
 
       return creditData;
     } catch (err) {
-      console.error('Error fetching credits:', err);
+      logger.error('Error fetching credits:', err);
       setError(err.message);
       return null;
     } finally {
@@ -85,7 +86,7 @@ export function CreditProvider({ children }) {
       }
       
       refreshTimeout.current = setInterval(() => {
-        console.log('Automatic credit refresh');
+        logger.debug('Automatic credit refresh');
         fetchCredits(true);
       }, REFRESH_INTERVAL);
     };

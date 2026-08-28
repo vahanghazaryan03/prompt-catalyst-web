@@ -13,6 +13,7 @@ import {
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 import apiService from '../services/api';
+import { logger } from '../utils/logger';
 
 const fadeInUp = {
   initial: { opacity: 0, y: 10 },
@@ -125,7 +126,7 @@ const TopUpModal = ({ isOpen, onClose }) => {
         throw new Error('No checkout URL received');
       }
     } catch (error) {
-      console.error('Purchase error:', error);
+      logger.error('Purchase error:', error);
       addToast(error.message || 'Failed to initiate purchase', 'error');
       setLoadingPackage(null); // Clear loading state on error
     }

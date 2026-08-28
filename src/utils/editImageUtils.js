@@ -1,3 +1,4 @@
+import { logger } from './logger';
 // editImageUtils.js
 // Utility functions for image editing operations
 
@@ -113,7 +114,7 @@ export const analyzeImageForEditing = async (imageFile) => {
       }
     };
   } catch (error) {
-    console.error('Error analyzing image for editing:', error);
+    logger.error('Error analyzing image for editing:', error);
     
     // Return default square size if analysis fails
     return {

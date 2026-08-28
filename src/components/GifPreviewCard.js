@@ -3,6 +3,7 @@ import classNames from 'classnames';
 import { Crown, Lock, ImageOff, Clock } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { assetCache } from '../utils/assetCache';
+import { logger } from '../utils/logger';
 
 // Renamed component but kept original name for backward compatibility
 export const GifPreviewCard = ({
@@ -84,7 +85,7 @@ export const GifPreviewCard = ({
           setIsLoading(false);
         }
       } catch (error) {
-        console.warn(`Failed to load preview video: ${previewPath}`, error);
+        logger.warn(`Failed to load preview video: ${previewPath}`, error);
         if (isMounted) {
           setVideoError(true);
           setIsLoading(false);
@@ -149,7 +150,7 @@ export const GifPreviewCard = ({
               playsInline
               className="absolute inset-0 w-full h-full object-cover bg-[var(--dropdownBackground)]"
               onError={(e) => {
-                console.warn(`Video error for ${videoSrc}`);
+                logger.warn(`Video error for ${videoSrc}`);
                 setVideoError(true);
               }}
             />

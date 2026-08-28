@@ -51,6 +51,7 @@ import CollapsibleCategory from './animation/CollapsibleCategory';
 import { ANIMATION_PRESETS, findPresetById } from '../utils/animationPresets';
 import ContentContainer from './layout/ContentContainer';
 import TrashView from './animation/TrashView';
+import { logger } from '../utils/logger';
 
 // Animation durations - dynamic based on AI model
 const getAnimationDurations = (aiModel) => {
@@ -1563,7 +1564,7 @@ const generationAttemptId = Date.now().toString();
         addToast('Failed to generate suggestion', 'error');
       }
     } catch (error) {
-      console.error('Error suggesting animation prompt:', error);
+      logger.error('Error suggesting animation prompt:', error);
       
       // Check for credit limit or premium errors
       if (error.response?.status === 429 || 

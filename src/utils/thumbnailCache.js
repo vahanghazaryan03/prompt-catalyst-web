@@ -1,3 +1,4 @@
+import { logger } from './logger';
 // Simple in-memory cache for thumbnails
 const thumbnailCache = new Map();
 
@@ -9,7 +10,7 @@ const thumbnailCache = new Map();
 export const storeThumbnail = (url, thumbnailDataUrl) => {
   if (!url || !thumbnailDataUrl) return;
   
-  console.log('Storing thumbnail for:', url);
+  logger.debug('Storing thumbnail for:', url);
   thumbnailCache.set(url, thumbnailDataUrl);
 };
 

@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import { useToast } from '../contexts/ToastContext';
 import LightboxModal from './LightboxModal';
+import { logger } from '../utils/logger';
 
 // Number of items to show per page
 const ITEMS_PER_PAGE = 5;
@@ -170,7 +171,7 @@ const GenerateHistory = ({
               return true;
             })
             .catch(error => {
-              console.error(`Failed to download image ${j + 1} from session ${i + 1}:`, error);
+              logger.error(`Failed to download image ${j + 1} from session ${i + 1}:`, error);
               return false;
             });
             
@@ -194,7 +195,7 @@ const GenerateHistory = ({
       
       addToast(`Successfully downloaded ${totalImages} images!`, 'success');
     } catch (error) {
-      console.error('Failed to download images:', error);
+      logger.error('Failed to download images:', error);
       addToast('Failed to download images. Please try again.', 'error');
     } finally {
       setIsDownloading(false);

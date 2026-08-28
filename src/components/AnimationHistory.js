@@ -28,6 +28,7 @@ import { useToast } from '../contexts/ToastContext';
 import { createFallbackThumbnail } from '../utils/animationStorage';
 import { useAnimationHistory } from '../hooks/useAnimationHistory';
 import useAnimationStore from '../contexts/AnimationStore';
+import { logger } from '../utils/logger';
 
 const AnimationHistory = ({ 
   onSelect, 
@@ -205,7 +206,7 @@ const AnimationHistory = ({
       }
     } catch (e) {
       // Ignore localStorage errors, rely on store state
-      console.warn('Error checking localStorage for trash state:', e);
+      logger.warn('Error checking localStorage for trash state:', e);
     }
     
     // If we get here, it's not in the trash

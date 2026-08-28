@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useAuth } from './AuthContext';
 import { useToast } from './ToastContext';
+import { logger } from '../utils/logger';
 
 const CollectionsContext = createContext();
 
@@ -16,7 +17,7 @@ export function CollectionsProvider({ children }) {
     const savedCollections = localStorage.getItem(STORAGE_KEY);
     return savedCollections ? JSON.parse(savedCollections) : {};
   } catch (error) {
-    console.error('Error loading collections from localStorage:', error);
+    logger.error('Error loading collections from localStorage:', error);
     return {};
   }
 });
@@ -24,7 +25,7 @@ export function CollectionsProvider({ children }) {
   try {
     return localStorage.getItem('activeCollectionId');
   } catch (error) {
-    console.error('Error loading activeCollectionId from localStorage:', error);
+    logger.error('Error loading activeCollectionId from localStorage:', error);
     return null;
   }
 });
@@ -34,7 +35,7 @@ useEffect(() => {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(collections));
   } catch (error) {
-    console.error('Error saving collections to localStorage:', error);
+    logger.error('Error saving collections to localStorage:', error);
     addToast('Failed to save collections', 'error');
   }
 }, [collections]);
@@ -48,7 +49,7 @@ useEffect(() => {
       localStorage.removeItem('activeCollectionId');
     }
   } catch (error) {
-    console.error('Error saving activeCollectionId to localStorage:', error);
+    logger.error('Error saving activeCollectionId to localStorage:', error);
   }
 }, [activeCollectionId]);
     
@@ -111,7 +112,7 @@ const createCollection = (name, initialPrompt = null) => {
           previewUrls[initialPrompt] = url;
         }
       } catch (error) {
-        console.error('Error reading preview from cache:', error);
+        logger.error('Error reading preview from cache:', error);
       }
 
       newCollection.prompts = [{
@@ -159,7 +160,7 @@ const addPromptToCollection = (collectionId, prompt) => {
       previewUrls[prompt] = url;
     }
   } catch (error) {
-    console.error('Error reading preview from cache:', error);
+    logger.error('Error reading preview from cache:', error);
   }
 
   const promptObj = {

@@ -7,6 +7,7 @@ import {
   getCategoryForRatio,
   getAllRatios
 } from '../utils/aspectRatioUtils';
+import { logger } from '../utils/logger';
 
 // Helper functions to calculate exaggerated preview dimensions - moved outside components for reusability
 const calculatePreviewWidth = (ratioObj) => {
@@ -401,7 +402,7 @@ const StandardAspectRatioScroller = ({ selectedRatio, onRatioChange, isPremium =
                 handleRatioClick(newRatio.id);
               }
             } catch (err) {
-              console.error('Error handling slider change:', err);
+              logger.error('Error handling slider change:', err);
             }
           }}
           // Add step property to enforce discrete values
@@ -766,7 +767,7 @@ const Seedream4AspectRatioSelector = ({ selectedRatio, onRatioChange, isMobile }
                 handleRatioClick(newRatio.id);
               }
             } catch (err) {
-              console.error('Error handling slider change:', err);
+              logger.error('Error handling slider change:', err);
             }
           }}
           step={1}

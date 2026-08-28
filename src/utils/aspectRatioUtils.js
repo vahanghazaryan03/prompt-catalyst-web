@@ -1,3 +1,4 @@
+import { logger } from './logger';
 // aspectRatioUtils.js
 // Special ratios for specific models
 export const SPECIAL_MODEL_RATIOS = {
@@ -290,7 +291,7 @@ export const getRatioFromPixelDimensions = (sizeString, modelType = null) => {
     
     return closestRatio.id;
   } catch (error) {
-    console.error('Error parsing dimensions:', error);
+    logger.error('Error parsing dimensions:', error);
     return '1:1'; // Default to square on error
   }
 };

@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { createFallbackThumbnail } from '../utils/animationStorage';
+import { logger } from '../utils/logger';
 
 /**
  * Custom hook to handle animation thumbnails with fallbacks
@@ -26,7 +27,7 @@ export function useAnimationThumbnail(animation, options = {}) {
   // Logging function that only runs in debug mode
   const log = useCallback((message, data) => {
     if (debug) {
-      console.log(`[AnimationThumbnail] ${message}`, data);
+      logger.debug(`[AnimationThumbnail] ${message}`, data);
     }
   }, [debug]);
   
@@ -167,16 +168,16 @@ export function useVideoPlayer(videoUrl, options = {}) {
     } else {
       // Add a retry mechanism for failed play attempts
       videoElement.play().catch(err => {
-        console.warn('Play attempt failed:', err);
+        logger.warn('Play attempt failed:', err);
         
         // If autoplay was blocked by browser policy, try with muted (which browsers allow)
         if (err.name === 'NotAllowedError') {
-          console.log('Autoplay blocked, trying with muted...');
+          logger.debug('Autoplay blocked, trying with muted...');
           videoElement.muted = true;
           setIsMuted(true);
           
           videoElement.play().catch(mutedErr => {
-            console.error('Even muted play failed:', mutedErr);
+            logger.error('Even muted play failed:', mutedErr);
             setError(`Video playback failed: ${mutedErr.message}`);
             setIsPlaying(false);
           });
@@ -207,16 +208,16 @@ export function useVideoPlayer(videoUrl, options = {}) {
     // Auto-play if specified
     if (autoPlay && !isPlaying) {
       e.target.play().catch(err => {
-        console.warn('Auto-play failed:', err);
+        logger.warn('Auto-play failed:', err);
         
         // If autoplay was blocked by browser policy, try with muted (which browsers allow)
         if (err.name === 'NotAllowedError') {
-          console.log('Autoplay blocked, trying with muted...');
+          logger.debug('Autoplay blocked, trying with muted...');
           e.target.muted = true;
           setIsMuted(true);
           
           e.target.play().catch(mutedErr => {
-            console.error('Even muted autoplay failed:', mutedErr);
+            logger.error('Even muted autoplay failed:', mutedErr);
             setIsPlaying(false);
           });
         } else {
@@ -232,15 +233,15 @@ export function useVideoPlayer(videoUrl, options = {}) {
   
   const handleVideoError = (e) => {
     const videoElement = e.target;
-    console.error('Video error event:', e);
+    logger.error('Video error event:', e);
     
     if (videoElement.error) {
-      console.error('Error code:', videoElement.error.code);
-      console.error('Error message:', videoElement.error.message);
+      logger.error('Error code:', videoElement.error.code);
+      logger.error('Error message:', videoElement.error.message);
     }
     
-    console.error('Network state:', videoElement.networkState);
-    console.error('Ready state:', videoElement.readyState);
+    logger.error('Network state:', videoElement.networkState);
+    logger.error('Ready state:', videoElement.readyState);
     
     // Only set error state if we've exceeded retry attempts
     if (retryCount >= maxRetries) {
@@ -253,7 +254,7 @@ export function useVideoPlayer(videoUrl, options = {}) {
       }
     } else {
       // Retry loading the video
-      console.log(`Retrying video load (attempt ${retryCount + 1} of ${maxRetries})...`);
+      logger.debug(`Retrying video load (attempt ${retryCount + 1} of ${maxRetries})...`);
       setRetryCount(prev => prev + 1);
       
       // Small delay before retry
@@ -263,10 +264,10 @@ export function useVideoPlayer(videoUrl, options = {}) {
           try {
             videoElement.load();
           } catch (loadError) {
-            console.error('Error during video.load():', loadError);
+            logger.error('Error during video.load():', loadError);
           }
         } else {
-          console.log('Cannot load video: load method not available');
+          logger.debug('Cannot load video: load method not available');
         }
       }, 1000);
     }
@@ -276,7 +277,7 @@ export function useVideoPlayer(videoUrl, options = {}) {
     if (loop) {
       e.target.currentTime = 0;
       e.target.play().catch(err => {
-        console.warn('Loop play failed:', err);
+        logger.warn('Loop play failed:', err);
         setIsPlaying(false);
       });
     } else {

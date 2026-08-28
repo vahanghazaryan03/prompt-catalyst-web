@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useAuth } from './AuthContext';
 import { useToast } from './ToastContext';
+import { logger } from '../utils/logger';
 
 const VideoCollectionsContext = createContext();
 
@@ -19,7 +20,7 @@ export function VideoCollectionsProvider({ children }) {
       const savedCollections = localStorage.getItem(STORAGE_KEY);
       return savedCollections ? JSON.parse(savedCollections) : {};
     } catch (error) {
-      console.error('Error loading video collections from localStorage:', error);
+      logger.error('Error loading video collections from localStorage:', error);
       return {};
     }
   });
@@ -28,7 +29,7 @@ export function VideoCollectionsProvider({ children }) {
     try {
       return localStorage.getItem('activeVideoCollectionId');
     } catch (error) {
-      console.error('Error loading activeVideoCollectionId from localStorage:', error);
+      logger.error('Error loading activeVideoCollectionId from localStorage:', error);
       return null;
     }
   });
@@ -38,7 +39,7 @@ export function VideoCollectionsProvider({ children }) {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(collections));
     } catch (error) {
-      console.error('Error saving video collections to localStorage:', error);
+      logger.error('Error saving video collections to localStorage:', error);
       addToast('Failed to save video collections', 'error');
     }
   }, [collections]);
@@ -52,7 +53,7 @@ export function VideoCollectionsProvider({ children }) {
         localStorage.removeItem('activeVideoCollectionId');
       }
     } catch (error) {
-      console.error('Error saving activeVideoCollectionId to localStorage:', error);
+      logger.error('Error saving activeVideoCollectionId to localStorage:', error);
     }
   }, [activeCollectionId]);
     

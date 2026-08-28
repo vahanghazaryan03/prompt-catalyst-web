@@ -9,6 +9,7 @@ import MessageActions from './MessageActions';
 import AddPromptModal from './AddPromptModal';
 import { useMediaQuery } from '../hooks/useMediaQuery';
 import ContentContainer from './layout/ContentContainer';
+import { logger } from '../utils/logger';
 
 const colors = {
   blue: '#3b82f6',
@@ -79,7 +80,7 @@ const CollectionsView = ({
             }
           }
         } catch (error) {
-          console.error('Error checking preview cache:', error);
+          logger.error('Error checking preview cache:', error);
         }
         return false;
       })();
@@ -151,7 +152,7 @@ const CollectionsView = ({
       addToast('Collection exported successfully', 'success');
     } catch (error) {
       addToast('Failed to export collection', 'error');
-      console.error('Export error:', error);
+      logger.error('Export error:', error);
     } finally {
       document.body.removeChild(a);
       URL.revokeObjectURL(url);

@@ -1,3 +1,4 @@
+import { logger } from '../logger';
 /**
  * IndexedDB wrapper for persistent asset caching
  * Stores images and videos as blobs with metadata
@@ -19,7 +20,7 @@ class CacheDatabase {
 
     this.initPromise = new Promise((resolve, reject) => {
       if (!window.indexedDB) {
-        console.warn('IndexedDB not supported, falling back to memory cache');
+        logger.warn('IndexedDB not supported, falling back to memory cache');
         resolve(false);
         return;
       }
@@ -27,7 +28,7 @@ class CacheDatabase {
       const request = indexedDB.open(this.dbName, this.version);
 
       request.onerror = () => {
-        console.warn('Failed to open IndexedDB:', request.error);
+        logger.warn('Failed to open IndexedDB:', request.error);
         resolve(false);
       };
 
@@ -80,7 +81,7 @@ class CacheDatabase {
 
       return true;
     } catch (error) {
-      console.warn('Failed to store asset in IndexedDB:', error);
+      logger.warn('Failed to store asset in IndexedDB:', error);
       return false;
     }
   }
@@ -113,7 +114,7 @@ class CacheDatabase {
 
       return result;
     } catch (error) {
-      console.warn('Failed to get asset from IndexedDB:', error);
+      logger.warn('Failed to get asset from IndexedDB:', error);
       return null;
     }
   }
@@ -134,7 +135,7 @@ class CacheDatabase {
 
       return true;
     } catch (error) {
-      console.warn('Failed to delete asset from IndexedDB:', error);
+      logger.warn('Failed to delete asset from IndexedDB:', error);
       return false;
     }
   }
@@ -155,7 +156,7 @@ class CacheDatabase {
 
       return true;
     } catch (error) {
-      console.warn('Failed to clear IndexedDB:', error);
+      logger.warn('Failed to clear IndexedDB:', error);
       return false;
     }
   }
@@ -190,10 +191,10 @@ class CacheDatabase {
       }
 
       if (deletedCount > 0) {
-        console.log(`Cleaned up ${deletedCount} expired assets`);
+        logger.debug(`Cleaned up ${deletedCount} expired assets`);
       }
     } catch (error) {
-      console.warn('Failed to cleanup IndexedDB:', error);
+      logger.warn('Failed to cleanup IndexedDB:', error);
     }
   }
 
@@ -229,7 +230,7 @@ class CacheDatabase {
         sizeMB: (totalSize / 1024 / 1024).toFixed(2)
       };
     } catch (error) {
-      console.warn('Failed to get storage stats:', error);
+      logger.warn('Failed to get storage stats:', error);
       return null;
     }
   }

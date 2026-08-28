@@ -6,6 +6,7 @@ import {
   setupSystemThemeListener,
   supportsSystemThemeDetection 
 } from '../utils/systemTheme';
+import { logger } from '../utils/logger';
 
 const ThemeContext = createContext();
 
@@ -83,7 +84,7 @@ const getInitialTheme = () => {
   }
   
   // Fallback to light if somehow invalid
-  console.warn('🎨 Invalid theme detected, falling back to light theme');
+  logger.warn('🎨 Invalid theme detected, falling back to light theme');
   return 'light';
 };
 
@@ -108,7 +109,7 @@ export const ThemeProvider = ({ children }) => {
     if (!savedTheme || followSystemTheme) {
       const handleSystemThemeChange = (newTheme, isDark) => {
         if (followSystemTheme || !savedTheme) {
-          console.log('🎨 System theme changed, switching to:', newTheme, isDark ? '(Dark)' : '(Light)');
+          logger.debug('🎨 System theme changed, switching to:', newTheme, isDark ? '(Dark)' : '(Light)');
           applyTheme(newTheme);
         }
       };
@@ -190,10 +191,10 @@ export const ThemeProvider = ({ children }) => {
     if (follow) {
       // Immediately switch to system preference
       const systemTheme = getSystemTheme();
-      console.log('🎨 Enabling system theme following, switching to:', systemTheme);
+      logger.debug('🎨 Enabling system theme following, switching to:', systemTheme);
       applyTheme(systemTheme);
     } else {
-      console.log('🎨 Disabling system theme following');
+      logger.debug('🎨 Disabling system theme following');
     }
   };
 

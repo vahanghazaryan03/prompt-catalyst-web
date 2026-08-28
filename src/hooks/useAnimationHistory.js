@@ -7,6 +7,7 @@ import {
   loadAnimationHistory as loadLocalHistory,
   saveAnimationHistory as saveLocalHistory
 } from '../utils/animationStorage';
+import { logger } from '../utils/logger';
 
 // Enhanced global cache for animation history
 // This prevents unnecessary loading state when switching tabs
@@ -230,13 +231,13 @@ export function useAnimationHistory() {
       // Record end time and calculate load duration
       window.animationHistoryCache.loadEndTime = Date.now();
       const loadTime = window.animationHistoryCache.loadEndTime - window.animationHistoryCache.loadStartTime;
-      console.log(`Animation history loaded in ${loadTime}ms with ${updatedHistory.length} items`);
+      logger.debug(`Animation history loaded in ${loadTime}ms with ${updatedHistory.length} items`);
             
             setLoading(false);
             return;
           }
         } catch (cloudError) {
-          console.error('Failed to fetch cloud animations:', cloudError);
+          logger.error('Failed to fetch cloud animations:', cloudError);
           setError('Failed to fetch animations from server. Please try again.');
         }
       }
@@ -249,7 +250,7 @@ export function useAnimationHistory() {
       
       setLoading(false);
     } catch (err) {
-      console.error('Animation history load error:', err);
+      logger.error('Animation history load error:', err);
       setError(err.message || 'Failed to load animation history');
       setHistory([]);
       
@@ -337,7 +338,7 @@ export function useAnimationHistory() {
     const animationToTrash = history.find(anim => anim.id === id);
     
     if (!animationToTrash) {
-      console.warn(`Animation with ID ${id} not found for trashing`);
+      logger.warn(`Animation with ID ${id} not found for trashing`);
       return;
     }
     

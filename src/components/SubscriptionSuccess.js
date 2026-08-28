@@ -5,6 +5,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 import subscriptionService from '../services/subscriptionService';
 import { Loader2 } from 'lucide-react';
+import { logger } from '../utils/logger';
 
 const SubscriptionSuccess = () => {
     const navigate = useNavigate();
@@ -33,7 +34,7 @@ const SubscriptionSuccess = () => {
                 // Redirect to home page
                 navigate('/', { replace: true });
             } catch (error) {
-                console.error('Failed to process subscription:', error);
+                logger.error('Failed to process subscription:', error);
                 addToast('Failed to process subscription. Please try again or contact support.', 'error');
                 navigate('/', { replace: true });
             } finally {

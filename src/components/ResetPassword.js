@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { EyeIcon, EyeOffIcon, KeyRound } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import apiService from '../services/api';
+import { logger } from '../utils/logger';
 
 const ResetPassword = ({ resetParams, onSuccess }) => {
     const [newPassword, setNewPassword] = useState('');
@@ -82,7 +83,7 @@ const ResetPassword = ({ resetParams, onSuccess }) => {
               setError(result.error || 'Failed to reset password');
           }
       } catch (error) {
-          console.error('Password reset failed:', error);
+          logger.error('Password reset failed:', error);
           
           if (error.message === 'invalid_reset_key') {
               setError('This password reset link has expired or is invalid.');

@@ -1,3 +1,4 @@
+import { logger } from '../logger';
 /**
  * WebM Cache Manager
  * Handles preloading and caching of WebM preview videos
@@ -28,7 +29,7 @@ export const preloadVideo = async (url) => {
     };
     
     video.onerror = (error) => {
-      console.error(`Failed to load video: ${url}`, error);
+      logger.error(`Failed to load video: ${url}`, error);
       reject(error);
     };
     
@@ -85,7 +86,7 @@ export const preloadCommonVideos = () => {
     setTimeout(() => {
       preloadVideo(url).catch((err) => {
         // Log but don't show errors to user
-        console.log(`Failed to preload: ${url}`, err);
+        logger.debug(`Failed to preload: ${url}`, err);
       });
     }, 1000 + (index * 300)); // Start after 1s, then 300ms apart
   });

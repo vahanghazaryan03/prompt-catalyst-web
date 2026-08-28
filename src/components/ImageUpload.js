@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
+import { logger } from '../utils/logger';
 
 export const ImageUpload = ({ 
   onFileSelect,
@@ -80,7 +81,7 @@ export const ImageUpload = ({
       
       }
     } catch (error) {
-      console.error('Error processing image:', error);
+      logger.error('Error processing image:', error);
       addToast(error.message || 'Error processing image. Please try again.', 'error');
     } finally {
       setIsProcessing(false);

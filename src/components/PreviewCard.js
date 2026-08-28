@@ -3,6 +3,7 @@ import classNames from 'classnames';
 import { Crown, Lock, ImageOff, Clock } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { assetCache } from '../utils/assetCache';
+import { logger } from '../utils/logger';
 
 // Simple folder mapping for preview images
 const getFolderName = (type) => {
@@ -64,7 +65,7 @@ export const PreviewCard = ({
           setIsLoading(false);
         }
       } catch (error) {
-        console.warn(`Failed to load preview image: ${previewPath}`, error);
+        logger.warn(`Failed to load preview image: ${previewPath}`, error);
         if (isMounted) {
           setImageError(true);
           setIsLoading(false);

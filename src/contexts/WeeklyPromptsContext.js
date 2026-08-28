@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
 import apiService from '../services/api';
 import { useToast } from './ToastContext';
+import { logger } from '../utils/logger';
 
 const WeeklyPromptsContext = createContext(null);
 
@@ -30,7 +31,7 @@ export const WeeklyPromptsProvider = ({ children }) => {
 
   const processPrompts = (weeklyPrompts) => {
     if (!Array.isArray(weeklyPrompts)) {
-      console.error('Invalid prompts data structure:', weeklyPrompts);
+      logger.error('Invalid prompts data structure:', weeklyPrompts);
       return [];
     }
 
@@ -75,7 +76,7 @@ export const WeeklyPromptsProvider = ({ children }) => {
       }));
 
     } catch (error) {
-      console.error('Error loading weekly image prompts:', error);
+      logger.error('Error loading weekly image prompts:', error);
       addToast('Failed to load weekly image prompts. Please try again later.', 'error');
       
       // Try to load from localStorage if API fails
@@ -88,7 +89,7 @@ export const WeeklyPromptsProvider = ({ children }) => {
             setImageLastUpdated(timestamp);
           }
         } catch (parseError) {
-          console.error('Error parsing cached image prompts:', parseError);
+          logger.error('Error parsing cached image prompts:', parseError);
         }
       }
     } finally {
@@ -155,7 +156,7 @@ export const WeeklyPromptsProvider = ({ children }) => {
       }));
 
     } catch (error) {
-      console.error('Error loading weekly video prompts:', error);
+      logger.error('Error loading weekly video prompts:', error);
       addToast('Failed to load weekly video prompts. Please try again later.', 'error');
       
       // Try to load from localStorage if API fails
@@ -168,7 +169,7 @@ export const WeeklyPromptsProvider = ({ children }) => {
             setVideoLastUpdated(timestamp);
           }
         } catch (parseError) {
-          console.error('Error parsing cached video prompts:', parseError);
+          logger.error('Error parsing cached video prompts:', parseError);
         }
       }
     } finally {
@@ -190,7 +191,7 @@ export const WeeklyPromptsProvider = ({ children }) => {
             setImageLoading(false);
           }
         } catch (error) {
-          console.error('Error loading cached image prompts:', error);
+          logger.error('Error loading cached image prompts:', error);
         }
       }
       
@@ -215,7 +216,7 @@ export const WeeklyPromptsProvider = ({ children }) => {
             setVideoLoading(false);
           }
         } catch (error) {
-          console.error('Error loading cached video prompts:', error);
+          logger.error('Error loading cached video prompts:', error);
         }
       }
       

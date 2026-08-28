@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { getRandomPresets } from '../utils/presets';
+import { logger } from '../utils/logger';
 
 const SettingsSuggestions = ({ onPresetApply, isVideoMode = false }) => {
   const { user } = useAuth();
@@ -20,14 +21,14 @@ const SettingsSuggestions = ({ onPresetApply, isVideoMode = false }) => {
       setIsApplyingPreset(true);
       
       if (!preset.settings || !preset.samplePrompt) {
-        console.warn('Preset missing required properties:', preset);
+        logger.warn('Preset missing required properties:', preset);
         return;
       }
   
       onPresetApply(preset);
   
     } catch (error) {
-      console.error('Error applying preset:', error);
+      logger.error('Error applying preset:', error);
     } finally {
       setIsApplyingPreset(false);
     }

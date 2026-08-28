@@ -14,6 +14,7 @@ import TypingAnimation from './TypingAnimation';
 import { RefreshCw, ArrowUpCircle } from 'lucide-react';
 import './CommandStyles.css';
 import { Dices, Image as ImageIcon, Cat as Bot, User, Wand2, Eye, Info } from 'lucide-react';
+import { logger } from '../utils/logger';
 
 export const ChatMessages = ({ 
   messages, 
@@ -38,7 +39,7 @@ export const ChatMessages = ({
       const savedStates = localStorage.getItem('previewStates');
       return savedStates ? JSON.parse(savedStates) : {};
     } catch (error) {
-      console.error('Error loading preview states:', error);
+      logger.error('Error loading preview states:', error);
       return {};
     }
   });
@@ -141,7 +142,7 @@ export const ChatMessages = ({
           const newStates = JSON.parse(e.newValue);
           setPreviewStates(newStates);
         } catch (error) {
-          console.error('Error parsing preview states from storage:', error);
+          logger.error('Error parsing preview states from storage:', error);
         }
       }
     };
@@ -482,7 +483,7 @@ export const ChatMessages = ({
       try {
         localStorage.setItem('previewStates', JSON.stringify(newState));
       } catch (error) {
-        console.error('Error saving preview states:', error);
+        logger.error('Error saving preview states:', error);
       }
       
       return newState;
@@ -520,7 +521,7 @@ export const ChatMessages = ({
 
       localStorage.setItem('promptHistory', JSON.stringify(updatedHistory));
     } catch (error) {
-      console.error('Error updating preview in history:', error);
+      logger.error('Error updating preview in history:', error);
     }
   };
 

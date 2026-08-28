@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactDOMServer from 'react-dom/server';
+import { logger } from '../../../utils/logger';
 
 const normalizeText = (text) => {
   if (typeof text !== 'string') return '';
@@ -31,7 +32,7 @@ const findRelevantContext = (sentences, matchedSentenceIndex, contextSize = 1) =
 };
 
 const searchContent = (searchQuery, sections) => {
-  console.log('Starting search for:', searchQuery);
+  logger.debug('Starting search for:', searchQuery);
   if (!searchQuery?.trim()) return [];
   
   const normalizedQuery = normalizeText(searchQuery);
@@ -80,7 +81,7 @@ const searchContent = (searchQuery, sections) => {
         }
       });
     } catch (error) {
-      console.error('Error processing section:', section.id, error);
+      logger.error('Error processing section:', section.id, error);
     }
   });
   
@@ -95,7 +96,7 @@ const searchContent = (searchQuery, sections) => {
     ))
   );
   
-  console.log('Found results:', uniqueResults.length);
+  logger.debug('Found results:', uniqueResults.length);
   return uniqueResults;
 };
 

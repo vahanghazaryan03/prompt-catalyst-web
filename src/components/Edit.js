@@ -32,6 +32,7 @@ import ImageCard from './ImageCard';
 import EditHistoryContainer from './EditHistoryContainer';
 import useAnimationStore from '../contexts/AnimationStore';
 import { analyzeImageForEditing, formatDimensions, getAspectRatioString } from '../utils/editImageUtils';
+import { logger } from '../utils/logger';
 
 // Edit models
 const EDIT_MODELS = [
@@ -371,7 +372,7 @@ const Edit = ({
       reader.readAsDataURL(blob);
       
     } catch (error) {
-      console.error('Error preparing image for re-editing:', error);
+      logger.error('Error preparing image for re-editing:', error);
       
       // Fall back to the original method without analysis
       try {
@@ -399,7 +400,7 @@ const Edit = ({
         addToast('Image ready for re-editing (using default dimensions)', 'success');
         
       } catch (fallbackError) {
-        console.error('Fallback re-edit preparation also failed:', fallbackError);
+        logger.error('Fallback re-edit preparation also failed:', fallbackError);
         addToast('Failed to prepare image for re-editing', 'error');
       }
     } finally {
@@ -453,7 +454,7 @@ const Edit = ({
         reader.readAsDataURL(blob);
       })
       .catch(error => {
-        console.error('Error preparing image for animation:', error);
+        logger.error('Error preparing image for animation:', error);
         addToast('Failed to prepare image for animation', 'error');
       });
   }, [user?.isProMember, user?.isUltimateMember, onPremiumClick, onViewChange, addToast]);
@@ -498,7 +499,7 @@ const Edit = ({
       reader.readAsDataURL(file);
       
     } catch (error) {
-      console.error('Error analyzing image:', error);
+      logger.error('Error analyzing image:', error);
       // Fall back to regular upload without analysis
       const reader = new FileReader();
       reader.onload = () => {
@@ -601,7 +602,7 @@ const Edit = ({
       }
       
     } catch (error) {
-      console.error('Image editing error:', error);
+      logger.error('Image editing error:', error);
       
       // Handle specific error types
       if (error.response?.status === 429) {
@@ -666,7 +667,7 @@ const Edit = ({
         img.onerror = () => {
           // If loading with crossOrigin fails, try without it
           // This will create a tainted canvas but might still work for some cases
-          console.log('Trying fallback download method for:', imageUrl);
+          logger.debug('Trying fallback download method for:', imageUrl);
           img.crossOrigin = null;
           img.src = imageUrl;
         };
@@ -713,12 +714,12 @@ const Edit = ({
             }
           }, 'image/png');
         } catch (canvasError) {
-          console.error('Canvas export error:', canvasError);
+          logger.error('Canvas export error:', canvasError);
           throw canvasError;
         }
       } catch (err) {
         // Method 2: Fall back to direct anchor approach
-        console.log('Canvas method failed, trying direct download approach');
+        logger.debug('Canvas method failed, trying direct download approach');
         const a = document.createElement('a');
         a.href = imageUrl;
         a.target = '_blank';
@@ -737,7 +738,7 @@ const Edit = ({
         addToast('Opening image in a new tab. Right-click and select "Save image as..."', 'info');
       }
     } catch (error) {
-      console.error('Download error:', error);
+      logger.error('Download error:', error);
       
       // Final fallback - open in new tab
       window.open(imageUrl, '_blank');

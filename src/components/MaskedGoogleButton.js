@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import socialAuthService from '../services/socialAuthService';
+import { logger } from '../utils/logger';
 import './GoogleButtonStyles.css'; // Import the CSS for styling
 
 const MaskedGoogleButton = ({ onLoginStart, onLoginComplete, className = '' }) => {
@@ -28,13 +29,13 @@ const MaskedGoogleButton = ({ onLoginStart, onLoginComplete, className = '' }) =
             socialAuthService.renderGoogleButton(googleButtonRef.current, 'filled_black');
           }
         } catch (error) {
-          console.error("Failed to initialize Google Sign-In:", error);
+          logger.error("Failed to initialize Google Sign-In:", error);
           setError(`Sign-in initialization failed`);
         }
       })
       .catch(error => {
         if (!mounted) return;
-        console.error("Failed to load Google SDK:", error);
+        logger.error("Failed to load Google SDK:", error);
         setError(`Sign-in service unavailable`);
       });
 
@@ -72,7 +73,7 @@ const MaskedGoogleButton = ({ onLoginStart, onLoginComplete, className = '' }) =
       if (onLoginComplete) onLoginComplete();
       setError(null);
     } catch (error) {
-      console.error("Google login processing error:", error);
+      logger.error("Google login processing error:", error);
       setError('Sign-in failed. Please try again.');
     } finally {
       setIsLoading(false);

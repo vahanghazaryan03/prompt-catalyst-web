@@ -52,6 +52,7 @@ import MaintenanceAnnouncement from './components/MaintenanceAnnouncement';
 import EmptyChat from './components/EmptyChat';
 import Animate from './components/Animate';
 import AnimationErrorBoundary from './components/AnimationErrorBoundary';
+import { logger } from './utils/logger';
 
 const getStoredView = () => {
   const storedView = localStorage.getItem('currentView');
@@ -181,7 +182,7 @@ const AppContent = () => {
     // Load development debugging tools in development mode
     if (process.env.NODE_ENV === 'development') {
       import('./utils/assetCache/debugUtils').catch(err => {
-        console.warn('Failed to load cache debugging tools:', err);
+        logger.warn('Failed to load cache debugging tools:', err);
       });
     }
 
@@ -1206,7 +1207,7 @@ const AppContent = () => {
                                 });
                               })
                               .catch(error => {
-                                console.error('Error reanalyzing image:', error);
+                                logger.error('Error reanalyzing image:', error);
                                 setIsGenerating(false); // Turn off loading state on error
                                 handleApiError(error);
                               });

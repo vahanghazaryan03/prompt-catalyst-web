@@ -1,3 +1,4 @@
+import { logger } from './logger';
 // src/utils/animationStorage.js
 
 /**
@@ -19,13 +20,13 @@ const MAX_RECENT_ITEMS = 5;   // Number of recent items to keep full thumbnails 
 export const compressDataUrl = (dataUrl, quality = 0.6, maxWidth = 320, maxHeight = 180) => {
   return new Promise((resolve, reject) => {
     if (!dataUrl || typeof dataUrl !== 'string') {
-      console.warn('Invalid data URL for compression:', dataUrl);
+      logger.warn('Invalid data URL for compression:', dataUrl);
       reject(new Error('Invalid data URL'));
       return;
     }
     
     if (!dataUrl.startsWith('data:image')) {
-      console.warn('Not an image data URL:', dataUrl.substring(0, 20) + '...');
+      logger.warn('Not an image data URL:', dataUrl.substring(0, 20) + '...');
       resolve(dataUrl); // Return as is if not an image
       return;
     }
@@ -66,7 +67,7 @@ export const compressDataUrl = (dataUrl, quality = 0.6, maxWidth = 320, maxHeigh
           
           // Verify the output is valid and not too small
           if (compressedDataUrl.length < 100 || !compressedDataUrl.startsWith('data:image')) {
-            console.warn('Compression produced invalid output:', compressedDataUrl.substring(0, 20));
+            logger.warn('Compression produced invalid output:', compressedDataUrl.substring(0, 20));
             resolve(dataUrl); // Return original if compression failed
           } else {
             resolve(compressedDataUrl);
@@ -75,14 +76,14 @@ export const compressDataUrl = (dataUrl, quality = 0.6, maxWidth = 320, maxHeigh
           // Clean up
           canvas.remove();
         } catch (error) {
-          console.error('Error during image compression:', error);
+          logger.error('Error during image compression:', error);
           resolve(dataUrl); // Return original on error
         }
       };
       
       // Handle load errors
       img.onerror = (err) => {
-        console.warn('Failed to load image for compression:', err);
+        logger.warn('Failed to load image for compression:', err);
         resolve(dataUrl); // Return original on error
       };
       
@@ -91,11 +92,11 @@ export const compressDataUrl = (dataUrl, quality = 0.6, maxWidth = 320, maxHeigh
       
       // Set timeout to avoid hanging
       setTimeout(() => {
-        console.warn('Image compression timed out');
+        logger.warn('Image compression timed out');
         resolve(dataUrl);
       }, 5000);
     } catch (error) {
-      console.error('Error setting up image compression:', error);
+      logger.error('Error setting up image compression:', error);
       resolve(dataUrl); // Return original on error
     }
   });
@@ -117,7 +118,7 @@ export const loadAnimationHistory = () => {
       try {
         parsedHistory = JSON.parse(historyData);
       } catch (parseError) {
-        console.error('Failed to parse animation history data:', parseError);
+        logger.error('Failed to parse animation history data:', parseError);
         // If we can't parse the JSON, clear the corrupted data
         localStorage.removeItem(STORAGE_KEY);
         return [];
@@ -125,7 +126,7 @@ export const loadAnimationHistory = () => {
       
       // Triple validate the format - check if it's an array and has expected properties
       if (!Array.isArray(parsedHistory)) {
-        console.error('Animation history is not an array, resetting:', parsedHistory);
+        logger.error('Animation history is not an array, resetting:', parsedHistory);
         localStorage.removeItem(STORAGE_KEY);
         return [];
       }
@@ -144,7 +145,7 @@ export const loadAnimationHistory = () => {
       
       // If we filtered out invalid items, update storage
       if (validatedHistory.length !== parsedHistory.length) {
-        console.warn(
+        logger.warn(
           `Found ${parsedHistory.length - validatedHistory.length} invalid items in animation history, removing them`
         );
         saveAnimationHistory(validatedHistory);
@@ -152,7 +153,7 @@ export const loadAnimationHistory = () => {
       
       return validatedHistory;
     } catch (error) {
-      console.error('Error loading animation history:', error);
+      logger.error('Error loading animation history:', error);
       // In case of any unexpected error, return empty array
       return [];
     }
@@ -166,7 +167,7 @@ export const saveAnimationHistory = (history) => {
     try {
       // First validate that we have an array
       if (!Array.isArray(history)) {
-        console.error('Attempted to save non-array history:', history);
+        logger.error('Attempted to save non-array history:', history);
         return false;
       }
       
@@ -183,7 +184,7 @@ export const saveAnimationHistory = (history) => {
         return true;
       } catch (storageError) {
         // If we hit quota limits, try more aggressive optimization
-        console.warn('Storage error when saving history, applying optimization:', storageError);
+        logger.warn('Storage error when saving history, applying optimization:', storageError);
         
         // Optimize by removing thumbnails from older items
         const optimizedHistory = limitedHistory.map((item, index) => {
@@ -198,7 +199,7 @@ export const saveAnimationHistory = (history) => {
           localStorage.setItem(STORAGE_KEY, JSON.stringify(optimizedHistory));
           return true;
         } catch (secondError) {
-          console.error('Failed to save history even after optimization:', secondError);
+          logger.error('Failed to save history even after optimization:', secondError);
           
           // As a last resort, try saving just the essential data
           try {
@@ -217,13 +218,13 @@ export const saveAnimationHistory = (history) => {
             localStorage.setItem(STORAGE_KEY, JSON.stringify(minimalHistory.slice(0, 20)));
             return true;
           } catch (finalError) {
-            console.error('All attempts to save history failed:', finalError);
+            logger.error('All attempts to save history failed:', finalError);
             return false;
           }
         }
       }
     } catch (error) {
-      console.error('Error processing animation history for save:', error);
+      logger.error('Error processing animation history for save:', error);
       return false;
     }
   };
@@ -240,7 +241,7 @@ export const checkAndRepairAnimationHistory = () => {
         
         // Check if it's an array
         if (!Array.isArray(parsedHistory)) {
-          console.warn('Animation history is not an array, repairing');
+          logger.warn('Animation history is not an array, repairing');
           localStorage.removeItem(STORAGE_KEY);
           return true;
         }
@@ -258,12 +259,12 @@ export const checkAndRepairAnimationHistory = () => {
         return true;
       } catch (parseError) {
         // If we can't parse the JSON, clear the corrupted data
-        console.error('Animation history data is corrupted, clearing:', parseError);
+        logger.error('Animation history data is corrupted, clearing:', parseError);
         localStorage.removeItem(STORAGE_KEY);
         return true;
       }
     } catch (error) {
-      console.error('Error checking animation history:', error);
+      logger.error('Error checking animation history:', error);
       return false;
     }
   };
@@ -275,7 +276,7 @@ export const checkAndRepairAnimationHistory = () => {
  */
 export const addAnimationToHistory = async (animation) => {
   if (!animation || !animation.id || !animation.url) {
-    console.error('Invalid animation object for history', animation);
+    logger.error('Invalid animation object for history', animation);
     return loadAnimationHistory();
   }
   
@@ -306,7 +307,7 @@ export const addAnimationToHistory = async (animation) => {
           });
           
           if (!isValidImage) {
-            console.warn('Invalid thumbnail detected, generating new one');
+            logger.warn('Invalid thumbnail detected, generating new one');
             // Replace with a fallback
             optimizedAnimation.thumbnail = createFallbackThumbnail(
               animation.movement || 'Animation',
@@ -318,9 +319,9 @@ export const addAnimationToHistory = async (animation) => {
           else if (animation.thumbnail.length > 10000) {
             try {
               optimizedAnimation.thumbnail = await compressDataUrl(animation.thumbnail, 0.6, 240, 135);
-              console.log('Compressed thumbnail from', animation.thumbnail.length, 'to', optimizedAnimation.thumbnail.length);
+              logger.debug('Compressed thumbnail from', animation.thumbnail.length, 'to', optimizedAnimation.thumbnail.length);
             } catch (compressionError) {
-              console.warn('Failed to compress thumbnail:', compressionError);
+              logger.warn('Failed to compress thumbnail:', compressionError);
               // If it's very large, create a new smaller one
               if (animation.thumbnail.length > 50000) {
                 optimizedAnimation.thumbnail = createFallbackThumbnail(
@@ -337,7 +338,7 @@ export const addAnimationToHistory = async (animation) => {
           optimizedAnimation.thumbnailIsUrl = true;
         }
       } catch (thumbnailError) {
-        console.warn('Error processing thumbnail:', thumbnailError);
+        logger.warn('Error processing thumbnail:', thumbnailError);
         // Create a fallback thumbnail
         optimizedAnimation.thumbnail = createFallbackThumbnail(
           animation.movement || 'Animation',
@@ -366,7 +367,7 @@ export const addAnimationToHistory = async (animation) => {
     try {
       saveAnimationHistory(updatedHistory);
     } catch (storageError) {
-      console.warn('Storage error when saving animation history:', storageError);
+      logger.warn('Storage error when saving animation history:', storageError);
       // Try with reduced quality
       try {
         // Replace all thumbnails with compressed versions
@@ -391,7 +392,7 @@ export const addAnimationToHistory = async (animation) => {
         
         saveAnimationHistory(compressedHistory);
       } catch (finalError) {
-        console.error('All attempts to save history with thumbnails failed:', finalError);
+        logger.error('All attempts to save history with thumbnails failed:', finalError);
         // Last resort - save without thumbnails
         const minimalHistory = updatedHistory.map(item => ({
           ...item,
@@ -403,7 +404,7 @@ export const addAnimationToHistory = async (animation) => {
     
     return updatedHistory;
   } catch (error) {
-    console.error('Error adding animation to history:', error);
+    logger.error('Error adding animation to history:', error);
     return loadAnimationHistory();
   }
 };
@@ -414,7 +415,7 @@ export const addAnimationToHistory = async (animation) => {
  * @returns {Array} The original history array
  */
 export const removeAnimationFromHistory = (id) => {
-  console.log("Animation deletion is disabled");
+  logger.debug("Animation deletion is disabled");
   return loadAnimationHistory();
 };
 
@@ -429,7 +430,7 @@ export const createVideoThumbnail = (videoElement, width = 320, height = 180) =>
   return new Promise((resolve, reject) => {
     try {
       if (!videoElement) {
-        console.warn('No video element provided for thumbnail generation');
+        logger.warn('No video element provided for thumbnail generation');
         reject(new Error('No video element provided'));
         return;
       }
@@ -441,7 +442,7 @@ export const createVideoThumbnail = (videoElement, width = 320, height = 180) =>
             videoElement.videoHeight === 0 || 
             videoElement.readyState < 2) { // HAVE_CURRENT_DATA or higher
           
-          console.log('Video not ready for thumbnail, waiting...');
+          logger.debug('Video not ready for thumbnail, waiting...');
           
           // Try again in a moment
           setTimeout(checkVideoState, 100);
@@ -500,12 +501,12 @@ export const createVideoThumbnail = (videoElement, width = 320, height = 180) =>
           };
           testImg.onerror = () => {
             // Image failed to load, use fallback
-            console.warn('Generated thumbnail failed to load as image');
+            logger.warn('Generated thumbnail failed to load as image');
             reject(new Error('Thumbnail failed verification'));
           };
           testImg.src = dataUrl;
         } catch (drawError) {
-          console.error('Error drawing video to canvas:', drawError);
+          logger.error('Error drawing video to canvas:', drawError);
           reject(drawError);
         }
       };
@@ -513,7 +514,7 @@ export const createVideoThumbnail = (videoElement, width = 320, height = 180) =>
       // Start checking video state
       checkVideoState();
     } catch (error) {
-      console.error('Error in thumbnail generation:', error);
+      logger.error('Error in thumbnail generation:', error);
       reject(error);
     }
   });
@@ -587,7 +588,7 @@ export const createFallbackThumbnail = (text = 'Animation', width = 320, height 
     // Use higher quality for these fallbacks since they're important
     return canvas.toDataURL('image/jpeg', 0.8);
   } catch (error) {
-    console.error('Error creating fallback thumbnail:', error);
+    logger.error('Error creating fallback thumbnail:', error);
     
     // Ultimate fallback - create a simple SVG data URL
     const svgContent = `
@@ -655,7 +656,7 @@ export const cleanupStorage = () => {
     
     return true;
   } catch (error) {
-    console.error('Storage cleanup failed:', error);
+    logger.error('Storage cleanup failed:', error);
     return false;
   }
 };

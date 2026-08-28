@@ -1,5 +1,6 @@
 // src/contexts/EditContext.js
 import React, { createContext, useContext, useState, useCallback, useMemo } from 'react';
+import { logger } from '../utils/logger';
 
 const EditContext = createContext();
 
@@ -29,7 +30,7 @@ const debugEditHistory = () => {
       const storageUsed = new Blob([stored]).size;
       const storageUsedKB = Math.round(storageUsed / 1024 * 100) / 100;
       
-      console.log('Edit History Debug:', {
+      logger.debug('Edit History Debug:', {
         totalItems: parsed.length,
         maxItems: MAX_EDIT_HISTORY_ITEMS,
         storageUsedKB: storageUsedKB,
@@ -42,10 +43,10 @@ const debugEditHistory = () => {
         }))
       });
     } else {
-      console.log('No edit history found in localStorage');
+      logger.debug('No edit history found in localStorage');
     }
   } catch (error) {
-    console.error('Error debugging edit history:', error);
+    logger.error('Error debugging edit history:', error);
   }
 };
 
@@ -90,7 +91,7 @@ const createThumbnailData = async (dataUrl, maxSize = 64, quality = 0.3) => {
       img.src = dataUrl;
     });
   } catch (error) {
-    console.warn('Failed to create thumbnail:', error);
+    logger.warn('Failed to create thumbnail:', error);
     return null;
   }
 };
@@ -144,19 +145,19 @@ export const EditProvider = ({ children }) => {
         try {
           localStorage.setItem(EDIT_HISTORY_STORAGE_KEY, JSON.stringify(cleanedHistory));
         } catch (cleanupError) {
-          console.warn('Could not save cleaned history:', cleanupError);
+          logger.warn('Could not save cleaned history:', cleanupError);
         }
         
         return cleanedHistory;
       }
       return [];
     } catch (error) {
-      console.error('Failed to load edit history:', error);
+      logger.error('Failed to load edit history:', error);
       // If history is corrupted, clear it
       try {
         localStorage.removeItem(EDIT_HISTORY_STORAGE_KEY);
       } catch (clearError) {
-        console.error('Could not clear corrupted history:', clearError);
+        logger.error('Could not clear corrupted history:', clearError);
       }
       return [];
     }
@@ -168,7 +169,7 @@ export const EditProvider = ({ children }) => {
       const storedSettings = localStorage.getItem(EDIT_SETTINGS_STORAGE_KEY);
       return storedSettings ? JSON.parse(storedSettings) : DEFAULT_EDIT_SETTINGS;
     } catch (error) {
-      console.error('Failed to load edit settings:', error);
+      logger.error('Failed to load edit settings:', error);
       return DEFAULT_EDIT_SETTINGS;
     }
   });
@@ -190,7 +191,7 @@ export const EditProvider = ({ children }) => {
         try {
           sessionStorage.setItem(EDIT_SESSION_STATE_KEY, JSON.stringify(parsedState));
         } catch (e) {
-          console.warn('Could not migrate edit state to sessionStorage:', e);
+          logger.warn('Could not migrate edit state to sessionStorage:', e);
         }
         return parsedState;
       }
@@ -204,7 +205,7 @@ export const EditProvider = ({ children }) => {
         editError: null
       };
     } catch (error) {
-      console.error('Failed to load edit state:', error);
+      logger.error('Failed to load edit state:', error);
       return {
         editPrompt: '',
         generatedImages: [],
@@ -235,7 +236,7 @@ export const EditProvider = ({ children }) => {
       try {
         thumbnail = await createThumbnailData(originalImage.dataUrl, 64, 0.4);
       } catch (error) {
-        console.warn('Failed to create thumbnail for history:', error);
+        logger.warn('Failed to create thumbnail for history:', error);
       }
     }
 
@@ -300,7 +301,7 @@ export const EditProvider = ({ children }) => {
         const historyJson = JSON.stringify(updated);
         localStorage.setItem(EDIT_HISTORY_STORAGE_KEY, historyJson);
       } catch (error) {
-        console.error('Failed to save edit history:', {
+        logger.error('Failed to save edit history:', {
           error: error.message,
           historyLength: updated.length,
           editId: uniqueId,
@@ -327,7 +328,7 @@ export const EditProvider = ({ children }) => {
             localStorage.setItem(EDIT_HISTORY_STORAGE_KEY, JSON.stringify(reducedHistory));
             return reducedHistory;
           } catch (retryError) {
-            console.error('Failed to save even reduced history:', retryError);
+            logger.error('Failed to save even reduced history:', retryError);
           }
         }
       }
@@ -343,7 +344,7 @@ export const EditProvider = ({ children }) => {
       try {
         localStorage.setItem(EDIT_HISTORY_STORAGE_KEY, JSON.stringify(updated));
       } catch (error) {
-        console.error('Failed to update edit history:', error);
+        logger.error('Failed to update edit history:', error);
       }
       
       return updated;
@@ -355,7 +356,7 @@ export const EditProvider = ({ children }) => {
     try {
       localStorage.removeItem(EDIT_HISTORY_STORAGE_KEY);
     } catch (error) {
-      console.error('Failed to clear edit history:', error);
+      logger.error('Failed to clear edit history:', error);
     }
   }, []);
 
@@ -366,7 +367,7 @@ export const EditProvider = ({ children }) => {
       try {
         localStorage.setItem(EDIT_SETTINGS_STORAGE_KEY, JSON.stringify(updated));
       } catch (error) {
-        console.error('Failed to save edit settings:', error);
+        logger.error('Failed to save edit settings:', error);
       }
       return updated;
     });
@@ -420,11 +421,11 @@ export const EditProvider = ({ children }) => {
           localStorage.setItem(EDIT_STATE_STORAGE_KEY, JSON.stringify(backupState));
         } catch (backupError) {
           // If localStorage fails, that's ok - we have sessionStorage
-          console.warn('Could not backup to localStorage:', backupError);
+          logger.warn('Could not backup to localStorage:', backupError);
         }
         
       } catch (error) {
-        console.error('Failed to save edit state:', error);
+        logger.error('Failed to save edit state:', error);
         // Try fallback to localStorage only
         try {
           const fallbackState = {
@@ -445,7 +446,7 @@ export const EditProvider = ({ children }) => {
           };
           localStorage.setItem(EDIT_STATE_STORAGE_KEY, JSON.stringify(fallbackState));
         } catch (fallbackError) {
-          console.error('Failed to save even fallback edit state:', fallbackError);
+          logger.error('Failed to save even fallback edit state:', fallbackError);
         }
       }
       
@@ -470,7 +471,7 @@ export const EditProvider = ({ children }) => {
       sessionStorage.setItem(EDIT_SESSION_STATE_KEY, JSON.stringify(defaultState));
       localStorage.setItem(EDIT_STATE_STORAGE_KEY, JSON.stringify(defaultState));
     } catch (error) {
-      console.error('Failed to clear edit state:', error);
+      logger.error('Failed to clear edit state:', error);
     }
   }, []);
 
@@ -480,7 +481,7 @@ export const EditProvider = ({ children }) => {
     try {
       localStorage.setItem(EDIT_SETTINGS_STORAGE_KEY, JSON.stringify(DEFAULT_EDIT_SETTINGS));
     } catch (error) {
-      console.error('Failed to reset edit settings:', error);
+      logger.error('Failed to reset edit settings:', error);
     }
   }, []);
 

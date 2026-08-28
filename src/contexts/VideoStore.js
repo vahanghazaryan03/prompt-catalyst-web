@@ -1,5 +1,6 @@
 // src/contexts/VideoStore.js
 import { create } from 'zustand';
+import { logger } from '../utils/logger';
 
 // Keys for session storage
 const SESSION_KEYS = {
@@ -28,7 +29,7 @@ const getSessionItem = (key, defaultValue) => {
     const saved = sessionStorage.getItem(key);
     return saved ? JSON.parse(saved) : defaultValue;
   } catch (e) {
-    console.error(`Error parsing ${key} from session storage:`, e);
+    logger.error(`Error parsing ${key} from session storage:`, e);
     return defaultValue;
   }
 };
@@ -41,7 +42,7 @@ const setSessionItem = (key, value) => {
       sessionStorage.removeItem(key);
     }
   } catch (e) {
-    console.warn(`Failed to save ${key} to session storage:`, e);
+    logger.warn(`Failed to save ${key} to session storage:`, e);
   }
 };
 
@@ -51,7 +52,7 @@ const getLocalItem = (key, defaultValue) => {
     const saved = localStorage.getItem(key);
     return saved ? JSON.parse(saved) : defaultValue;
   } catch (e) {
-    console.error(`Error parsing ${key} from local storage:`, e);
+    logger.error(`Error parsing ${key} from local storage:`, e);
     return defaultValue;
   }
 };
@@ -64,7 +65,7 @@ const setLocalItem = (key, value) => {
       localStorage.removeItem(key);
     }
   } catch (e) {
-    console.warn(`Failed to save ${key} to local storage:`, e);
+    logger.warn(`Failed to save ${key} to local storage:`, e);
   }
 };
 
@@ -182,7 +183,7 @@ const useVideoStore = create((set, get) => ({
       setSessionItem(SESSION_KEYS.VIDEO_GENERATED, videoForStorage);
     } else {
       // When video is null, we're clearing the video
-      console.log('VideoStore: clearing generated video');
+      logger.debug('VideoStore: clearing generated video');
       set({ generatedVideo: null });
       sessionStorage.removeItem(SESSION_KEYS.VIDEO_GENERATED);
     }

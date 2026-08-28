@@ -4,6 +4,7 @@
  */
 
 import { cacheDB } from './cacheDatabase';
+import { logger } from '../logger';
 
 class AssetCacheManager {
   constructor() {
@@ -82,7 +83,7 @@ class AssetCacheManager {
 
       return blobUrl;
     } catch (error) {
-      console.warn(`Failed to load asset: ${url}`, error);
+      logger.warn(`Failed to load asset: ${url}`, error);
       throw error;
     }
   }
@@ -95,7 +96,7 @@ class AssetCacheManager {
         ...options
       });
     } catch (error) {
-      console.warn('Background storage failed:', error);
+      logger.warn('Background storage failed:', error);
     }
   }
 
@@ -119,7 +120,7 @@ class AssetCacheManager {
           loaded++;
           onProgress?.(loaded, urls.length);
         } catch (error) {
-          console.warn(`Failed to preload: ${url}`, error);
+          logger.warn(`Failed to preload: ${url}`, error);
           loaded++;
           onProgress?.(loaded, urls.length);
         }

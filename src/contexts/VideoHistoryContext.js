@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import { logger } from '../utils/logger';
 
 // Create a new context for video history
 const VideoHistoryContext = createContext();
@@ -20,7 +21,7 @@ export const VideoHistoryProvider = ({ children }) => {
           setVideoHistory(JSON.parse(storedHistory));
         }
       } catch (error) {
-        console.error('Error loading video history:', error);
+        logger.error('Error loading video history:', error);
         // If there's an error, initialize with empty array
         setVideoHistory([]);
       }

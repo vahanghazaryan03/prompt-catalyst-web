@@ -5,6 +5,7 @@ import { X, ZoomIn, ZoomOut, ChevronLeft, ChevronRight, Download, Copy, Play, Pe
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 import useAnimationStore from '../contexts/AnimationStore';
+import { logger } from '../utils/logger';
 
 const LightboxModal = ({ 
   images,
@@ -76,7 +77,7 @@ const LightboxModal = ({
   
   // Early return if no valid current image (after all hooks)
   if (!currentImage) {
-    console.warn('LightboxModal: No valid current image found');
+    logger.warn('LightboxModal: No valid current image found');
     return null;
   }
 
@@ -160,7 +161,7 @@ const LightboxModal = ({
         reader.readAsDataURL(blob);
       })
       .catch(error => {
-        console.error('Error preparing image for animation:', error);
+        logger.error('Error preparing image for animation:', error);
         addToast('Failed to prepare image for animation', 'error');
       });
   };

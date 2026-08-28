@@ -1,3 +1,4 @@
+import { logger } from './logger';
 // src/utils/falMediaThumbnail.js
 // Specialized utility for generating thumbnails from fal.media video URLs
 
@@ -63,7 +64,7 @@ export const generateFalMediaThumbnail = async (videoUrl, options = {}) => {
     const videoPromise = new Promise((resolve, reject) => {
       // Set up error handler
       video.onerror = (error) => {
-        console.warn('Error loading video for thumbnail:', error, video.error);
+        logger.warn('Error loading video for thumbnail:', error, video.error);
         reject(new Error(`Video failed to load: ${video.error?.message || 'Unknown error'}`));
       };
 
@@ -95,7 +96,7 @@ export const generateFalMediaThumbnail = async (videoUrl, options = {}) => {
           if (playPromise !== undefined) {
             playPromise.catch(error => {
               // Ignore play errors, we only need the frame
-              console.warn('Play failed during thumbnail generation:', error);
+              logger.warn('Play failed during thumbnail generation:', error);
             });
           }
         } catch (playError) {
@@ -160,7 +161,7 @@ export const generateFalMediaThumbnail = async (videoUrl, options = {}) => {
         document.body.removeChild(video);
       }
     } catch (cleanupError) {
-      console.warn('Error cleaning up video element:', cleanupError);
+      logger.warn('Error cleaning up video element:', cleanupError);
     }
 
     // Store in caches
@@ -168,12 +169,12 @@ export const generateFalMediaThumbnail = async (videoUrl, options = {}) => {
     try {
       sessionStorage.setItem(cacheKey, thumbnailDataUrl);
     } catch (storageError) {
-      console.warn('Failed to store thumbnail in session storage:', storageError);
+      logger.warn('Failed to store thumbnail in session storage:', storageError);
     }
 
     return thumbnailDataUrl;
   } catch (error) {
-    console.warn(`Failed to generate thumbnail for fal.media video:`, error);
+    logger.warn(`Failed to generate thumbnail for fal.media video:`, error);
 
     // Clean up the video element
     try {
@@ -271,7 +272,7 @@ const createFallbackThumbnail = (videoUrl, width = 320, height = 180) => {
 
     return canvas.toDataURL('image/jpeg', 0.9);
   } catch (error) {
-    console.error('Error creating fallback thumbnail:', error);
+    logger.error('Error creating fallback thumbnail:', error);
     
     // Ultimate fallback - create a simple colored rectangle with text
     return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(`
@@ -358,7 +359,7 @@ export const regenerateAllFalMediaThumbnails = async () => {
     const history = loadAnimationHistory();
     
     if (!Array.isArray(history)) {
-      console.warn('Animation history is not an array, cannot regenerate thumbnails');
+      logger.warn('Animation history is not an array, cannot regenerate thumbnails');
       return { success: false, error: 'Invalid history format' };
     }
     
@@ -367,7 +368,7 @@ export const regenerateAllFalMediaThumbnails = async () => {
       animation => animation && animation.url && animation.url.includes('fal.media')
     );
     
-    console.log(`Found ${falMediaAnimations.length} fal.media animations of ${history.length} total`);
+    logger.debug(`Found ${falMediaAnimations.length} fal.media animations of ${history.length} total`);
     
     if (falMediaAnimations.length === 0) {
       return { success: true, count: 0, processed: 0 };
@@ -385,7 +386,7 @@ export const regenerateAllFalMediaThumbnails = async () => {
       const end = Math.min(start + batchSize, falMediaAnimations.length);
       const batch = falMediaAnimations.slice(start, end);
       
-      console.log(`Processing batch ${i+1}/${batches} (${batch.length} animations)`);
+      logger.debug(`Processing batch ${i+1}/${batches} (${batch.length} animations)`);
       
       // Process this batch
       const batchResults = await Promise.allSettled(
@@ -406,7 +407,7 @@ export const regenerateAllFalMediaThumbnails = async () => {
               };
             }
           } catch (error) {
-            console.warn(`Failed to generate thumbnail for animation ${animation.id}:`, error);
+            logger.warn(`Failed to generate thumbnail for animation ${animation.id}:`, error);
           }
           
           return null;
@@ -430,7 +431,7 @@ export const regenerateAllFalMediaThumbnails = async () => {
         
         // Save updated history
         saveAnimationHistory(updatedHistory);
-        console.log(`Saved ${successfulUpdates.length} updated thumbnails in batch ${i+1}`);
+        logger.debug(`Saved ${successfulUpdates.length} updated thumbnails in batch ${i+1}`);
       }
       
       // Pause between batches to allow UI to remain responsive
@@ -446,7 +447,7 @@ export const regenerateAllFalMediaThumbnails = async () => {
       updated
     };
   } catch (error) {
-    console.error('Failed to regenerate fal.media thumbnails:', error);
+    logger.error('Failed to regenerate fal.media thumbnails:', error);
     return {
       success: false,
       error: error.message
@@ -457,9 +458,9 @@ export const regenerateAllFalMediaThumbnails = async () => {
 // Export a function that can be called from the browser console
 export const setupThumbnailFixer = () => {
   window.fixFalMediaThumbnails = async () => {
-    console.log('Starting fal.media thumbnail regeneration...');
+    logger.debug('Starting fal.media thumbnail regeneration...');
     const result = await regenerateAllFalMediaThumbnails();
-    console.log('Thumbnail regeneration completed:', result);
+    logger.debug('Thumbnail regeneration completed:', result);
     return result;
   };
 };

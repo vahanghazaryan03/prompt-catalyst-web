@@ -10,6 +10,7 @@ import subscriptionService from '../services/subscriptionService';
 import tokenService from '../services/tokenService';
 import JumpingCat from './JumpingCat';
 import { useAuth } from '../contexts/AuthContext';
+import { logger } from '../utils/logger';
 
 // Energy field animation removed
 
@@ -610,7 +611,7 @@ const PremiumModal = ({ isOpen, onClose, onLoginRequired }) => {
         throw new Error('Failed to get checkout URL');
       }
     } catch (error) {
-      console.error('Subscription error:', error);
+      logger.error('Subscription error:', error);
       if (error.message === 'Authentication required') {
         onLoginRequired();
       } else if (error.message === 'email_verification_required') {
