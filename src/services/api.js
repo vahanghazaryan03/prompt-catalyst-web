@@ -311,19 +311,10 @@ register: async (email, password, username) => {
 },
 initiateCreditPurchase: async (packageId) => {
   try {
-    const response = await api.post('/initiate-credit-purchase', { packageId });
+    const response = await promptApi.post('/initiate-credit-purchase', { packageId });
     return response.data;
   } catch (error) {
     logger.error('Failed to initiate credit purchase:', error);
-    throw error;
-  }
-},
-initiateStripeCheckout: async () => {
-  try {
-    const response = await api.post('/admin-post.php?action=stripe_checkout');
-    return response.data;
-  } catch (error) {
-    logger.error('Failed to initiate Stripe checkout:', error);
     throw error;
   }
 },
