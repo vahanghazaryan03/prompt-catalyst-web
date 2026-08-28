@@ -1,6 +1,6 @@
 // AppRouter.js
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import App from './App';
 import { HelpPage } from './components/help';
 import { LegalHub, PrivacyPolicy, TermsOfService } from './components/legal';
@@ -18,6 +18,29 @@ const ThemedPageWrapper = ({ children }) => (
         </ToastProvider>
     </ThemeProvider>
 );
+
+// Paths handled inside App. The first group are views — App derives which one
+// to show from the pathname (see VIEW_PATHS there). The second are actions that
+// open a modal and then return the URL to the root.
+const APP_VIEW_PATHS = [
+    '/',
+    '/generate',
+    '/edit',
+    '/animate',
+    '/history',
+    '/collections',
+    '/weekly',
+    '/style-codes',
+    '/reset-password',
+];
+
+const APP_ACTION_PATHS = [
+    '/login',
+    '/sign-up',
+    '/password-reset',
+    '/premium',
+    '/community',
+];
 
 const AppRouter = () => {
     return (
@@ -58,15 +81,13 @@ const AppRouter = () => {
                         <SubscriptionSuccessWrapper />
                     </ThemedPageWrapper>
                 } />
-                <Route path="/reset-password" element={<App />} />
-                <Route path="/login" element={<App />} />
-                <Route path="/sign-up" element={<App />} />
-                <Route path="/premium" element={<App />} />
-                <Route path="/weekly" element={<App />} />
-                <Route path="/community" element={<App />} />
-                <Route path="/style-codes" element={<App />} />
-                <Route path="/" element={<App />} />
-               
+
+                {[...APP_VIEW_PATHS, ...APP_ACTION_PATHS].map((path) => (
+                    <Route key={path} path={path} element={<App />} />
+                ))}
+
+                {/* Anything unrecognised goes to the app rather than a blank page. */}
+                <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
         </Router>
     );

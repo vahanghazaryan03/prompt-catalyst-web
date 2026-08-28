@@ -54,10 +54,27 @@ import Animate from './components/Animate';
 import AnimationErrorBoundary from './components/AnimationErrorBoundary';
 import { logger } from './utils/logger';
 
-const getStoredView = () => {
-  const storedView = localStorage.getItem('currentView');
-  return storedView || 'chat'; // Default to 'chat' if no stored view
+// Every view is a URL. Chat lives at the root and the rest are real paths, so
+// the app is deep-linkable, the back button works, and the current view
+// survives a reload without being mirrored into localStorage.
+const VIEW_PATHS = {
+  chat: '/',
+  generate: '/generate',
+  edit: '/edit',
+  animate: '/animate',
+  history: '/history',
+  collections: '/collections',
+  weekly: '/weekly',
+  styleRefs: '/style-codes',
+  'reset-password': '/reset-password',
 };
+
+const PATH_VIEWS = Object.fromEntries(
+  Object.entries(VIEW_PATHS).map(([view, path]) => [path, view])
+);
+
+const viewForPath = (pathname) => PATH_VIEWS[pathname] || 'chat';
+const pathForView = (view) => VIEW_PATHS[view] || '/';
 
 
 
@@ -274,7 +291,12 @@ const AppContent = () => {
   const messages = isVideoMode ? videoMessages : imageMessages;
   const setMessages = isVideoMode ? setVideoMessages : setImageMessages;
   
-  const [currentView, setCurrentView] = useState(getStoredView());
+  // The URL is the single source of truth for which view is showing.
+  const currentView = viewForPath(location.pathname);
+  const setCurrentView = useCallback(
+    (view) => navigate(pathForView(view)),
+    [navigate]
+  );
   const [isSettingsOpen, setIsSettingsOpen] = useState(() => {
     // Get from localStorage or default to true
     return localStorage.getItem('isSettingsOpen') !== 'false';
@@ -334,34 +356,25 @@ const AppContent = () => {
   
   // Handler for video mode toggle with improved transition
   const handleVideoModeToggle = useCallback(() => {
-    setIsVideoMode(prev => {
-      const newMode = !prev;
-      localStorage.setItem('isVideoMode', newMode.toString());
-      
-      // Notify preload manager about mode change
-      preloadManager.onModeChange(newMode);
-      
-      // Reset generatePrompt when switching modes to avoid confusion
-      setGeneratePrompt('');
-      
-      // Add transition animation
-      document.body.classList.add('mode-transition');
-      setTimeout(() => document.body.classList.remove('mode-transition'), 500);
-      
-      // When switching modes, make sure we're in chat view for the best experience
-      if (currentView !== 'chat' && currentView !== 'collections' && currentView !== 'history') {
-        setCurrentView('chat');
-        localStorage.setItem('currentView', 'chat');
-      }
-      
-      // If in history view, switch to the appropriate history type
-      if (currentView === 'history') {
-        // No action needed as history view already adapts based on isVideoMode
-      }
-      
-      return newMode;
-    });
-  }, [currentView]);
+    // Side effects belong here rather than inside the state updater: React
+    // invokes updaters twice under StrictMode, which fired these twice.
+    const newMode = !isVideoMode;
+    setIsVideoMode(newMode);
+    localStorage.setItem('isVideoMode', newMode.toString());
+    preloadManager.onModeChange(newMode);
+
+    // Reset generatePrompt when switching modes to avoid confusion
+    setGeneratePrompt('');
+
+    document.body.classList.add('mode-transition');
+    setTimeout(() => document.body.classList.remove('mode-transition'), 500);
+
+    // Collections and history already adapt to the mode. Every other view goes
+    // back to chat, which is the best place to land after a switch.
+    if (currentView !== 'chat' && currentView !== 'collections' && currentView !== 'history') {
+      setCurrentView('chat');
+    }
+  }, [isVideoMode, currentView, setCurrentView, setGeneratePrompt]);
   const [isGenerating, setIsGenerating] = useState(false);
   const [isGeneratingRandom, setIsGeneratingRandom] = useState(false);
  
@@ -377,30 +390,31 @@ const AppContent = () => {
     const emailParam = params.get('email');
   
     const handleInitialRoute = () => {
-      // Handle login with email parameter
+      // These paths are actions, not views: they open a modal and hand the URL
+      // back to the app. View paths are left alone, because the view is derived
+      // from the URL rather than stored.
       if (pathname === '/login' && emailParam) {
         setLoginEmail(emailParam);
         setIsLoginModalOpen(true);
-        navigate('/', { replace: true }); // Clean up URL after handling
+        navigate('/', { replace: true });
         return;
       }
-    
+
+      // /reset-password only means anything with its query parameters.
+      if (pathname === '/reset-password' && !params.get('reset_key')) {
+        navigate('/', { replace: true });
+        return;
+      }
+
       switch (pathname) {
         case '/premium':
-          // Only proceed if we have user state
           if (!loading) {
             handleOpenPremiumModal();
             navigate('/', { replace: true });
           }
           break;
-        case '/weekly':
-          handleViewChange('weekly');
-          break;
-        case '/style-codes':
-          handleViewChange('styleRefs');
-          break;
-        case '/tutorials':
-          // Don't do anything, let the tutorials route handle it
+        case '/login':
+          setIsLoginModalOpen(true);
           break;
         case '/sign-up':
           setIsSignUpMode(true);
@@ -411,21 +425,9 @@ const AppContent = () => {
           setIsLoginModalOpen(true);
           break;
         default:
-          if (pathname !== '/') {
-            navigate('/', { replace: true });
-          }
-      }
-        
-      if (pathname !== '/premium' && 
-          pathname !== '/' && 
-          pathname !== '/reset-password' && 
-          pathname !== '/tutorials' && 
-          !pathname.startsWith('/help') &&
-          !pathname.startsWith('/legal')) {
-        navigate('/', { replace: true });
+          break;
       }
     };
-
     handleInitialRoute();
   }, [location.pathname, location.search, navigate, loading]);
   
@@ -457,7 +459,8 @@ const AppContent = () => {
         email: decodeURIComponent(emailParam),
         resetKey: resetKey
       });
-      setCurrentView('reset-password');
+      // The view follows from the /reset-password path, and we deliberately do
+      // not navigate: the email and reset_key query parameters must survive.
       // Don't navigate away - we want to keep the URL parameters
     } else if (emailParam) {
       setLoginEmail(emailParam);
@@ -1027,7 +1030,6 @@ const AppContent = () => {
     setAnimationActiveTab(targetView);
     
     setCurrentView(targetView);
-    localStorage.setItem('currentView', targetView);
   };
 
   if (loading) {
