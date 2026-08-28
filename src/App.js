@@ -37,7 +37,6 @@ import { HistoryView } from './components/HistoryView';
 import { VideoHistoryView } from './components/VideoHistoryView';
 import { ThemeSwitcher } from './components/ThemeSwitcher';
 import { WeeklyPrompts } from './components/WeeklyPrompts';
-import { StyleReferences } from './components/StyleReferences';
 import AuthRequired from './components/AuthRequired';
 import { ImageAnalysis } from './components/ImageAnalysis';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -65,7 +64,6 @@ const VIEW_PATHS = {
   history: '/history',
   collections: '/collections',
   weekly: '/weekly',
-  styleRefs: '/style-codes',
   'reset-password': '/reset-password',
 };
 
@@ -1004,7 +1002,7 @@ const AppContent = () => {
     let targetView = view;
     
     // If in video mode and trying to navigate to Animate, Edit, or StyleRefs, redirect to Generate
-    if (isVideoMode && (targetView === 'animate' || targetView === 'edit' || targetView === 'styleRefs')) {
+    if (isVideoMode && (targetView === 'animate' || targetView === 'edit')) {
       targetView = 'generate';
       addToast('This feature is not available in Video mode', 'info');
     }
@@ -1765,19 +1763,6 @@ const AppContent = () => {
         onTopUpClick={handleOpenTopUpModal}
     />
     </AnimationErrorBoundary>
-  </AuthRequired>
-) : currentView === 'styleRefs' ? (
-  <AuthRequired>
-    <StyleReferences 
-      onEdit={handleEdit}
-      onPremiumClick={(planType) => {
-        // If a specific plan type is provided, we'll select it in the modal
-        if (planType) {
-          // Store the selected plan in sessionStorage to be used by PremiumModal
-          sessionStorage.setItem('selectedPremiumPlan', planType);
-        }
-        handleOpenPremiumModal();
-      }} />
   </AuthRequired>
 ) : currentView === 'generate' ? (
   <AuthRequired>

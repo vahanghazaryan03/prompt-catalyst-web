@@ -1181,16 +1181,6 @@ checkAnimationStatus: async (requestId) => {
     }
   },
 
-  getStyleReferences: async () => {
-    try {
-      const response = await api.get('/api/style-references');
-      return response.data;
-    } catch (error) {
-      logger.error('Failed to fetch style references:', error);
-      throw error;
-    }
-  },
-
   // Subscription
   verifySubscription: async (receipt) => {
     try {

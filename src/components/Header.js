@@ -70,7 +70,6 @@ const Header = ({
     { id: 'collections', label: 'Collections', icon: FolderOpen },
     { id: 'history', label: 'History', icon: HistoryIcon },
     { id: 'weekly', label: 'Weekly Prompts', icon: Calendar },
-    //{ id: 'styleRefs', label: 'Style Codes', icon: Palette },
     { id: 'tutorials', label: 'Tutorials', icon: BookOpen, external: true },
    
   ];
@@ -78,7 +77,7 @@ const Header = ({
   // Get filtered navigation items based on video mode
   const filteredNavigationItems = navigationItems.filter(item => {
     // In video mode, hide Animate, Edit, StyleRefs, and Weekly Prompts tabs
-    if (isVideoMode && (item.id === 'animate' || item.id === 'edit' || item.id === 'styleRefs' || item.id === 'weekly')) {
+    if (isVideoMode && (item.id === 'animate' || item.id === 'edit' || item.id === 'weekly')) {
       return false;
     }
     return true;

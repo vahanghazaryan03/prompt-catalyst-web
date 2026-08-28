@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 
 import { 
   ArrowLeft, Book, Search, HelpCircle, ExternalLink,
-  Clapperboard, Calendar, Filter, History, Palette, Star, Command, Image,
+  Clapperboard, Calendar, Filter, History, Star, Command, Image,
   Wand2, Sparkles, X, Coins, FileText, Shield, Play, PencilRuler
 } from 'lucide-react';
 
@@ -21,7 +21,6 @@ import {
   EditSection,
   CollectionsSection,
   HistorySection,
-  StyleReferencesSection,
   WeeklyPromptsSection,
   PromptOperationsSection,
   GenerateSection,
@@ -265,14 +264,8 @@ const HelpPage = () => {
   ];
   
   // Additional sections that are not shown in the main navigation but can be accessed programmatically
-  const hiddenSections = [
-    { 
-      id: 'style-references', 
-      title: 'Style References', 
-      icon: <Palette className="w-4 h-4" />,
-      component: StyleReferencesSection
-    }
-  ];
+  // Sections reachable by search or direct link but absent from the sidebar.
+  const hiddenSections = [];
 
   // Combined sections for search and rendering purposes
   const allSections = [...sections, ...hiddenSections];

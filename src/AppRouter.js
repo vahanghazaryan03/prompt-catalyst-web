@@ -30,7 +30,6 @@ const APP_VIEW_PATHS = [
     '/history',
     '/collections',
     '/weekly',
-    '/style-codes',
     '/reset-password',
 ];
 
