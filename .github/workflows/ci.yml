@@ -1,0 +1,45 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+        env:
+          # CRA treats warnings as errors when CI=true. The build currently
+          # emits warnings that are being cleaned up incrementally; until that
+          # is finished, warnings should not fail the build.
+          CI: false
+
+      - name: Check build output exists
+        run: test -f build/index.html && test -d build/static
+
+  lint:
+    runs-on: ubuntu-latest
+    # Reporting only for now. Flip this off once the warning count reaches zero.
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npx eslint src --ext .js,.jsx --max-warnings 0

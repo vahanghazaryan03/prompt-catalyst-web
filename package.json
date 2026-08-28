@@ -29,7 +29,9 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "lint": "eslint src --ext .js,.jsx",
+    "deploy": "bash scripts/deploy.sh"
   },
   "eslintConfig": {
     "extends": [
@@ -53,5 +55,9 @@
     "autoprefixer": "^10.4.17",
     "postcss": "^8.4.35",
     "tailwindcss": "^3.4.1"
+  },
+  "engines": {
+    "node": ">=20 <21",
+    "npm": ">=10"
   }
 }
