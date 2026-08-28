@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback, Suspense, lazy } from 'react';
 import { preloadManager } from './utils/assetCache';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { CollectionsProvider } from './contexts/CollectionsContext';
@@ -8,8 +8,6 @@ import { ToastProvider, useToast } from './contexts/ToastContext';
 import { preparePromptSettings, initializeFirstTimeSettings } from './utils/settings';
 import apiService from './services/api';
 // Import our new components
-import VideoWeeklyPrompts from './components/VideoWeeklyPrompts';
-import Edit from './components/Edit';
 // Import for the API service modifications we'll need
 import { usePremiumModal } from './hooks/usePremiumModal';
 import ResetPassword from './components/ResetPassword';
@@ -31,12 +29,7 @@ import { LoginModal } from './components/LoginModal';
 import PremiumModal from './components/PremiumModal';
 import TopUpModal from './components/TopUpModal';
 import CollectionsSidebar from './components/CollectionsSidebar';
-import CollectionsView from './components/CollectionsView';
-import VideoCollectionsView from './components/VideoCollectionsView';
-import { HistoryView } from './components/HistoryView';
-import { VideoHistoryView } from './components/VideoHistoryView';
 import { ThemeSwitcher } from './components/ThemeSwitcher';
-import { WeeklyPrompts } from './components/WeeklyPrompts';
 import AuthRequired from './components/AuthRequired';
 import { ImageAnalysis } from './components/ImageAnalysis';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -44,14 +37,24 @@ import { WeeklyPromptsProvider } from './contexts/WeeklyPromptsContext';
 import { VideoHistoryProvider } from './contexts/VideoHistoryContext';
 import useAnimationStore from './contexts/AnimationStore';
 import { loadSettings, saveSettings } from './utils/settings';
-import Generate from './components/Generate';
-import VideoGenerate from './components/VideoGenerate';
 import MaintenanceAnnouncement from './components/MaintenanceAnnouncement';
 
 import EmptyChat from './components/EmptyChat';
-import Animate from './components/Animate';
 import AnimationErrorBoundary from './components/AnimationErrorBoundary';
 import { logger } from './utils/logger';
+
+// Deferred views. Roughly 430KB of source between them, and only one is ever
+// on screen — previously every visitor downloaded all ten before first paint.
+const VideoWeeklyPrompts = lazy(() => import('./components/VideoWeeklyPrompts'));
+const Edit = lazy(() => import('./components/Edit'));
+const CollectionsView = lazy(() => import('./components/CollectionsView'));
+const VideoCollectionsView = lazy(() => import('./components/VideoCollectionsView'));
+const HistoryView = lazy(() => import('./components/HistoryView').then((m) => ({ default: m.HistoryView })));
+const VideoHistoryView = lazy(() => import('./components/VideoHistoryView').then((m) => ({ default: m.VideoHistoryView })));
+const WeeklyPrompts = lazy(() => import('./components/WeeklyPrompts').then((m) => ({ default: m.WeeklyPrompts })));
+const Generate = lazy(() => import('./components/Generate'));
+const VideoGenerate = lazy(() => import('./components/VideoGenerate'));
+const Animate = lazy(() => import('./components/Animate'));
 
 // Every view is a URL. Chat lives at the root and the rest are real paths, so
 // the app is deep-linkable, the back button works, and the current view
@@ -1534,6 +1537,12 @@ const AppContent = () => {
             </div>
           )}
   
+          {/*
+            One boundary for every deferred view. They are mutually exclusive —
+            only one is ever on screen — so a single fallback is enough, and it
+            keeps switching between them from flashing separate loaders.
+          */}
+          <Suspense fallback={<FullScreenLoader />}>
           {currentView === 'collections' && (
             <AuthRequired>
               {isVideoMode ? (
@@ -1829,6 +1838,7 @@ const AppContent = () => {
     }} 
   />
 ) : null}
+          </Suspense>
         </div>
       </div>
   

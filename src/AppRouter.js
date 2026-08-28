@@ -1,20 +1,45 @@
 // AppRouter.js
-import React from 'react';
+import React, { Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import App from './App';
-import { HelpPage } from './components/help';
-import { LegalHub, PrivacyPolicy, TermsOfService } from './components/legal';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { ToastProvider } from './contexts/ToastContext';
+import FullScreenLoader from './components/loading/FullScreenLoader';
 
-import SubscriptionSuccessWrapper from './components/SubscriptionSuccessWrapper';
-import Tutorials from './components/tutorials/Tutorials';
+/**
+ * The standalone pages are loaded on demand.
+ *
+ * Help, Tutorials and Legal are roughly 330KB of source between them and are
+ * never needed to use the app — most visitors never open any of them. Loading
+ * them eagerly meant every visitor downloaded all three before the first paint.
+ *
+ * App itself stays eager: it is what the root path renders, so deferring it
+ * would only add a round trip before anything appeared.
+ */
+const HelpPage = lazy(() =>
+    import('./components/help').then((m) => ({ default: m.HelpPage }))
+);
+const LegalHub = lazy(() =>
+    import('./components/legal').then((m) => ({ default: m.LegalHub }))
+);
+const PrivacyPolicy = lazy(() =>
+    import('./components/legal').then((m) => ({ default: m.PrivacyPolicy }))
+);
+const TermsOfService = lazy(() =>
+    import('./components/legal').then((m) => ({ default: m.TermsOfService }))
+);
+const Tutorials = lazy(() => import('./components/tutorials/Tutorials'));
+const SubscriptionSuccessWrapper = lazy(() =>
+    import('./components/SubscriptionSuccessWrapper')
+);
 
 // Wrapper component for pages that need theme support
 const ThemedPageWrapper = ({ children }) => (
     <ThemeProvider>
         <ToastProvider>
-            {children}
+            <Suspense fallback={<FullScreenLoader />}>
+                {children}
+            </Suspense>
         </ToastProvider>
     </ThemeProvider>
 );
