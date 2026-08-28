@@ -5,6 +5,28 @@ import { logger } from '../utils/logger';
 
 const API_BASE_URL = 'https://catalystmedia.ai/promptcatalystfreedemo';
 
+/**
+ * The reworked API. Routes are moved here one group at a time; everything not
+ * listed below still goes to the legacy server above.
+ *
+ * Reverting a group is a one-line change: point its calls back at `api`.
+ *
+ * Migrated so far: weekly prompts (read-only, static JSON, verified
+ * byte-identical to the legacy responses).
+ */
+const NEW_API_BASE_URL = 'https://catalystmedia.ai/pctest';
+
+/**
+ * Client for public content. Deliberately without the token interceptors on
+ * `api`: this data needs no authentication, so a request for it should never
+ * trigger a token refresh or a logout.
+ */
+const contentApi = axios.create({
+  baseURL: NEW_API_BASE_URL,
+  timeout: 15000,
+  headers: { Accept: 'application/json' },
+});
+
 const api = axios.create({
   baseURL: API_BASE_URL,
   timeout: 60000, // 60 second timeout
@@ -1131,7 +1153,7 @@ checkAnimationStatus: async (requestId) => {
   // Content and Resources
   getWeeklyPrompts: async () => {
     try {
-      const response = await api.get('/api/weekly-prompts-new');
+      const response = await contentApi.get('/api/weekly-prompts-new');
       return response.data;
     } catch (error) {
       logger.error('Failed to fetch weekly prompts:', error);
@@ -1143,7 +1165,7 @@ checkAnimationStatus: async (requestId) => {
   getWeeklyVideoPrompts: async () => {
     try {
       // Try to use the video-specific endpoint if it exists
-      const response = await api.get('/api/weekly-video-prompts');
+      const response = await contentApi.get('/api/weekly-video-prompts');
       return response.data;
     } catch (error) {
       logger.error('Failed to fetch weekly video prompts:', error);
@@ -1155,7 +1177,7 @@ checkAnimationStatus: async (requestId) => {
   getSimplifiedVideoPrompts: async () => {
     try {
       // First try to get video-specific prompts
-      const response = await api.get('/api/weekly-video-prompts');
+      const response = await contentApi.get('/api/weekly-video-prompts');
       
       // Transform to simplified format
       if (response.data && response.data.weeklyPrompts) {
