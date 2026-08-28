@@ -1,3 +1,4 @@
+import authService from './authService';
 /**
  * Service for handling social authentication flows
  */
@@ -17,130 +18,55 @@ const getUserExistsEndpoint = (provider, email) => {
   return `${baseUrl}/?rest_route=/simple-jwt-login/v1/user-exists&email=${encodeURIComponent(email)}`;
 };
 
+/** The user from the most recent Google sign-in, for checkIfNewUser. */
+let lastSignIn = null;
+
 const socialAuthService = {
   /**
    * Exchange Google ID token for WordPress JWT
    */
-  exchangeGoogleTokenForJWT: async (idToken) => {
-    try {
-      const endpoint = getEndpointUrl('google', 'id_token', idToken);
-      
-      const response = await fetch(endpoint, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        credentials: 'include'
-      });
-      
-      // Get response as text first to safely handle different response formats
-      const responseText = await response.text();
-      
-      // Try to parse as JSON if possible
-      let data;
-      try {
-        data = JSON.parse(responseText);
-      } catch (e) {
-        throw new Error('Invalid response format from server');
-      }
-      
-      if (!response.ok) {
-        throw new Error(data.message || `Authentication error (${response.status})`);
-      }
-      
-      // Check for token in various possible formats
-      const token = data.jwt || data.token || data.data?.jwt || data.data?.token;
-      
-      if (!token) {
-        throw new Error('No authentication token returned from server');
-      }
-      
-      return token;
-    } catch (error) {
-      throw error;
-    }
-  },
-  
   /**
-   * Check if this appears to be a new user
+   * Exchanges the Google id token for a Supabase session.
+   *
+   * Supabase is configured with the same Google client id the site has always
+   * used, and the id token flow needs no redirect URI, so the button, the popup
+   * and the consent screen are unchanged from the user's point of view. Google
+   * accounts never had a password, so unlike email sign-in nothing about this
+   * migration is visible to them.
+   *
+   * The signed-in user is remembered so checkIfNewUser can answer without a
+   * second round trip.
    */
-  checkIfNewUser: async (idToken) => {
-    try {
-      // Parse the ID token to get the email
-      const tokenParts = idToken.split('.');
-      if (tokenParts.length !== 3) {
-        return false; // Invalid token format
-      }
-      
-      // Decode the payload (second part of token)
-      const payload = JSON.parse(atob(tokenParts[1]));
-      const email = payload.email;
-      
-      if (!email) {
-        return false; // No email in token
-      }
-      
-      // Check if the user exists in WordPress
-      const endpoint = getUserExistsEndpoint('google', email);
-      
-      try {
-        const response = await fetch(endpoint, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        });
-        
-        const data = await response.json();
-        
-        // If the response indicates the user doesn't exist, it's a new user
-        return !data.exists;
-      } catch (error) {
-        // If there's an error checking, assume it might be a new user
-        return true;
-      }
-    } catch (error) {
-      return false;
-    }
+  exchangeGoogleTokenForJWT: async (idToken) => {
+    const session = await authService.signInWithGoogle(idToken);
+    lastSignIn = session?.user ?? null;
+    return session.access_token;
   },
-  
+
   /**
-   * Handle the new user creation and login flow
-   * This is a new function to handle the scenario when a new account is created
+   * Whether the account was created by the sign-in that just happened.
+   *
+   * Only drives the welcome message. An account carrying wp_user_id came from
+   * the WordPress import and is by definition not new — which matters, because
+   * every imported account was created on the migration date and would
+   * otherwise look brand new.
+   */
+  checkIfNewUser: async () => {
+    if (!lastSignIn) return false;
+    if (lastSignIn.app_metadata?.wp_user_id) return false;
+    const createdAt = Date.parse(lastSignIn.created_at ?? '');
+    if (Number.isNaN(createdAt)) return false;
+    return Date.now() - createdAt < 60_000;
+  },
+
+  /**
+   * Kept for the existing call site. Supabase creates the account on first
+   * sign-in, so there is no separate creation step any more.
    */
   handleNewUserCreation: async (idToken) => {
-    try {
-      // Step 1: Check if this is a new user
-      const isNewUser = await socialAuthService.checkIfNewUser(idToken);
-      
-      if (isNewUser) {
-        // First try to exchange the token - this creates the user
-        try {
-          await socialAuthService.exchangeGoogleTokenForJWT(idToken);
-        } catch (error) {
-          // If it's a user already exists error, we can continue
-          if (!error.message.includes('already exists')) {
-            throw error;
-          }
-        }
-        
-        // Wait a brief moment for WordPress to process the creation
-        await new Promise(resolve => setTimeout(resolve, 1500));
-        
-        // Now try again with the same token - this should log in the newly created user
-        return await socialAuthService.exchangeGoogleTokenForJWT(idToken);
-      }
-      
-      // If not a new user, proceed with normal token exchange
-      return await socialAuthService.exchangeGoogleTokenForJWT(idToken);
-    } catch (error) {
-      throw error;
-    }
+    return socialAuthService.exchangeGoogleTokenForJWT(idToken);
   },
-  
-  /**
-   * Exchange Google authorization code for ID token
-   */
+
   exchangeCodeForIdToken: async (code) => {
     try {
       const endpoint = getEndpointUrl('google', 'code', code);

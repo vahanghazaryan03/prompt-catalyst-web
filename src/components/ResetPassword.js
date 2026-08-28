@@ -1,10 +1,32 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { EyeIcon, EyeOffIcon, KeyRound } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import apiService from '../services/api';
+import authService from '../services/authService';
+import supabase from '../services/supabaseClient';
 import { logger } from '../utils/logger';
 
-const ResetPassword = ({ resetParams, onSuccess }) => {
+const ResetPassword = ({ onSuccess }) => {
+    /**
+     * The emailed link carries the recovery session in the URL fragment, which
+     * the Supabase client consumes on load. Either it produced a session, in
+     * which case the form can be shown, or the link was stale and it did not.
+     * 'checking' keeps the invalid-link message from flashing while that
+     * resolves.
+     */
+    const [hasRecoverySession, setHasRecoverySession] = useState('checking');
+
+    useEffect(() => {
+        let cancelled = false;
+        supabase.auth.getSession().then(({ data }) => {
+            if (!cancelled) setHasRecoverySession(Boolean(data.session));
+        });
+        // Fires once the fragment has been read, which can be after the check above.
+        const { data: sub } = supabase.auth.onAuthStateChange((event, session) => {
+            if (!cancelled && (event === 'PASSWORD_RECOVERY' || session)) setHasRecoverySession(true);
+        });
+        return () => { cancelled = true; sub.subscription.unsubscribe(); };
+    }, []);
+
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [isResetting, setIsResetting] = useState(false);
@@ -59,8 +81,8 @@ const ResetPassword = ({ resetParams, onSuccess }) => {
           return;
       }
 
-      if (!resetParams?.email || !resetParams?.resetKey) {
-          setError('Invalid reset password link');
+      if (hasRecoverySession !== true) {
+          setError('This password reset link is no longer valid. Request a new one.');
           return;
       }
 
@@ -68,13 +90,9 @@ const ResetPassword = ({ resetParams, onSuccess }) => {
       setError(null);
 
       try {
-          const result = await apiService.resetPassword(
-              resetParams.email,
-              resetParams.resetKey,
-              newPassword
-          );
+          const result = await authService.completePasswordReset(newPassword);
 
-          if (result.success) {
+          if (result.updated) {
               // Navigate to root first to ensure proper routing
               navigate('/', { replace: true });
               // Then call onSuccess callback
@@ -99,7 +117,9 @@ const ResetPassword = ({ resetParams, onSuccess }) => {
       }
   };
 
-    if (!resetParams?.email || !resetParams?.resetKey) {
+    if (hasRecoverySession === 'checking') return null;
+
+    if (!hasRecoverySession) {
         return (
             <div className="flex flex-col items-center justify-center min-h-screen bg-[#171717] p-4">
                 <div className="w-full max-w-md p-8 bg-[#1e1e1e] rounded-xl border border-[#333] shadow-lg">

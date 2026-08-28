@@ -1,5 +1,6 @@
 // src/services/api.js
 import axios from 'axios';
+import authService from './authService';
 import tokenService from './tokenService';
 import { logger } from '../utils/logger';
 
@@ -137,7 +138,7 @@ const apiService = {
         const token = loginResponse.data.data.jwt;
         tokenService.setToken(token);
         
-        const premiumResponse = await api.get('/test-premium');
+        const premiumResponse = await promptApi.get('/test-premium');
         
         return {
             token,
@@ -199,113 +200,44 @@ const apiService = {
     }
 },
 login: async (email, password) => {
-  try {
-      const loginResponse = await api.post('/auth', {
-          email,
-          password
-      });
-      
-      const token = loginResponse.data.data.jwt;
-      tokenService.setToken(token);
-      
-      const premiumResponse = await api.get('/test-premium');
-      
-      return {
-          token,
-          isPremium: premiumResponse.data.is_premium,
-          displayName: premiumResponse.data.display_name,
-          userId: premiumResponse.data.user_id,
-          roles: premiumResponse.data.roles || [] // Add this line
-      };
-  } catch (error) {
-      // Removed logging
-      
-      // Handle email verification error
-      if (error.response?.status === 403 && 
-          error.response.data?.error === 'Email verification required') {
-          throw new Error('email_verification_required');
-      }
+  /**
+   * Signs in against Supabase, not WordPress.
+   *
+   * Accounts imported from WordPress have no password — phpass hashes cannot
+   * be carried across — so an existing user's old password will not work and
+   * they are asked to set a new one. authService turns that into a single
+   * message, because Supabase reports it identically to a wrong password and
+   * asking it apart would mean an endpoint that reveals who has an account.
+   */
+  const session = await authService.signIn(email, password);
 
-      if (error.response?.status === 400) {
-          // Extract error message from nested structure
-          let errorMessage = '';
-          
-          // Check different possible locations of the error message
-          if (error.response.data?.data?.message) {
-              errorMessage = error.response.data.data.message;
-          } else if (error.response.data?.message) {
-              errorMessage = error.response.data.message;
-          } else if (error.response.data?.data?.error) {
-              errorMessage = error.response.data.data.error;
-          } else if (typeof error.response.data?.data === 'string') {
-              errorMessage = error.response.data.data;
-          }
-          
-        // Removed logging
+  /**
+   * The token is passed explicitly rather than relying on the interceptor.
+   * The SDK writes the session to storage as part of signing in, and reading
+   * it back here would depend on that having landed first.
+   */
+  const premiumResponse = await promptApi.get('/test-premium', {
+    headers: { Authorization: `Bearer ${session.access_token}` },
+  });
 
-          // Map specific error messages to error codes
-          if (errorMessage.includes('Wrong user credentials') || 
-              errorMessage.includes('invalid credentials')) {
-              throw new Error('invalid_credentials');
-          }
-          
-          if (errorMessage.includes('user not found') || 
-              errorMessage.includes('invalid username')) {
-              throw new Error('user_not_found');
-          }
-          
-          // If we have an error message but no specific mapping, use it directly
-          if (errorMessage) {
-              throw new Error(errorMessage);
-          }
-          
-          // Fallback for unknown 400 errors
-          throw new Error('invalid_credentials');
-      }
-
-      if (error.request) {
-          throw new Error('network_error');
-      }
-
-      throw new Error('unknown_error');
-  }
-},
-// Add to apiService object
-submitCommunityPrompt: async (formData) => {
-  try {
-    const response = await api.post('/submit-community-prompt', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data'
-      },
-      transformRequest: [function () {
-        return formData;
-      }]
-    });
-    return response.data;
-  } catch (error) {
-    logger.error('Failed to submit community prompt:', error);
-    throw error;
-  }
+  return {
+    token: session.access_token,
+    isPremium: premiumResponse.data.is_premium,
+    displayName: premiumResponse.data.display_name,
+    userId: premiumResponse.data.user_id,
+    roles: premiumResponse.data.roles || [],
+  };
 },
 register: async (email, password, username) => {
   try {
-    const response = await api.post('/register', {
-      email,
-      password,
-      username
-    });
-    return response.data;
+    const { session, needsConfirmation } = await authService.signUp(email, password, username);
+    return { success: true, session, needsConfirmation };
   } catch (error) {
-    logger.debug('Registration error details:', {
-      error: error.response?.data?.error,
-      field: error.response?.data?.field
-    });
-    
-    // Propagate the error with field information
+    // The UI reads .message and .field, so that shape is kept.
     throw {
-      message: error.response?.data?.error || 'Registration failed',
-      field: error.response?.data?.field,
-      status: error.response?.status
+      message: error.message || 'Registration failed',
+      field: error.code === 'user_already_exists' ? 'email' : undefined,
+      code: error.code,
     };
   }
 },
@@ -320,23 +252,10 @@ initiateCreditPurchase: async (packageId) => {
 },
 
 
-// Method to handle subscription success
-handleSubscriptionSuccess: async (sessionId) => {
-  try {
-    const response = await api.post('/verify-subscription', { 
-      session_id: sessionId 
-    });
-    return response.data;
-  } catch (error) {
-    logger.error('Failed to verify successful subscription:', error);
-    throw error;
-  }
-},
-
 // Method to check subscription status - this uses the existing checkPremium method
 checkSubscriptionStatus: async () => {
   try {
-    const response = await api.get('/test-premium');
+    const response = await promptApi.get('/test-premium');
     return {
       isPremium: response.data.is_premium,
       displayName: response.data.display_name,
@@ -347,14 +266,22 @@ checkSubscriptionStatus: async () => {
     throw error;
   }
 },
-  logout: () => {
+  /**
+   * Ends both sessions.
+   *
+   * Clearing the legacy token alone would leave a live Supabase session in
+   * storage, and tokenService prefers that one — so the user would still be
+   * signed in after pressing log out.
+   */
+  logout: async () => {
     tokenService.clearToken();
+    await authService.signOut();
   },
 
   // Modified to handle 403 errors for new users
   checkPremium: async (isNewUser = false) => {
     try {
-      const response = await api.get('/test-premium');
+      const response = await promptApi.get('/test-premium');
       return {
         is_premium: response.data.is_premium,
         display_name: response.data.display_name,
@@ -401,7 +328,7 @@ checkSubscriptionStatus: async () => {
   // Credits
   getCredits: async () => {
     try {
-      const response = await api.get('/credits');
+      const response = await promptApi.get('/credits');
       return {
         credits: response.data.credits,
         resetType: response.data.resetType,
@@ -415,84 +342,27 @@ checkSubscriptionStatus: async () => {
       throw error;
     }
   },
+  /**
+   * Sends the email that lets someone set a password.
+   *
+   * Serves both a forgotten password and an account migrated from WordPress
+   * that never had one. It resolves the same way whether or not the address
+   * has an account, so it cannot be used to discover who is registered.
+   */
   forgotPassword: async (email) => {
-    try {
-      const response = await api.post('/forgot-password', { email });
-      return response.data;
-    } catch (error) {
-      logger.error('Failed to process forgot password request:', error);
-      // Map specific error responses
-      if (error.response?.status === 404) {
-        throw new Error('invalid_email');
-      }
-      throw error;
-    }
+    return authService.requestPasswordReset(email);
   },
-  
-  resetPassword: async (email, resetKey, newPassword) => {
-    try {
-        // Removed logging
 
-        const response = await api.post('/reset-password', {
-            email,
-            reset_key: resetKey,
-            new_password: newPassword
-        });
-
-        // Removed logging
-
-        return response.data;
-    } catch (error) {
-        logger.error('Password reset error');
-
-        // Enhanced error handling
-        if (error.response?.status === 400) {
-            throw new Error('invalid_reset_key');
-        } else if (error.response?.status === 404) {
-            throw new Error('user_not_found');
-        } else if (error.response?.status === 401) {
-            throw new Error('expired_reset_key');
-        }
-        
-        throw error;
-    }
-},
-  // Prompt Generation
-  generatePromptDeepseek: async (settings) => {
-    try {
-      // Modify settings to ensure backend compatibility
-      const modifiedSettings = { ...settings };
-      
-      // Convert array-based settings to string format for backend compatibility
-      if (modifiedSettings.styles && Array.isArray(modifiedSettings.styles) && modifiedSettings.styles.length > 0) {
-        // Join the styles array with commas
-        modifiedSettings.combinedStyles = modifiedSettings.styles.join(',');
-      }
-      
-      if (modifiedSettings.lightingEffects && Array.isArray(modifiedSettings.lightingEffects) && modifiedSettings.lightingEffects.length > 0) {
-        // Join the lighting effects array with commas
-        modifiedSettings.combinedLighting = modifiedSettings.lightingEffects.join(',');
-      }
-      
-      if (modifiedSettings.cameraAngles && Array.isArray(modifiedSettings.cameraAngles) && modifiedSettings.cameraAngles.length > 0) {
-        // Join the camera angles array with commas
-        modifiedSettings.combinedCameraAngles = modifiedSettings.cameraAngles.join(',');
-      }
-      
-      // Ensure promptAmount is set and is a number between 1 and 10
-      if (modifiedSettings.promptAmount !== undefined) {
-        modifiedSettings.promptAmount = Math.min(Math.max(1, parseInt(modifiedSettings.promptAmount)), 10);
-      } else {
-        modifiedSettings.promptAmount = 3; // Default to 3 if not specified
-      }
-      
-      const response = await promptApi.post('/generate-prompt-deepseek', modifiedSettings);
-      
-      return response.data;
-    } catch (error) {
-      logger.error('Failed to generate prompt with DeepSeek:', error);
-      throw error;
-    }
+  /**
+   * Sets the new password after the emailed link has been followed.
+   *
+   * The link carries a recovery session, which the Supabase client picks up
+   * from the URL, so the email and reset key the old flow needed are no longer
+   * part of it. The arguments are kept so existing callers still compile.
+   */
+  resetPassword: async (_email, _resetKey, newPassword) => {
+    await authService.completePasswordReset(newPassword);
+    return { success: true };
   },
   generatePrompt: async (settings) => {
     try {
@@ -690,7 +560,7 @@ checkSubscriptionStatus: async () => {
       };
       
       // Make the API request
-      const response = await api.post('/generate-text-to-video', payload);
+      const response = await promptApi.post('/generate-text-to-video', payload);
       
       // Return the response data
       return response.data;
@@ -968,7 +838,7 @@ generateAnimation: async (imageFile, prompt, movementId, duration, metadata = {}
       return response.data;
     } catch (directError) {
       // Fall back to the api instance if direct request fails
-      const response = await api.post('/generate-animation', formData, {
+      const response = await promptApi.post('/generate-animation', formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         },
@@ -1048,7 +918,7 @@ checkAnimationStatus: async (requestId) => {
 },
   generatePreview: async (prompt) => {
   try {
-    const response = await api.post('/generate-preview', { prompt: String(prompt).trim() });
+    const response = await promptApi.post('/generate-preview', { prompt: String(prompt).trim() });
     
     // Ensure we're returning in the expected format
     if (!response.data || (!response.data.imageUrl && typeof response.data !== 'string')) {
@@ -1075,7 +945,7 @@ checkAnimationStatus: async (requestId) => {
   // Image Analysis
   analyzeImage: async (formData) => {
     try {
-      const response = await api.post('/analyze-image', formData, {
+      const response = await promptApi.post('/analyze-image', formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         },
@@ -1092,7 +962,7 @@ checkAnimationStatus: async (requestId) => {
 
   suggestAnimationPrompt: async (formData) => {
     try {
-      const response = await api.post('/suggest-animation-prompt', formData, {
+      const response = await promptApi.post('/suggest-animation-prompt', formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         },
@@ -1124,7 +994,7 @@ checkAnimationStatus: async (requestId) => {
         }
       }
       
-      const response = await api.post('/edit-image', formData, {
+      const response = await promptApi.post('/edit-image', formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         },
@@ -1214,35 +1084,6 @@ checkAnimationStatus: async (requestId) => {
     }
   },
 
-  // Subscription
-  verifySubscription: async (receipt) => {
-    try {
-      const response = await api.post('/verify-subscription', { receipt });
-      return response.data;
-    } catch (error) {
-      logger.error('Failed to verify subscription:', error);
-      throw error;
-    }
-  },
-
-
-  // File Upload
-  uploadImage: async (formData) => {
-    try {
-      const response = await api.post('/api/upload-image', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        },
-        transformRequest: [function () {
-          return formData;
-        }]
-      });
-      return response.data;
-    } catch (error) {
-      logger.error('Failed to upload image:', error);
-      throw error;
-    }
-  },
 
   // Animation History API Methods
   getUserAnimations: async () => {

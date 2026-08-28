@@ -401,11 +401,13 @@ const AppContent = () => {
         return;
       }
 
-      // /reset-password only means anything with its query parameters.
-      if (pathname === '/reset-password' && !params.get('reset_key')) {
-        navigate('/', { replace: true });
-        return;
-      }
+      /**
+       * /reset-password is no longer gated here. Supabase puts the recovery
+       * session in the URL fragment rather than a query parameter, and the
+       * client consumes that fragment as it loads, so there is nothing stable
+       * to test for at this point. The page itself decides whether it has a
+       * recovery session and says so if it does not.
+       */
 
       switch (pathname) {
         case '/premium':
@@ -1831,7 +1833,6 @@ const AppContent = () => {
   </AuthRequired>
 ) : currentView === 'reset-password' ? (
   <ResetPassword 
-    resetParams={resetPasswordParams}
     onSuccess={() => {
       handleViewChange('chat');
       setIsLoginModalOpen(true);
