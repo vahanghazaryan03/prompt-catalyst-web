@@ -5,6 +5,10 @@ import { logger } from '../utils/logger';
 
 const WORDPRESS_URL = 'https://catalystmedia.ai';
 
+// Checkout is served by the reworked API, not by WordPress. Same request and
+// response shape as the admin-post handler it replaces.
+const API_URL = 'https://catalystmedia.ai/pctest';
+
 const subscriptionService = {
     initiateStripeCheckout: async (plan, isAnnual = false, preload = false) => {
         try {
@@ -17,22 +21,22 @@ const subscriptionService = {
             const currentDomain = window.location.origin;
             const successUrl = `${currentDomain}/subscription-success`;
             
-            const response = await fetch(`${WORDPRESS_URL}/wp-admin/admin-post.php?action=stripe_checkout`, {
+            const response = await fetch(`${API_URL}/billing/checkout`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json',
-                    'X-Requested-With': 'XMLHttpRequest'
+                    'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
                     success_url: successUrl,
                     cancel_url: currentDomain,
                     yearly: isAnnual,
                     plan: plan, // 'premium' or 'pro' or 'ultimate'
-                    is_upgrade: plan === 'pro' || plan === 'ultimate', // Flag for upgrade
-                    preload: preload // Add preload flag
+                    is_upgrade: plan === 'pro' || plan === 'ultimate',
+                    preload: preload
                 }),
-                credentials: 'include',
+                // No credentials: the API authenticates by bearer token, and sending
+                // cookies cross-origin would need Allow-Credentials on the response.
                 mode: 'cors'
             });
             
