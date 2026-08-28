@@ -1,0 +1,19 @@
+# Normalise text files to LF in the repository; the working tree keeps whatever
+# the platform prefers.
+* text=auto
+
+# Shell scripts must stay LF even in the working tree. With core.autocrlf=true
+# on Windows a fresh clone would otherwise produce CRLF, and bash fails with
+# "$'\r': command not found" the first time anyone runs npm run deploy.
+*.sh text eol=lf
+
+# Binary assets — never touch these.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.webm binary
+*.mp4 binary
+*.woff binary
+*.woff2 binary
