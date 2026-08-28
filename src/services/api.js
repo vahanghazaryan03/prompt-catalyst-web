@@ -11,8 +11,12 @@ const API_BASE_URL = 'https://catalystmedia.ai/promptcatalystfreedemo';
  *
  * Reverting a group is a one-line change: point its calls back at `api`.
  *
- * Migrated so far: weekly prompts (read-only, static JSON, verified
- * byte-identical to the legacy responses).
+ * Migrated so far:
+ *   - weekly prompts (read-only static JSON, verified byte-identical)
+ *   - all nine prompt-generation routes
+ *
+ * Still on the legacy server: auth, credits, billing, and the image and video
+ * generation routes.
  */
 const NEW_API_BASE_URL = 'https://catalystmedia.ai/pctest';
 
@@ -27,71 +31,89 @@ const contentApi = axios.create({
   headers: { Accept: 'application/json' },
 });
 
-const api = axios.create({
-  baseURL: API_BASE_URL,
-  timeout: 60000, // 60 second timeout
-  headers: {
-    'Accept': 'application/json',
-  },
-  withCredentials: false,
-  xsrfCookieName: 'XSRF-TOKEN',
-  xsrfHeaderName: 'X-XSRF-TOKEN',
-});
+/**
+ * Builds an authenticated client.
+ *
+ * Both the legacy server and the reworked one need the same token handling, and
+ * copying the interceptors would let the two drift apart. Note the retry
+ * resolves through `client` rather than a fixed instance — the original code
+ * retried through `api` by name, which would have sent a refreshed request to
+ * the wrong server once a second client existed.
+ */
+const createAuthenticatedClient = (baseURL) => {
+  const client = axios.create({
+    baseURL,
+    timeout: 60000, // 60 second timeout
+    headers: {
+      'Accept': 'application/json',
+    },
+    withCredentials: false,
+    xsrfCookieName: 'XSRF-TOKEN',
+    xsrfHeaderName: 'X-XSRF-TOKEN',
+  });
 
-// Request interceptor to add token and handle refresh
-api.interceptors.request.use(
-  async (config) => {
-    // Skip token for auth endpoints
-    if (config.url.includes('/auth') || config.url.includes('/register')) {
-      return config;
-    }
-
-    // Ensure fresh token before request
-    const token = await tokenService.ensureFreshToken();
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    
-    // Remove problematic headers that might cause CORS issues
-    if (config.headers) {
-      // These headers might cause preflight CORS issues
-      const problematicHeaders = ['Cache-Control', 'Pragma', 'Expires'];
-      problematicHeaders.forEach(header => {
-        if (config.headers[header]) {
-          delete config.headers[header];
-        }
-      });
-    }
-    
-    return config;
-  },
-  (error) => Promise.reject(error)
-);
-
-// Response interceptor to handle authentication errors
-api.interceptors.response.use(
-  (response) => response,
-  async (error) => {
-    const originalRequest = error.config;
-    
-    if (error.response?.status === 401 && !originalRequest._retry) {
-      originalRequest._retry = true;
-      try {
-        // Try refreshing token
-        const newToken = await tokenService.refreshToken();
-        if (newToken) {
-          originalRequest.headers.Authorization = `Bearer ${newToken}`;
-          return api(originalRequest);
-        }
-      } catch (refreshError) {
-        // If refresh fails, proceed with logout
-        tokenService.clearToken();
-        window.dispatchEvent(new Event('tokenExpired'));
+  // Request interceptor to add token and handle refresh
+  client.interceptors.request.use(
+    async (config) => {
+      // Skip token for auth endpoints
+      if (config.url.includes('/auth') || config.url.includes('/register')) {
+        return config;
       }
+
+      // Ensure fresh token before request
+      const token = await tokenService.ensureFreshToken();
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
+
+      // Remove problematic headers that might cause CORS issues
+      if (config.headers) {
+        // These headers might cause preflight CORS issues
+        const problematicHeaders = ['Cache-Control', 'Pragma', 'Expires'];
+        problematicHeaders.forEach(header => {
+          if (config.headers[header]) {
+            delete config.headers[header];
+          }
+        });
+      }
+
+      return config;
+    },
+    (error) => Promise.reject(error)
+  );
+
+  // Response interceptor to handle authentication errors
+  client.interceptors.response.use(
+    (response) => response,
+    async (error) => {
+      const originalRequest = error.config;
+
+      if (error.response?.status === 401 && !originalRequest._retry) {
+        originalRequest._retry = true;
+        try {
+          // Try refreshing token
+          const newToken = await tokenService.refreshToken();
+          if (newToken) {
+            originalRequest.headers.Authorization = `Bearer ${newToken}`;
+            return client(originalRequest);
+          }
+        } catch (refreshError) {
+          // If refresh fails, proceed with logout
+          tokenService.clearToken();
+          window.dispatchEvent(new Event('tokenExpired'));
+        }
+      }
+      return Promise.reject(error);
     }
-    return Promise.reject(error);
-  }
-);
+  );
+
+  return client;
+};
+
+const api = createAuthenticatedClient(API_BASE_URL);
+
+/** Authenticated client for routes already moved to the reworked service. */
+const promptApi = createAuthenticatedClient(NEW_API_BASE_URL);
 
 const apiService = {
   // Authentication
@@ -473,7 +495,7 @@ checkSubscriptionStatus: async () => {
         modifiedSettings.promptAmount = 3; // Default to 3 if not specified
       }
       
-      const response = await api.post('/generate-prompt-deepseek', modifiedSettings);
+      const response = await promptApi.post('/generate-prompt-deepseek', modifiedSettings);
       
       return response.data;
     } catch (error) {
@@ -509,7 +531,7 @@ checkSubscriptionStatus: async () => {
         modifiedSettings.promptAmount = 3; // Default to 3 if not specified
       }
       
-      const response = await api.post('/generate-prompt', modifiedSettings);
+      const response = await promptApi.post('/generate-prompt', modifiedSettings);
       
       return response.data;
     } catch (error) {
@@ -556,7 +578,7 @@ checkSubscriptionStatus: async () => {
         nextSceneDetails: nextSceneText
       };
       
-      const response = await api.post('/generate-next-scene', request);
+      const response = await promptApi.post('/generate-next-scene', request);
       
       return response.data;
     } catch (error) {
@@ -597,7 +619,7 @@ checkSubscriptionStatus: async () => {
       // Log final parameters being sent to the API
       // Removed logging
       
-      const response = await api.post('/generate-video-prompt', apiParams);
+      const response = await promptApi.post('/generate-video-prompt', apiParams);
       return response.data;
     } catch (error) {
       logger.error('Failed to generate video prompt:', error);
@@ -608,7 +630,7 @@ checkSubscriptionStatus: async () => {
   generateVariations: async (prompt) => {
     try {
       // Make sure we're only sending the prompt
-      const response = await api.post('/generate-variations', {
+      const response = await promptApi.post('/generate-variations', {
         prompt: String(prompt).trim()
       });
       return response.data;
@@ -620,7 +642,7 @@ checkSubscriptionStatus: async () => {
 
   generateExtended: async (prompt, additionalDetails) => {
     try {
-      const response = await api.post('/generate-extended', {
+      const response = await promptApi.post('/generate-extended', {
         prompt,
         additionalDetails
       });
@@ -633,7 +655,7 @@ checkSubscriptionStatus: async () => {
 
   generateShortened: async (prompt) => {
     try {
-      const response = await api.post('/generate-shortened', { prompt });
+      const response = await promptApi.post('/generate-shortened', { prompt });
       return response.data;
     } catch (error) {
       logger.error('Failed to generate shortened prompt:', error);
@@ -643,7 +665,7 @@ checkSubscriptionStatus: async () => {
 
   editPrompt: async (originalPrompt, editInstructions) => {
     try {
-      const response = await api.post('/edit-prompt', {
+      const response = await promptApi.post('/edit-prompt', {
         originalPrompt,
         editInstructions
       });
@@ -656,7 +678,7 @@ checkSubscriptionStatus: async () => {
 
   generateRandomPrompts: async () => {
     try {
-      const response = await api.post('/generate-random-prompts');
+      const response = await promptApi.post('/generate-random-prompts');
       return response.data;
     } catch (error) {
       logger.error('Failed to generate random prompts:', error);
