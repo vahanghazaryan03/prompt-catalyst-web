@@ -66,13 +66,6 @@ const MODEL_EXAMPLES = {
     '/examples/hidream-fast/example-4.png',
   ],
   
-  // GPT Image model examples
-  'gpt-image-1': [
-    '/examples/gpt-image/example-1.png',
-    '/examples/gpt-image/example-2.png',
-    '/examples/gpt-image/example-3.png',
-    '/examples/gpt-image/example-4.png',
-  ],
   
   'juggernaut-flux-lightning': [
     '/examples/juggernaut-lightning/example-1.png',

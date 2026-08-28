@@ -28,7 +28,6 @@ import {
   Maximize2,
   Minimize2
 } from 'lucide-react';
-import OpenAISVGIcon from './icons/OpenAISVGIcon';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 import apiService from '../services/api';
@@ -109,16 +108,6 @@ const MODELS = [
       creditCost: 10
   },
   
-  {
-      value: 'gpt-image-1',
-      label: 'GPT Image 1',
-      icon: OpenAISVGIcon,
-      description: 'OpenAI-powered image generation model',
-      proOnly: true, // Changed to true to move to Advanced Models section
-      requiresPro: true, // Property to require Pro access
-      creditCost: 80
-      
-  },
  
   { 
     value: 'juggernaut-flux-lightning',
@@ -267,7 +256,7 @@ const Generate = ({
     }
     
     // Also check if this is a special model-only ratio but we're on a standard model
-    const specialModels = ['flux-pro-1.1-ultra', 'gpt-image-1', 'seedream-4.0'];
+    const specialModels = ['flux-pro-1.1-ultra', 'seedream-4.0'];
     const isCurrentModelSpecial = specialModels.includes(model);
     
     if (!isCurrentModelSpecial && isSpecialModelOnlyRatio(selectedAspectRatio)) {
@@ -812,7 +801,7 @@ const Generate = ({
       updateSettings({ model: newModel });
       
       // Define special models that need specific aspect ratios
-      const specialModels = ['flux-pro-1.1-ultra', 'gpt-image-1', 'seedream-4.0'];
+      const specialModels = ['flux-pro-1.1-ultra', 'seedream-4.0'];
       const isCurrentModelSpecial = specialModels.includes(currentModel);
       const isNewModelSpecial = specialModels.includes(newModel);
       

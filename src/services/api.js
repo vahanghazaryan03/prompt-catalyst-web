@@ -839,8 +839,6 @@ generateImage: async ({ prompt, width, height, model, numberResults, rawMode }) 
           endpoint = '/generate-flux-image';
       } else if (model === 'imagen') {
           endpoint = '/generate-imagen';
-      } else if (model === 'gpt-image-1') {
-          endpoint = '/generate-gpt-image'; // New endpoint for GPT Image 1
       } else if (model === 'seedream-4.0') {
           // Seedream 4.0 uses its own specific endpoint
           endpoint = '/generate-image'; // Or use a specific endpoint if needed: '/generate-seedream-image'

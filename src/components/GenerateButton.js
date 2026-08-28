@@ -2,7 +2,6 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Loader2, Sparkles, Zap, Camera, Wand2, Palette, BadgePlus, CircleGauge, CircleFadingArrowUpIcon } from 'lucide-react';
 import { Tooltip } from './Tooltip';
-import OpenAISVGIcon from './icons/OpenAISVGIcon';
 
 // Define credit costs for all models
 const MODEL_COSTS = {
@@ -15,8 +14,7 @@ const MODEL_COSTS = {
   'juggernaut-flux-pro': 15,
   'juggernaut-flux-lightning': 5,
   'flux': 10,
-  'flux-schnell': 5,
-  'gpt-image-1': 80
+  'flux-schnell': 5
 };
 
 // Define model icons
@@ -30,8 +28,7 @@ const MODEL_ICONS = {
   'juggernaut-flux-pro': BadgePlus,
   'juggernaut-flux-lightning': Zap,
   'flux': Wand2,
-  'flux-schnell': CircleGauge,
-  'gpt-image-1': OpenAISVGIcon
+  'flux-schnell': CircleGauge
 };
 
 const GenerateButton = ({ onClick, isGenerating, disabled, model, imageCount, showUpgradeButton = false, onPremiumClick }) => {

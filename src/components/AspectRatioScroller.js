@@ -416,88 +416,6 @@ const StandardAspectRatioScroller = ({ selectedRatio, onRatioChange, isPremium =
 };
 
 // GPT Image 1 selector with the 3 specific sizes
-const GPTImage1AspectRatioSelector = ({ selectedRatio, onRatioChange, isMobile }) => {
-  // The only three options for GPT Image 1 - reordered with 1:1 in the middle
-  const options = [
-    { id: 'gpt-2:3', label: '2:3', pixelWidth: 1024, pixelHeight: 1536 },
-    { id: 'gpt-1:1', label: '1:1', pixelWidth: 1024, pixelHeight: 1024 },
-    { id: 'gpt-3:2', label: '3:2', pixelWidth: 1536, pixelHeight: 1024 }
-  ];
-
-  // Ensure we always have a valid ratio selected
-  useEffect(() => {
-    // If the current ratio is not one of the valid options, select 1:1 by default
-    if (!options.some(option => option.id === selectedRatio)) {
-      onRatioChange('gpt-1:1');
-    }
-  }, [selectedRatio, onRatioChange]);
-
-  // Get ratio object based on selected ID
-  const selectedRatioObj = options.find(option => option.id === selectedRatio) || options[0];
-
-  const handleSelect = (ratioId) => {
-    onRatioChange(ratioId);
-  };
-
-  return (
-    <div className="w-full bg-[var(--cardBackground)] rounded-lg p-3 border border-[var(--border)] shadow-lg">
-      <div className="flex justify-between items-center mb-3">
-        <div>
-          <h3 className="text-lg font-medium text-[var(--text)]">Image Sizes</h3>
-          <p className="text-xs text-[var(--textSecondary)] mt-1">GPT Image model only supports these specific sizes</p>
-        </div>
-      </div>
-      
-      {/* Preview area with gradient background - smaller for mobile */}
-      <div className="flex justify-center mb-4">
-        <div className={`relative ${isMobile ? 'w-20 h-20' : 'w-28 h-28'} flex items-center justify-center bg-gradient-to-br from-[var(--dropdownHover)] to-[var(--inputBackground)] rounded-md shadow-inner`}>
-          <div className="absolute inset-0 border border-dashed border-[var(--border)] rounded-md"></div>
-          <div 
-            className="bg-[var(--inputBackground)]/30 backdrop-blur-sm border-2 border-[var(--primary)] rounded-md flex items-center justify-center shadow-lg transition-all duration-300"
-            style={{
-              width: `${selectedRatioObj.id === 'gpt-1:1' ? 80 : (selectedRatioObj.id === 'gpt-3:2' ? 90 : 60)}%`,
-              height: `${selectedRatioObj.id === 'gpt-1:1' ? 80 : (selectedRatioObj.id === 'gpt-2:3' ? 90 : 60)}%`,
-              maxWidth: '120px',
-              maxHeight: '120px'
-            }}
-          >
-            <span className={`text-[var(--text)] font-medium drop-shadow-md ${isMobile ? 'text-xs' : ''}`}>
-              {selectedRatioObj.label}
-            </span>
-          </div>
-        </div>
-      </div>
-      
-      {/* Option buttons in a grid */}
-      <div className="grid grid-cols-3 gap-3">
-        {options.map(option => (
-          <button
-            key={option.id}
-            onClick={() => handleSelect(option.id)}
-            className={`flex flex-col items-center justify-center ${isMobile ? 'p-2' : 'p-3'} rounded-md transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/50 ${
-              selectedRatio === option.id
-                ? 'bg-gradient-to-b from-[var(--primary)]/20 to-[var(--primary)]/10 text-[var(--text)] border border-[var(--primary)]/50 shadow-md transform scale-105'
-                : 'bg-[var(--inputBackground)] text-[var(--text)] hover:text-[var(--text)] hover:bg-[var(--dropdownHover)] border border-[var(--border)]/50'
-            }`}
-          >
-            <div className={`${isMobile ? 'text-lg' : 'text-xl'} font-bold mb-1`}>{option.label}</div>
-            <div className={`${isMobile ? 'text-xs' : 'text-sm'} font-medium`}>
-              {option.pixelWidth}×{option.pixelHeight}
-            </div>
-            <div className={`mt-2 ${isMobile ? 'h-10 w-10' : 'h-12 w-12'} flex items-center justify-center`}>
-              <div className="bg-[var(--border)]/60 rounded-sm border border-[var(--text)]/20"
-                style={{
-                  width: option.id === 'gpt-1:1' ? '80%' : (option.id === 'gpt-3:2' ? '90%' : '60%'),
-                  height: option.id === 'gpt-1:1' ? '80%' : (option.id === 'gpt-2:3' ? '90%' : '60%')
-                }}
-              ></div>
-            </div>
-          </button>
-        ))}
-      </div>
-    </div>
-  );
-};
 
 // Seedream 4.0 selector with scroller interface
 const Seedream4AspectRatioSelector = ({ selectedRatio, onRatioChange, isMobile }) => {
@@ -784,8 +702,6 @@ const AspectRatioScroller = (props) => {
   // Check if we should use one of the specialized selectors
   if (modelType === 'flux-pro-1.1-ultra') {
     return <FluxUltraAspectRatioSelector {...props} isMobile={isMobile} />;
-  } else if (modelType === 'gpt-image-1') {
-    return <GPTImage1AspectRatioSelector {...props} isMobile={isMobile} />;
   } else if (modelType === 'seedream-4.0') {
     return <Seedream4AspectRatioSelector {...props} isMobile={isMobile} />;
   }

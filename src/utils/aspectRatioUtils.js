@@ -10,17 +10,6 @@ export const SPECIAL_MODEL_RATIOS = {
       { id: '21:9-ultra', label: '21:9', width: 21, height: 9, pixelWidth: 2752, pixelHeight: 1536, fixedSize: true }
     ]
   },
-  'gpt-image-1': {
-    square: [
-      { id: 'gpt-1:1', label: '1:1', width: 1, height: 1, pixelWidth: 1024, pixelHeight: 1024, fixedSize: true }
-    ],
-    portrait: [
-      { id: 'gpt-2:3', label: '2:3', width: 2, height: 3, pixelWidth: 1024, pixelHeight: 1536, fixedSize: true }
-    ],
-    landscape: [
-      { id: 'gpt-3:2', label: '3:2', width: 3, height: 2, pixelWidth: 1536, pixelHeight: 1024, fixedSize: true }
-    ]
-  },
   'seedream-4.0': {
     square: [
       { id: 'seedream-1:1', label: '1:1', width: 1, height: 1, pixelWidth: 1024, pixelHeight: 1024, fixedSize: true }
@@ -64,8 +53,6 @@ export const ASPECT_RATIOS = {
 export const isValidRatioForModel = (ratioId, modelType) => {
   if (modelType === 'flux-pro-1.1-ultra') {
     return ['21:9-ultra', '9:21-ultra'].includes(ratioId);
-  } else if (modelType === 'gpt-image-1') {
-    return ['gpt-1:1', 'gpt-2:3', 'gpt-3:2'].includes(ratioId);
   } else if (modelType === 'seedream-4.0') {
     return ['seedream-1:1', 'seedream-9:16', 'seedream-2:3', 'seedream-3:4', 
             'seedream-16:9', 'seedream-21:9', 'seedream-3:2', 'seedream-4:3'].includes(ratioId);
@@ -77,8 +64,6 @@ export const isValidRatioForModel = (ratioId, modelType) => {
 export const getDefaultRatioForModel = (modelType) => {
   if (modelType === 'flux-pro-1.1-ultra') {
     return '21:9-ultra';
-  } else if (modelType === 'gpt-image-1') {
-    return 'gpt-1:1';
   } else if (modelType === 'seedream-4.0') {
     return 'seedream-1:1';
   }
@@ -94,8 +79,6 @@ export const isSpecialModelOnlyRatio = (ratioId) => {
   const specialModelOnlyRatios = [
     // Flux Ultra specific ratios
     '21:9-ultra', '9:21-ultra',
-    // GPT Image 1 specific ratios
-    'gpt-1:1', 'gpt-2:3', 'gpt-3:2',
     // Seedream 4.0 specific ratios
     'seedream-1:1', 'seedream-9:16', 'seedream-2:3', 'seedream-3:4',
     'seedream-16:9', 'seedream-21:9', 'seedream-3:2', 'seedream-4:3'
@@ -224,19 +207,6 @@ export const getRatioFromPixelDimensions = (sizeString, modelType = null) => {
       return '1:1'; // Default to square if parsing fails
     }
     
-    // Handle special cases for GPT Image 1 model ONLY when modelType is specified
-    if (modelType === 'gpt-image-1') {
-      if ((width === 1024 && height === 1024) || 
-          (width === 1536 && height === 1536)) {
-        return 'gpt-1:1';
-      }
-      if (width === 1024 && height === 1536) {
-        return 'gpt-2:3';
-      }
-      if (width === 1536 && height === 1024) {
-        return 'gpt-3:2';
-      }
-    }
     
     // Handle Flux Ultra special cases ONLY when modelType is specified
     if (modelType === 'flux-pro-1.1-ultra') {
