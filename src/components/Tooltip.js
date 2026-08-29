@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { HelpCircle } from 'lucide-react';
 
 export const Tooltip = ({ content, children, compact = false }) => {
   const [isVisible, setIsVisible] = useState(false);

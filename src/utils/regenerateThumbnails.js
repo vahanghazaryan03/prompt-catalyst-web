@@ -1,5 +1,6 @@
 // src/utils/regenerateThumbnails.js
 // Utility to regenerate all thumbnails for existing animations
+import { logger } from './logger';
 
 import { loadAnimationHistory, saveAnimationHistory } from './animationStorage';
 import { generateFalMediaThumbnail } from './falMediaThumbnail';
@@ -23,17 +24,17 @@ export const regenerateAllThumbnails = async () => {
     // Update status in console for user feedback
     const updateStatus = () => {
       const elapsed = ((Date.now() - status.startTime) / 1000).toFixed(1);
-      console.log(
+      logger.debug(
         `Processing: ${status.processed}/${status.total} videos (${status.updated} updated, ${status.errors} errors) - ${elapsed}s elapsed`
       );
     };
 
     // Load animation history
-    console.log('Loading animation history...');
+    logger.debug('Loading animation history...');
     const history = loadAnimationHistory();
 
     if (!Array.isArray(history) || history.length === 0) {
-      console.log('No animations found in history');
+      logger.debug('No animations found in history');
       return { success: true, message: 'No animations to process', count: 0 };
     }
 
@@ -43,7 +44,7 @@ export const regenerateAllThumbnails = async () => {
     );
 
     status.total = animationsWithVideos.length;
-    console.log(`Found ${status.total} animations with video URLs`);
+    logger.debug(`Found ${status.total} animations with video URLs`);
 
     if (status.total === 0) {
       return { success: true, message: 'No videos to process', count: 0 };
@@ -54,7 +55,7 @@ export const regenerateAllThumbnails = async () => {
     const totalBatches = Math.ceil(animationsWithVideos.length / batchSize);
 
     for (let batchIndex = 0; batchIndex < totalBatches; batchIndex++) {
-      console.log(`Processing batch ${batchIndex + 1} of ${totalBatches}...`);
+      logger.debug(`Processing batch ${batchIndex + 1} of ${totalBatches}...`);
 
       const startIndex = batchIndex * batchSize;
       const endIndex = Math.min(startIndex + batchSize, animationsWithVideos.length);
@@ -67,7 +68,7 @@ export const regenerateAllThumbnails = async () => {
         status.processed++;
 
         try {
-          console.log(`Processing animation: ${animation.id} (${animation.url})`);
+          logger.debug(`Processing animation: ${animation.id} (${animation.url})`);
           
           // Check if this is a fal.media URL
           if (animation.url.includes('fal.media')) {
@@ -83,14 +84,14 @@ export const regenerateAllThumbnails = async () => {
                 thumbnail: newThumbnail
               });
               status.updated++;
-              console.log(`✓ Generated new thumbnail for ${animation.id}`);
+              logger.debug(`✓ Generated new thumbnail for ${animation.id}`);
             }
           } else {
             // For non-fal.media URLs, we could implement other thumbnail generation methods here
-            console.log(`Skipping non-fal.media URL: ${animation.url}`);
+            logger.debug(`Skipping non-fal.media URL: ${animation.url}`);
           }
         } catch (error) {
-          console.warn(`Failed to generate thumbnail for animation ${animation.id}:`, error);
+          logger.warn(`Failed to generate thumbnail for animation ${animation.id}:`, error);
           status.errors++;
         }
 
@@ -111,9 +112,9 @@ export const regenerateAllThumbnails = async () => {
 
         // Save the updated history
         saveAnimationHistory(updatedHistory);
-        console.log(`Batch ${batchIndex + 1}: Saved ${updates.length} updated thumbnails`);
+        logger.debug(`Batch ${batchIndex + 1}: Saved ${updates.length} updated thumbnails`);
       } else {
-        console.log(`Batch ${batchIndex + 1}: No thumbnails needed updating`);
+        logger.debug(`Batch ${batchIndex + 1}: No thumbnails needed updating`);
       }
 
       // Wait a bit between batches to keep the UI responsive
@@ -125,7 +126,7 @@ export const regenerateAllThumbnails = async () => {
     // Final status update
     status.inProgress = false;
     const totalTime = ((Date.now() - status.startTime) / 1000).toFixed(1);
-    console.log(
+    logger.debug(
       `Thumbnail regeneration completed in ${totalTime}s: ${status.updated} updated, ${status.errors} errors`
     );
 
@@ -138,7 +139,7 @@ export const regenerateAllThumbnails = async () => {
       time: totalTime
     };
   } catch (error) {
-    console.error('Error during thumbnail regeneration:', error);
+    logger.error('Error during thumbnail regeneration:', error);
     return {
       success: false,
       error: error.message

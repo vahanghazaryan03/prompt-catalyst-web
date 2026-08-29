@@ -1,6 +1,5 @@
-import React, { useState, useCallback, useMemo, useEffect, useRef } from 'react';
+import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import { 
-  ImagePlus, 
   Loader2, 
   XCircle, 
   Info,
@@ -8,9 +7,6 @@ import {
   ChevronDown,
   Wand2,
   Sparkles,
-  Layers,
-  Copy,
-  Download,
   PencilRuler,
   AlertTriangle,
   Cat,
@@ -23,7 +19,6 @@ import { ImageUpload } from './ImageUpload';
 import { useToast } from '../contexts/ToastContext';
 import { useAuth } from '../contexts/AuthContext';
 import { useCredit } from '../contexts/CreditContext';
-import { useEditHistory } from '../contexts/EditContext';
 import { useEditSettings } from '../hooks/useEditSettings';
 import apiService from '../services/api';
 import ContentContainer from './layout/ContentContainer';
@@ -134,7 +129,7 @@ const EmptyState = () => {
 
 // Edit Loading state component - Similar to GenerateEmptyState but themed for editing
 const EditLoadingState = ({ uploadedImage }) => {
-  const [isHovered, setIsHovered] = useState(false);
+  const [setIsHovered] = useState(false);
   
   // Edit-specific messages that cycle during generation
   const generatingMessages = useMemo(() => [

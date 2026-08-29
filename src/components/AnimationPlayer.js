@@ -2,8 +2,6 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { 
   Play, 
   Pause, 
-  Volume2, 
-  VolumeX, 
   Download, 
   RotateCcw, 
   ChevronLeft, 
@@ -49,7 +47,7 @@ const AnimationPlayer = ({
   const [thumbnailError, setThumbnailError] = useState(false);
   const [videoAttempt, setVideoAttempt] = useState(0);
   const [showNativeControls, setShowNativeControls] = useState(false);
-  const [debugInfo, setDebugInfo] = useState({});
+  const [setDebugInfo] = useState({});
   const [localMuted, setLocalMuted] = useState(false); // Add local muted state
   const { addToast } = useToast();
   

@@ -76,7 +76,7 @@ export const useTextToVideo = () => {
 
   // Refs
   const isMounted = useRef(true);
-  const [pollingInterval, setPollingInterval] = useState(null);
+  const [setPollingInterval] = useState(null);
   const [processingCompleted, setProcessingCompleted] = useState(false);
   const thumbnailVideoRef = useRef(null); // Reference for thumbnail generation
 

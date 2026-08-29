@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { RefreshCw, Copy, InboxIcon, ChevronDown, ChevronUp, Play, Pause, Video } from 'lucide-react';
+import { RefreshCw, Copy, ChevronDown, ChevronUp, Play, Pause, Video } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 import { useWeeklyPrompts } from '../contexts/WeeklyPromptsContext';

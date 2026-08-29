@@ -1,6 +1,6 @@
 // src/components/VideoGenerateHistoryContainer.js
 import React, { useState, useEffect, useRef } from 'react';
-import { Trash2, HistoryIcon, RefreshCw, Video, Clock, Calendar, AlertCircle, Loader } from 'lucide-react';
+import { Trash2, HistoryIcon, RefreshCw, Video, Clock, AlertCircle, Loader } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useVideoHistory } from '../hooks/useVideoHistory';
 import useVideoStore from '../contexts/VideoStore';
@@ -14,7 +14,7 @@ const VideoCard = ({ video, onSelect, onDelete, onDownload, isSelected }) => {
   const [isHovered, setIsHovered] = useState(false);
   const [thumbnailSrc, setThumbnailSrc] = useState(null);
   const [isThumbnailLoading, setIsThumbnailLoading] = useState(false);
-  const [thumbnailError, setThumbnailError] = useState(false);
+  const [setThumbnailError] = useState(false);
   const videoRef = useRef(null);
   
   // Format the date to show only what's needed

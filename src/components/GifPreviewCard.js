@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import classNames from 'classnames';
-import { Crown, Lock, ImageOff, Clock } from 'lucide-react';
+import { Lock, ImageOff } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { assetCache } from '../utils/assetCache';
 import { logger } from '../utils/logger';

@@ -1,11 +1,9 @@
 import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react';
 import { 
-  ASPECT_RATIOS,
-  SPECIAL_MODEL_RATIOS, 
+  ASPECT_RATIOS, 
   getPixelDimensionsFromRatio, 
   getRatioDimensions,
-  getCategoryForRatio,
-  getAllRatios
+  getCategoryForRatio
 } from '../utils/aspectRatioUtils';
 import { logger } from '../utils/logger';
 

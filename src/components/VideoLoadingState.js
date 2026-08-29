@@ -17,7 +17,7 @@ const VideoLoadingState = ({
   ], []);
 
   const [currentMessage, setCurrentMessage] = useState(0);
-  const [isHovered, setIsHovered] = useState(false);
+  const [setIsHovered] = useState(false);
 
   useEffect(() => {
     const interval = setInterval(() => {

@@ -5,12 +5,10 @@ import {
   Search, 
   X, 
   Trash2,
-  Clock,
   ChevronDown,
   ChevronUp,
   PencilRuler,
   Filter,
-  Calendar,
   Info,
   Shield
 } from 'lucide-react';

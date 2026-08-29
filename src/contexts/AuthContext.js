@@ -19,8 +19,7 @@ const AUTH_ERROR_MESSAGES = {
     // Social login errors
     'jwt_not_configured': 'Social login is not properly configured. Please contact support.',
     'jwt_generation_failed': 'Failed to generate authentication token. Please try again.',
-    'no_user': 'No user account was found during social login.',
-    'user_not_found': 'User account could not be retrieved.'
+    'no_user': 'No user account was found during social login.'
 };
 
 const AuthContext = createContext(null);

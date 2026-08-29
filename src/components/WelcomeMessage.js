@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Wand2, Sparkles, ImagePlus, Play, FolderPlus } from 'lucide-react';
+import { Wand2, ImagePlus, Play, FolderPlus } from 'lucide-react';
 
 const WelcomeMessage = ({ onClose }) => {
   const [isExiting, setIsExiting] = useState(false);

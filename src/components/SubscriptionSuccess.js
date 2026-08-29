@@ -11,7 +11,7 @@ const SubscriptionSuccess = () => {
     const navigate = useNavigate();
     const { addToast } = useToast();
     const { checkAuthStatus } = useAuth();
-    const [isProcessing, setIsProcessing] = useState(true);
+    const [setIsProcessing] = useState(true);
 
     useEffect(() => {
         const processSubscription = async () => {

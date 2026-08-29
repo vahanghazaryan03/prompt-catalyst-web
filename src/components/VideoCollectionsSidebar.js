@@ -3,7 +3,6 @@ import { useVideoCollections } from '../contexts/VideoCollectionsContext';
 import { Folder, Plus, Trash2, X, Film } from 'lucide-react';
 import { useToast } from '../contexts/ToastContext';
 import { useMediaQuery } from '../hooks/useMediaQuery';
-import DropdownPortal from './DropdownPortal';
 
 const colors = {
   blue: '#3b82f6',

@@ -1,6 +1,6 @@
 // src/components/VideoTrashView.js
 import React, { useState } from 'react';
-import { Trash2, AlertTriangle, RefreshCw, ArrowLeft, Video, Clock } from 'lucide-react';
+import { Trash2, AlertTriangle, ArrowLeft, Video } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import useVideoStore from '../contexts/VideoStore';
 import { useToast } from '../contexts/ToastContext';

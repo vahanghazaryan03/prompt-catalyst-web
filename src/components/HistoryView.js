@@ -6,8 +6,7 @@ import { PreviewImage } from './PreviewImage';
 import MessageActions from './MessageActions';
 import { 
   Search, 
-  Trash2, 
-  Calendar,  
+  Trash2,  
   Video as VideoIcon, 
   Image as ImageIcon,
   Wand2,
@@ -17,12 +16,9 @@ import {
   Minimize2,
   AlertCircle,
   X,
-  ClipboardCopy,
-  Eye,
   Download,
   Upload,
   ShieldCheck,
-  Info,
   Edit
 } from 'lucide-react';
 import { logger } from '../utils/logger';
@@ -224,7 +220,7 @@ export const HistoryView = ({
     try {
       const cached = localStorage.getItem(`preview_${prompt}`);
       if (cached) {
-        const { url, timestamp } = JSON.parse(cached);
+        const { timestamp } = JSON.parse(cached);
         return Date.now() - timestamp <= 24 * 60 * 60 * 1000; // 24 hours
       }
     } catch (error) {

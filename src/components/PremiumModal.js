@@ -2,9 +2,9 @@ import React, { useCallback, useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   X, Check, Loader2, DollarSign,
-  Star, Crown, Zap, List, Film, Settings,
-  History, Rocket, MessageCircle, CreditCard, Clock, Info, PencilRuler,
-  Asterisk, Sparkles, Diamond, Infinity, Video
+  Star, Crown, Zap, List, Film,
+  History, Rocket, MessageCircle, CreditCard, Info, PencilRuler,
+  Asterisk, Sparkles, Diamond, Infinity
 } from 'lucide-react';
 import subscriptionService from '../services/subscriptionService';
 import tokenService from '../services/tokenService';

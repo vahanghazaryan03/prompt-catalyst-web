@@ -2,8 +2,7 @@
 
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { 
-  Move,
-  ImagePlus, 
+  Move, 
   XCircle,
   PlayCircle,
   Loader2, 
@@ -11,23 +10,15 @@ import {
   ChevronUp,
   Cat,
   ChevronDown,
-  Video,
 Zap as Download,
-  Trash2,
-  Share2,
   X,
-  AlertTriangle,
   CircleFadingArrowUpIcon,
   Crown,
-  Sparkles,
-  Text,
-  RotateCcw,
   AlertCircle
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ImageUpload } from './ImageUpload';
 import { useToast } from '../contexts/ToastContext';
-import { Tooltip } from './Tooltip';
 import { useAuth } from '../contexts/AuthContext';
 import { useCredit } from '../contexts/CreditContext';
 import apiService from '../services/api';
@@ -38,8 +29,7 @@ import { useAnimationHistory } from '../hooks/useAnimationHistory';
 import { 
     loadAnimationHistory, 
     saveAnimationHistory,
-    addAnimationToHistory, 
-    removeAnimationFromHistory,
+    addAnimationToHistory,
     createVideoThumbnail,
     createFallbackThumbnail,
     cleanupStorage,

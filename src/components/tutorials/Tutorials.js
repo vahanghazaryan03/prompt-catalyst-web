@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './Tutorials.css';
-import { ChevronLeft, Book, Calendar, User, Clock, ExternalLink, Shield, FileText, Star, Home, ArrowUp } from 'lucide-react';
+import { ChevronLeft, Book, Calendar, User, Clock, Shield, FileText, Home, ArrowUp } from 'lucide-react';
 import { Link, useNavigate, useParams, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import ContentContainer from '../layout/ContentContainer';

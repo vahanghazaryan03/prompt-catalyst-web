@@ -73,7 +73,7 @@ const CollectionsView = ({
           const cacheKey = `preview_${prompt.text}`;
           const cached = localStorage.getItem(cacheKey);
           if (cached) {
-            const { url, timestamp } = JSON.parse(cached);
+            const { timestamp } = JSON.parse(cached);
             // Check if cache is still valid (24 hours)
             if (Date.now() - timestamp <= 24 * 60 * 60 * 1000) {
               return true;

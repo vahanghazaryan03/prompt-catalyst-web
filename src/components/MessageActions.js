@@ -8,7 +8,7 @@ import { useToast } from '../contexts/ToastContext';
 import { ExtendPromptModal } from './ExtendPromptModal';
 import NextSceneModal from './NextSceneModal';
 import DropdownPortal from './DropdownPortal';
-import { Send, Share2, Clapperboard, Film, Reply } from 'lucide-react';
+import { Send, Film, Reply } from 'lucide-react';
 const MessageActions = ({
   prompt,
   onVariations,

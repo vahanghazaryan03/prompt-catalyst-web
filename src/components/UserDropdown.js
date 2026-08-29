@@ -16,7 +16,7 @@ export const UserDropdown = ({ onLogout, onPremiumClick, isMobile = false }) => 
   const [isEditingDisplayName, setIsEditingDisplayName] = useState(false);
   const dropdownRef = useRef(null);
   const { user } = useAuth();
-  const { credits, creditType, resetType, lastReset, loading, refreshCredits } = useCredit();
+  const { credits, lastReset, loading, refreshCredits } = useCredit();
   const { currentTheme, setTheme, isFollowingSystemTheme, setFollowSystemTheme } = useTheme();
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [touchStart, setTouchStart] = useState(null);
@@ -123,7 +123,7 @@ export const UserDropdown = ({ onLogout, onPremiumClick, isMobile = false }) => 
 
   // Determine user tier
   const isPremiumUser = user?.isPremium && !user?.isProMember && !user?.isUltimateMember;
-  const isProUser = user?.isProMember && !user?.isUltimateMember || false;
+  const isProUser = (user?.isProMember && !user?.isUltimateMember) || false;
   const isUltimateUser = user?.isUltimateMember || false;
 
   // Handle account management click

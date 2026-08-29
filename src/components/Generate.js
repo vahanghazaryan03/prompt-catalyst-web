@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo, useEffect, useRef } from 'react';
+import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import './AspectRatioScroller.css';
 import AspectRatioScroller from './AspectRatioScroller';
 import { 
@@ -12,8 +12,6 @@ import {
 } from '../utils/aspectRatioUtils';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  ImagePlus, 
-  Loader2, 
   Wand2, 
   Camera, 
   Sparkles, 
@@ -43,7 +41,7 @@ import useAnimationStore from '../contexts/AnimationStore';
 import { useEditSettings } from '../hooks/useEditSettings';
 import ContentContainer from './layout/ContentContainer';
 import ModelOption from './ModelOption';
-import { analyzeImageForEditing, formatDimensions as formatEditDimensions } from '../utils/editImageUtils';
+import { analyzeImageForEditing } from '../utils/editImageUtils';
 import { logger } from '../utils/logger';
 
 // Constants stay the same
@@ -146,7 +144,7 @@ const Generate = ({
   onPremiumClick,
   onTopUpClick
 }) => {
-  const { credits, creditType, refreshCredits } = useCredit();
+  const { credits, refreshCredits } = useCredit();
   const { user } = useAuth();
   const { addToast } = useToast();
   // Use localStorage to persist the expanded state of advanced models
@@ -159,7 +157,7 @@ const Generate = ({
   });
   const [isControlsVisible, setIsControlsVisible] = useState(true);
   const [isImagePanelFullscreen, setIsImagePanelFullscreen] = useState(false);
-  const [topUpModalOpen, setTopUpModalOpen] = useState(false);
+  const [setTopUpModalOpen] = useState(false);
   
   // State for mobile detection
   const isMobile = window.innerWidth < 768;

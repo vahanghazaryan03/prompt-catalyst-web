@@ -1,7 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Loader2, Sparkles, Zap, Camera, Wand2, Palette, BadgePlus, CircleGauge, CircleFadingArrowUpIcon } from 'lucide-react';
-import { Tooltip } from './Tooltip';
 
 // Define credit costs for all models
 const MODEL_COSTS = {

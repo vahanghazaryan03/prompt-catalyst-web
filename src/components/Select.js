@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { ChevronRight, ChevronDown, ChevronUp, HelpCircle } from 'lucide-react';
+import { ChevronRight, HelpCircle } from 'lucide-react';
 import { PreviewCard } from './PreviewCard';
 import { ModelPreview } from './ModelPreview';
 import { SelectDialog } from './SelectDialog';
 import { Tooltip } from './Tooltip';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 const STYLES = {
   free: [
     { value: 'not_specified', label: 'Not Specified' },

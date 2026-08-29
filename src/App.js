@@ -11,9 +11,7 @@ import apiService from './services/api';
 // Import for the API service modifications we'll need
 import { usePremiumModal } from './hooks/usePremiumModal';
 import ResetPassword from './components/ResetPassword';
-import SettingsSuggestions from './components/SettingsSuggestions';
 import FullScreenLoader from './components/loading/FullScreenLoader';
-import { Settings } from './components/Settings';
 import { SettingsDrawer } from './components/SettingsDrawer';
 import { VideoSettingsDrawer } from './components/VideoSettingsDrawer';
 import { ChatMessages } from './components/ChatMessages';
@@ -21,17 +19,13 @@ import { InputArea } from './components/InputArea';
 import Header from './components/Header';
 import { GenerateProvider } from './contexts/GenerateContext';
 import { EditProvider } from './contexts/EditContext';
-import { useCredits } from './hooks/useCredits';
 import WelcomeMessage from './components/WelcomeMessage';
 import { CreditProvider, useCredit } from './contexts/CreditContext';
 import LimitReachedMessage from './components/LimitReachedMessage';
 import { LoginModal } from './components/LoginModal';
 import PremiumModal from './components/PremiumModal';
 import TopUpModal from './components/TopUpModal';
-import CollectionsSidebar from './components/CollectionsSidebar';
-import { ThemeSwitcher } from './components/ThemeSwitcher';
 import AuthRequired from './components/AuthRequired';
-import { ImageAnalysis } from './components/ImageAnalysis';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { WeeklyPromptsProvider } from './contexts/WeeklyPromptsContext';
 import { VideoHistoryProvider } from './contexts/VideoHistoryContext';
@@ -290,7 +284,7 @@ const AppContent = () => {
 
   const debouncedSaveRef = useRef();
   const { user, loading, logout } = useAuth();
-  const { credits, loading: creditsLoading, error: creditsError, refreshCredits } = useCredit();  // State declarations (consolidated)
+  const { refreshCredits } = useCredit();  // State declarations (consolidated)
   const { addToast } = useToast(); // Add toast functionality
   
   // Determine if the user is a Pro member (for UI changes)
@@ -342,7 +336,7 @@ const AppContent = () => {
   });
   const [isCommandActive, setIsCommandActive] = useState(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
-  const [resetPasswordParams, setResetPasswordParams] = useState(null);
+  const [setResetPasswordParams] = useState(null);
 
   /**
    * Warms the deferred view chunks once the browser is idle.
@@ -454,7 +448,7 @@ const AppContent = () => {
     }
   }, [isVideoMode, currentView, setCurrentView, setGeneratePrompt]);
   const [isGenerating, setIsGenerating] = useState(false);
-  const [isGeneratingRandom, setIsGeneratingRandom] = useState(false);
+  const [setIsGeneratingRandom] = useState(false);
  
   const [isPasswordResetMode, setIsPasswordResetMode] = useState(() => window.location.pathname === '/password-reset');
   const [isSignUpMode, setIsSignUpMode] = useState(() => window.location.pathname === '/sign-up');

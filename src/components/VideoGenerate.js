@@ -7,30 +7,24 @@ import {
   Info,
   ChevronUp,
   ChevronDown,
-  AlertCircle,
   Sparkles,
   CircleFadingArrowUpIcon,
   XCircle,
   Text,
   Video,
-  Crown,
   Cat,
   Zap as Download,
-
-  RefreshCw,
   X
 } from 'lucide-react';
 import VideoLoadingState from './VideoLoadingState';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useToast } from '../contexts/ToastContext';
-import { Tooltip } from './Tooltip';
 import { useAuth } from '../contexts/AuthContext';
 import { useVideoHistory } from '../hooks/useVideoHistory';
 import ContentContainer from './layout/ContentContainer';
 import VideoGenerateHistoryContainer from './VideoGenerateHistoryContainer';
 import AnimationPlayer from './AnimationPlayer';
 import MessageActions from './MessageActions';
-import apiService from '../services/api';
 import useVideoStore from '../contexts/VideoStore';
 import useTextToVideo from '../hooks/useTextToVideo';
 import { logger } from '../utils/logger';

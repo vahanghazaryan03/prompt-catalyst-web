@@ -5,9 +5,8 @@ import { Slider } from './Slider';
 import { MidjourneyParams } from './MidjourneyParams';
 import VideoSettings from './VideoSettings';
 import { Tooltip } from './Tooltip';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { 
-  X, 
   Wand2, 
   Settings2, 
   Crown,
@@ -15,7 +14,6 @@ import {
   SlidersHorizontal,
   ChevronLeft,
   ChevronRight,
-  Sparkles,
   RotateCcw,
   HelpCircle,
   Lock

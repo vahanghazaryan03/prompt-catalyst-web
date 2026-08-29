@@ -3,7 +3,6 @@ import { useCollections } from '../contexts/CollectionsContext';
 import { Folder, Plus, Trash2, X, BookMarked } from 'lucide-react';
 import { useToast } from '../contexts/ToastContext';
 import { useMediaQuery } from '../hooks/useMediaQuery';
-import DropdownPortal from './DropdownPortal';
 
 const colors = {
   blue: '#3b82f6',

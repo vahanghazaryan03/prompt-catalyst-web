@@ -115,7 +115,7 @@ export const isThankYouMessage = (input) => {
   if (!input || typeof input !== 'string') return false;
   
   // Normalize input - trim, lowercase, remove punctuation
-  const normalizedInput = input.trim().toLowerCase().replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, '');
+  const normalizedInput = input.trim().toLowerCase().replace(/[.,/#!$%^&*;:{}=\-_`~()]/g, '');
   
   // Common thank you phrases
   const thankYouPhrases = [
@@ -143,7 +143,7 @@ export const isConversationalInput = (input) => {
   if (isThankYouMessage(input)) return true;
   
   // Normalize input - trim, lowercase, remove punctuation
-  const normalizedInput = input.trim().toLowerCase().replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, '');
+  const normalizedInput = input.trim().toLowerCase().replace(/[.,/#!$%^&*;:{}=\-_`~()]/g, '');
   
   // Common conversational phrases and questions
   const conversationalPhrases = [

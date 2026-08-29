@@ -2,19 +2,13 @@
 import React, { useState, useEffect } from 'react';
 import { 
   Trash2, 
-  RefreshCw, 
-  Download, 
-  ArrowUpRight,
+  Download,
   RotateCcw,
-  AlertCircle,
   ChevronLeft,
   X,
-  ChevronDown,
-  ChevronUp,
   Play,
   Video,
   Tag,
-  Search,
   Info,
   SlidersHorizontal,
   List

@@ -141,12 +141,12 @@ register: async (email, password, username) => {
     const { session, needsConfirmation } = await authService.signUp(email, password, username);
     return { success: true, session, needsConfirmation };
   } catch (error) {
-    // The UI reads .message and .field, so that shape is kept.
-    throw {
-      message: error.message || 'Registration failed',
-      field: error.code === 'user_already_exists' ? 'email' : undefined,
-      code: error.code,
-    };
+    // The UI reads .message and .field, so that shape is kept — but on a real
+    // Error, so the throw carries a stack.
+    const failure = new Error(error.message || 'Registration failed');
+    if (error.code === 'user_already_exists') failure.field = 'email';
+    if (error.code) failure.code = error.code;
+    throw failure;
   }
 },
 initiateCreditPurchase: async (packageId) => {
@@ -840,10 +840,8 @@ checkAnimationStatus: async (requestId) => {
   } catch (error) {
     // Check specifically for rate limit or quota exceeded
     if (error.response?.status === 429 || error.response?.data?.error?.includes('premium')) {
-      throw {
-        ...error,
-        isRateLimit: true
-      };
+      // A real Error rather than a literal, so the throw carries a stack.
+      throw Object.assign(new Error(error.message || 'Rate limited'), error, { isRateLimit: true });
     }
     logger.error('Failed to generate preview:', error);
     throw error;

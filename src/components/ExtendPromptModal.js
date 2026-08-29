@@ -13,7 +13,7 @@ export const ExtendPromptModal = ({ isOpen, onClose, onConfirm }) => {
     mood: ''
   });
   const [errors, setErrors] = useState({});
-  const [focusedField, setFocusedField] = useState(null);
+  const [setFocusedField] = useState(null);
 
   useEffect(() => {
     if (!isOpen) {

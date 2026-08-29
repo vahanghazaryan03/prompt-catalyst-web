@@ -1,7 +1,6 @@
 // A standalone optimized ImageCard component to be used in Generate.js
 import React, { useState, memo, useCallback, useEffect, useRef } from 'react';
 import CopyAnimation from './CopyAnimation';
-import { motion } from 'framer-motion';
 import { Copy, Download, Play, PencilRuler } from 'lucide-react';
 
 const ImageCard = memo(({ 

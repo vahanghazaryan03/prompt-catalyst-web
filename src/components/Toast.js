@@ -1,5 +1,4 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
 
 // Add CSS keyframes for animations
 const toastCSS = `

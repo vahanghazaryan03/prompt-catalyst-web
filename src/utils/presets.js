@@ -12,7 +12,6 @@ import {
   PenTool, 
   BookOpen, 
   Building, 
-  Microscope, 
   Baby, 
   Flower,
   CloudLightning,

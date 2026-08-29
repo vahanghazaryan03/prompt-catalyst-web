@@ -3,7 +3,6 @@ import useAnimationStore from '../contexts/AnimationStore';
 import {
   Menu,
   X,
-  LogOut,
   LogIn,
   Video,
   Image,
@@ -13,15 +12,11 @@ import {
   Wand2,
   History as HistoryIcon,
   Calendar,
-  Palette,
   HelpCircle,
-  Crown,
   Film,
-  Users,
   Settings,
   FileText,
   Chrome,
-  FileText as BlogIcon,
   BookOpen,
   Sun,
   Moon,
@@ -31,12 +26,11 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 import { useToast } from '../contexts/ToastContext';
 import { UserDropdown } from './UserDropdown';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { openHelpPage } from '../utils/navigation';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import VideoToggle from './VideoToggle';
-import { ThemeSwitcher } from './ThemeSwitcher';
 
 const Header = ({
   isLoggedIn,

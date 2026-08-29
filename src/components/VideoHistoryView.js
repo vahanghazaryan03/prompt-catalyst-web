@@ -7,25 +7,16 @@ import MessageActions from './MessageActions';
 import { 
   Search, 
   Trash2, 
-  Calendar,  
-  Video as VideoIcon, 
   Image as ImageIcon,
-  Wand2,
   Dices,
   FileText,
   Copy,
   Minimize2,
-  AlertCircle,
   X,
-  ClipboardCopy,
-  Eye,
   Download,
   Upload,
   ShieldCheck,
-  Info,
-  Camera,
   Film,
-  Clock,
   GalleryHorizontalEnd,
   Edit
 } from 'lucide-react';
@@ -290,7 +281,7 @@ const VideoHistoryView = ({
     try {
       const cached = localStorage.getItem(`preview_${prompt}`);
       if (cached) {
-        const { url, timestamp } = JSON.parse(cached);
+        const { timestamp } = JSON.parse(cached);
         return Date.now() - timestamp <= 24 * 60 * 60 * 1000; // 24 hours
       }
     } catch (error) {

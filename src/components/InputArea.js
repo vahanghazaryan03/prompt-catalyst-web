@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Image, Dices, X, Send, ArrowUp, ImageUp, Zap, HelpCircle, Terminal, Copy, Minimize2, LayoutPanelLeft, ChevronUp, ChevronDown, Reply } from 'lucide-react';
+import { Dices, X, ArrowUp, ImageUp, Zap, HelpCircle, Terminal, ChevronUp, ChevronDown, Reply } from 'lucide-react';
 import { ImageAnalysis } from './ImageAnalysis';
 import { useToast } from '../contexts/ToastContext';
 import { useAuth } from '../contexts/AuthContext';
@@ -24,7 +24,7 @@ export const InputArea = ({ onSubmit, isSettingsOpen, isVideoMode, disabled, onC
     logger.debug('InputArea: isCommandsDropdownOpen changed to:', isCommandsDropdownOpen);
   }, [isCommandsDropdownOpen]);
   const [input, setInput] = useState('');
-  const [isCommandActive, setIsCommandActive] = useState(false);
+  const [setIsCommandActive] = useState(false);
   const [isImageAnalysisOpen, setIsImageAnalysisOpen] = useState(false);
   const [isGeneratingRandom, setIsGeneratingRandom] = useState(false);
   const { user } = useAuth();

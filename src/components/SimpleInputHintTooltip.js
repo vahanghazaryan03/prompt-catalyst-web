@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, MessageCircle, Cat, Terminal } from 'lucide-react';
+import { X, Cat } from 'lucide-react';
 
 const SimpleInputHintTooltip = ({ isVisible, onDismiss }) => {
   return (

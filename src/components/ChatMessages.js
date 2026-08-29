@@ -13,7 +13,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import TypingAnimation from './TypingAnimation';
 import { RefreshCw, ArrowUpCircle } from 'lucide-react';
 import './CommandStyles.css';
-import { Dices, Image as ImageIcon, Cat as Bot, User, Wand2, Eye, Info } from 'lucide-react';
+import { Dices, Image as ImageIcon, Cat as Bot, User, Wand2 } from 'lucide-react';
 import { logger } from '../utils/logger';
 
 export const ChatMessages = ({ 

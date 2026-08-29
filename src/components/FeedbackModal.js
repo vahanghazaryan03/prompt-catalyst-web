@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, ThumbsDown, CheckCircle } from 'lucide-react';
+import { X, CheckCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const FEEDBACK_OPTIONS = [

@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { preloadCommonVideos } from '../utils/videoCache';
-import { prepareVideoPromptSettings } from '../utils/settings';
 import { SelectDialog } from './SelectDialog';
 import { Select } from './Select';
 import { Slider } from './Slider';
 import { Tooltip } from './Tooltip';
-import { ChevronRight, X, Wand2, Settings2, Crown, SlidersHorizontal, ChevronLeft, HelpCircle, RotateCcw, Lock, Compass, Clock, Sparkles } from 'lucide-react';
+import { ChevronRight, Wand2, Settings2, Crown, SlidersHorizontal, ChevronLeft, HelpCircle, RotateCcw, Lock, Sparkles } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { GifPreviewCard } from './GifPreviewCard';
 import { openHelpPage } from '../utils/navigation';
