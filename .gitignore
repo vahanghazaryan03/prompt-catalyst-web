@@ -30,3 +30,7 @@ yarn-error.log*
 
 # local editor/tooling config
 .claude/
+
+# deployment tooling: host-specific, kept out of the public repo
+scripts/deploy.sh
+docs/DEPLOY.md

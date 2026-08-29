@@ -32,7 +32,6 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "lint": "eslint src --ext .js",
-    "deploy": "bash scripts/deploy.sh",
     "lint:fix": "eslint src --ext .js --fix"
   },
   "eslintConfig": {
