@@ -7,7 +7,7 @@ const WORDPRESS_URL = 'https://catalystmedia.ai';
 
 // Checkout is served by the reworked API, not by WordPress. Same request and
 // response shape as the admin-post handler it replaces.
-const API_URL = 'https://catalystmedia.ai/pctest';
+const API_URL = '/api';
 
 const subscriptionService = {
     initiateStripeCheckout: async (plan, isAnnual = false, preload = false) => {

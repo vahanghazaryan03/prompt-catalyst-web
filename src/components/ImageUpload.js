@@ -56,7 +56,7 @@ export const ImageUpload = ({
         const token = user?.token;
         const headers = token ? { Authorization: `Bearer ${token}` } : {};
 
-        const response = await fetch('https://catalystmedia.ai/pctest/analyze-image', {
+        const response = await fetch('/api/analyze-image', {
           method: 'POST',
           headers,
           body: formData

@@ -19,7 +19,7 @@ const API_BASE_URL = 'https://catalystmedia.ai/promptcatalystfreedemo';
  * Still on the legacy server: auth, credits, billing, and the image and video
  * generation routes.
  */
-const NEW_API_BASE_URL = 'https://catalystmedia.ai/pctest';
+const NEW_API_BASE_URL = '/api';
 
 /**
  * Client for public content. Deliberately without the token interceptors on
@@ -601,7 +601,7 @@ checkSubscriptionStatus: async () => {
           
           if (attempts === 1) {
             // First try: Use the API instance that already has proper CORS handling
-            response = await api.get(`/text-to-video-status/${requestId}?${cacheBuster}`);
+            response = await promptApi.get(`/text-to-video-status/${requestId}?${cacheBuster}`);
             // Removed logging
             break; // Success, exit the retry loop
           } 
@@ -674,7 +674,7 @@ checkSubscriptionStatus: async () => {
     try {
       // Add cache-busting parameter
       const timestamp = Date.now();
-      const response = await api.get(`/user-text-to-videos?_=${timestamp}`, {
+      const response = await promptApi.get(`/user-text-to-videos?_=${timestamp}`, {
         headers: {
           'Cache-Control': 'no-cache, no-store, must-revalidate',
           'Pragma': 'no-cache',
@@ -746,7 +746,7 @@ generateImage: async ({ prompt, width, height, model, numberResults, rawMode }) 
           payload.rawMode = true;
       }
       
-      const response = await api.post(endpoint, payload);
+      const response = await promptApi.post(endpoint, payload);
       
       // Handle the response
       if (response.data.error) {
@@ -891,7 +891,7 @@ checkAnimationStatus: async (requestId) => {
     } catch (directError) {
       logger.warn('Direct animation status check failed, trying with API instance:', directError);
       // Fall back to the api instance
-      response = await api.get(`/animation-status/${requestId}?${cacheBuster}`);
+      response = await promptApi.get(`/animation-status/${requestId}?${cacheBuster}`);
     }
     
     return response.data;
@@ -1092,7 +1092,7 @@ checkAnimationStatus: async (requestId) => {
       const timestamp = Date.now();
       const url = `/user-animations?_=${timestamp}`;
       
-      const response = await api.get(url, {
+      const response = await promptApi.get(url, {
         headers: {
           'Cache-Control': 'no-cache, no-store, must-revalidate',
           'Pragma': 'no-cache',
@@ -1113,7 +1113,7 @@ checkAnimationStatus: async (requestId) => {
 
   getUserAnimation: async (requestId) => {
     try {
-      const response = await api.get(`/user-animation/${requestId}`);
+      const response = await promptApi.get(`/user-animation/${requestId}`);
       return response.data;
     } catch (error) {
       throw error;
@@ -1122,7 +1122,7 @@ checkAnimationStatus: async (requestId) => {
 
   deleteAnimation: async (requestId) => {
     try {
-      const response = await api.delete(`/user-animation/${requestId}`);
+      const response = await promptApi.delete(`/user-animation/${requestId}`);
       return response.data;
     } catch (error) {
       throw error;
