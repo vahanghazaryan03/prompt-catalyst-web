@@ -84,40 +84,19 @@ class TokenService {
     if (session) return session.access_token;
 
     /**
-     * The last thing still pointing at the old server, and deliberately so.
+     * Sessions issued before the move to Supabase cannot be refreshed.
      *
-     * It only runs for sessions issued before the move to Supabase, which
-     * WordPress gave a 14-day refresh window. When that server goes away this
-     * fetch fails, the token is cleared and tokenExpired fires, which is the
-     * same path as any expired session: the person signs in again, now
-     * through Supabase. Nothing needs to be done to retire it.
+     * They were refreshed by the WordPress server, which no longer exists.
+     * Rather than call a retired host and wait for it to fail, the token is
+     * dropped here and tokenExpired fires -- the same path as any expired
+     * session, so the person simply signs in again through Supabase.
      */
-    const currentToken = localStorage.getItem(LEGACY_TOKEN_KEY);
-    if (!currentToken) return null;
+    const legacyToken = localStorage.getItem(LEGACY_TOKEN_KEY);
+    if (!legacyToken) return null;
 
-    try {
-      const response = await fetch('https://catalystmedia.ai/promptcatalystfreedemo/refresh-token', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ token: currentToken })
-      });
-
-      if (!response.ok) throw new Error('Refresh failed');
-
-      const data = await response.json();
-      if (data.token) {
-        this.setToken(data.token);
-        return data.token;
-      }
-
-      throw new Error('No token in refresh response');
-    } catch (error) {
-      this.clearToken();
-      window.dispatchEvent(new Event('tokenExpired'));
-      throw error;
-    }
+    this.clearToken();
+    window.dispatchEvent(new Event('tokenExpired'));
+    throw new Error('Legacy session can no longer be refreshed');
   }
 
   async ensureFreshToken() {
