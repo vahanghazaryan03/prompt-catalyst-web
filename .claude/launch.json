@@ -4,8 +4,22 @@
     {
       "name": "promptcatalyst-web",
       "runtimeExecutable": "npm",
-      "runtimeArgs": ["start"],
+      "runtimeArgs": [
+        "start"
+      ],
       "port": 3000
+    },
+    {
+      "name": "prod-build-preview",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": [
+        "serve",
+        "-s",
+        "build",
+        "-l",
+        "3001"
+      ],
+      "port": 3001
     }
   ]
 }

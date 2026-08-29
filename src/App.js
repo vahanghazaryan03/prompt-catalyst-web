@@ -43,18 +43,56 @@ import EmptyChat from './components/EmptyChat';
 import AnimationErrorBoundary from './components/AnimationErrorBoundary';
 import { logger } from './utils/logger';
 
-// Deferred views. Roughly 430KB of source between them, and only one is ever
-// on screen — previously every visitor downloaded all ten before first paint.
-const VideoWeeklyPrompts = lazy(() => import('./components/VideoWeeklyPrompts'));
-const Edit = lazy(() => import('./components/Edit'));
-const CollectionsView = lazy(() => import('./components/CollectionsView'));
-const VideoCollectionsView = lazy(() => import('./components/VideoCollectionsView'));
-const HistoryView = lazy(() => import('./components/HistoryView').then((m) => ({ default: m.HistoryView })));
-const VideoHistoryView = lazy(() => import('./components/VideoHistoryView').then((m) => ({ default: m.VideoHistoryView })));
-const WeeklyPrompts = lazy(() => import('./components/WeeklyPrompts').then((m) => ({ default: m.WeeklyPrompts })));
-const Generate = lazy(() => import('./components/Generate'));
-const VideoGenerate = lazy(() => import('./components/VideoGenerate'));
-const Animate = lazy(() => import('./components/Animate'));
+/**
+ * Deferred views. Roughly 430KB of source between them, and only one is ever on
+ * screen — previously every visitor downloaded all ten before first paint.
+ *
+ * The loaders are named rather than inlined into lazy() so the same import can
+ * be triggered ahead of time. Splitting alone moved the delay rather than
+ * removing it: the chunk was fetched when the tab was clicked, and against this
+ * host that is 0.5s of latency before a byte arrives, so switching tabs gained
+ * a visible pause. Warming them once the app is idle keeps the small first
+ * paint and gives the click a cached module. import() caches, so calling a
+ * loader twice costs nothing.
+ */
+const loadVideoWeeklyPrompts = () => import('./components/VideoWeeklyPrompts');
+const loadEdit = () => import('./components/Edit');
+const loadCollectionsView = () => import('./components/CollectionsView');
+const loadVideoCollectionsView = () => import('./components/VideoCollectionsView');
+const loadHistoryView = () => import('./components/HistoryView');
+const loadVideoHistoryView = () => import('./components/VideoHistoryView');
+const loadWeeklyPrompts = () => import('./components/WeeklyPrompts');
+const loadGenerate = () => import('./components/Generate');
+const loadVideoGenerate = () => import('./components/VideoGenerate');
+const loadAnimate = () => import('./components/Animate');
+
+const VideoWeeklyPrompts = lazy(loadVideoWeeklyPrompts);
+const Edit = lazy(loadEdit);
+const CollectionsView = lazy(loadCollectionsView);
+const VideoCollectionsView = lazy(loadVideoCollectionsView);
+const HistoryView = lazy(() => loadHistoryView().then((m) => ({ default: m.HistoryView })));
+const VideoHistoryView = lazy(() => loadVideoHistoryView().then((m) => ({ default: m.VideoHistoryView })));
+const WeeklyPrompts = lazy(() => loadWeeklyPrompts().then((m) => ({ default: m.WeeklyPrompts })));
+const Generate = lazy(loadGenerate);
+const VideoGenerate = lazy(loadVideoGenerate);
+const Animate = lazy(loadAnimate);
+
+/**
+ * Ordered by how soon a view is usually reached, so the ones a person is most
+ * likely to click next arrive first if the connection is slow.
+ */
+const DEFERRED_VIEW_LOADERS = [
+  loadGenerate,
+  loadWeeklyPrompts,
+  loadEdit,
+  loadAnimate,
+  loadHistoryView,
+  loadCollectionsView,
+  loadVideoGenerate,
+  loadVideoWeeklyPrompts,
+  loadVideoHistoryView,
+  loadVideoCollectionsView,
+];
 
 // Every view is a URL. Chat lives at the root and the rest are real paths, so
 // the app is deep-linkable, the back button works, and the current view
@@ -305,6 +343,45 @@ const AppContent = () => {
   const [isCommandActive, setIsCommandActive] = useState(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [resetPasswordParams, setResetPasswordParams] = useState(null);
+
+  /**
+   * Warms the deferred view chunks once the browser is idle.
+   *
+   * Without this, splitting the bundle only moved the wait: the chunk for a
+   * view was fetched when its tab was clicked, and time-to-first-byte against
+   * this host is around half a second before any of the payload arrives, so
+   * switching tabs picked up a visible pause. Fetching them after first paint
+   * keeps the smaller initial download and makes the click instant.
+   *
+   * Sequential, not all at once, so ten requests do not compete with whatever
+   * the view on screen is still loading. Skipped entirely when the browser
+   * reports a metered or slow connection — roughly 680KB of speculative
+   * download is not a fair trade on someone's mobile data.
+   */
+  useEffect(() => {
+    const connection = navigator.connection;
+    if (connection?.saveData) return undefined;
+    if (/(^|-)2g$/.test(connection?.effectiveType ?? '')) return undefined;
+
+    let cancelled = false;
+    const warm = () => {
+      DEFERRED_VIEW_LOADERS.reduce(
+        (chain, load) => chain.then(() => (cancelled ? undefined : load().catch(() => {}))),
+        Promise.resolve(),
+      );
+    };
+
+    const canIdle = typeof window.requestIdleCallback === 'function';
+    const handle = canIdle
+      ? window.requestIdleCallback(warm, { timeout: 4000 })
+      : window.setTimeout(warm, 2500);
+
+    return () => {
+      cancelled = true;
+      if (canIdle) window.cancelIdleCallback?.(handle);
+      else window.clearTimeout(handle);
+    };
+  }, []);
   const [loginEmail, setLoginEmail] = useState('');
   
   // Settings change handler using the debounced save - moved before video mode effect
