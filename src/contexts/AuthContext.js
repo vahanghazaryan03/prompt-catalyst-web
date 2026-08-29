@@ -384,8 +384,6 @@ export const AuthProvider = ({ children }) => {
                 window.location.origin,
                 'https://promptcatalyst.ai',
                 'https://www.promptcatalyst.ai',
-                'https://catalystmedia.ai',
-                'https://www.catalystmedia.ai'
             ];
             
             if (process.env.NODE_ENV === 'development') {

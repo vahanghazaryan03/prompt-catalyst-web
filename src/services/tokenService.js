@@ -83,6 +83,15 @@ class TokenService {
     const session = readSupabaseSession();
     if (session) return session.access_token;
 
+    /**
+     * The last thing still pointing at the old server, and deliberately so.
+     *
+     * It only runs for sessions issued before the move to Supabase, which
+     * WordPress gave a 14-day refresh window. When that server goes away this
+     * fetch fails, the token is cleared and tokenExpired fires, which is the
+     * same path as any expired session: the person signs in again, now
+     * through Supabase. Nothing needs to be done to retire it.
+     */
     const currentToken = localStorage.getItem(LEGACY_TOKEN_KEY);
     if (!currentToken) return null;
 

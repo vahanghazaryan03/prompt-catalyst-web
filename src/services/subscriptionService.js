@@ -3,7 +3,6 @@ import apiService from './api';
 import tokenService from './tokenService';
 import { logger } from '../utils/logger';
 
-const WORDPRESS_URL = 'https://catalystmedia.ai';
 
 // Checkout is served by the reworked API, not by WordPress. Same request and
 // response shape as the admin-post handler it replaces.
@@ -122,33 +121,6 @@ const subscriptionService = {
         }
     },
 
-    verifyEmailStatus: async () => {
-        try {
-            const token = tokenService.getToken();
-            if (!token) {
-                throw new Error('Authentication required');
-            }
-
-            const response = await fetch(`${WORDPRESS_URL}/wp-json/um-custom/v1/check-verification`, {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                },
-                credentials: 'include',
-                mode: 'cors'
-            });
-
-            const data = await response.json();
-            return {
-                isVerified: data.is_verified,
-                message: data.message
-            };
-        } catch (error) {
-            logger.error('Failed to verify email status:', error);
-            throw error;
-        }
-    }
 };
 
 export default subscriptionService;

@@ -6,18 +6,6 @@ import authService from './authService';
 // The Google Client ID 
 const GOOGLE_CLIENT_ID = '380542979532-uh47rmug3b18c6sarifv51232tb2loja.apps.googleusercontent.com';
 
-// Helper function to create full endpoint URL
-const getEndpointUrl = (provider, paramType, paramValue) => {
-  const baseUrl = process.env.REACT_APP_WORDPRESS_URL || 'https://catalystmedia.ai';
-  return `${baseUrl}/?rest_route=/simple-jwt-login/v1/oauth/token&provider=${provider}&${paramType}=${encodeURIComponent(paramValue)}`;
-};
-
-// Helper function to check if user exists without full login
-const getUserExistsEndpoint = (provider, email) => {
-  const baseUrl = process.env.REACT_APP_WORDPRESS_URL || 'https://catalystmedia.ai';
-  return `${baseUrl}/?rest_route=/simple-jwt-login/v1/user-exists&email=${encodeURIComponent(email)}`;
-};
-
 /** The user from the most recent Google sign-in, for checkIfNewUser. */
 let lastSignIn = null;
 
@@ -67,46 +55,6 @@ const socialAuthService = {
     return socialAuthService.exchangeGoogleTokenForJWT(idToken);
   },
 
-  exchangeCodeForIdToken: async (code) => {
-    try {
-      const endpoint = getEndpointUrl('google', 'code', code);
-      
-      const response = await fetch(endpoint, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        credentials: 'include'
-      });
-      
-      const responseText = await response.text();
-      
-      let data;
-      try {
-        data = JSON.parse(responseText);
-      } catch (e) {
-        throw new Error('Invalid response format from server');
-      }
-      
-      if (!response.ok) {
-        throw new Error(data.message || 'Failed to exchange authorization code');
-      }
-      
-      const idToken = data.id_token || data.data?.id_token;
-      
-      if (!idToken) {
-        throw new Error('No ID token in response');
-      }
-      
-      return idToken;
-    } catch (error) {
-      throw error;
-    }
-  },
-  
-  /**
-   * Load the Google Sign-In SDK
-   */
   loadGoogleSignInSDK: () => {
     return new Promise((resolve, reject) => {
       // Check if script is already loaded
@@ -258,31 +206,6 @@ const socialAuthService = {
   /**
    * Handle redirect from OAuth flow
    */
-  handleRedirect: async () => {
-    // Check for authorization code in URL
-    const urlParams = new URLSearchParams(window.location.search);
-    const code = urlParams.get('code');
-    const error = urlParams.get('error');
-    
-    if (error) {
-      throw new Error(`OAuth error: ${error}`);
-    }
-    
-    if (code) {
-      // Exchange code for ID token
-      const idToken = await socialAuthService.exchangeCodeForIdToken(code);
-      
-      // Use the new function to handle new user creation
-      const jwtToken = await socialAuthService.handleNewUserCreation(idToken);
-      
-      // Clean URL
-      window.history.replaceState({}, document.title, window.location.pathname);
-      
-      return jwtToken;
-    }
-    
-    return null;
-  }
 };
 
 export default socialAuthService;

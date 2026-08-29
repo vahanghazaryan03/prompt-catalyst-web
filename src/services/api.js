@@ -4,20 +4,12 @@ import authService from './authService';
 import tokenService from './tokenService';
 import { logger } from '../utils/logger';
 
-const API_BASE_URL = 'https://catalystmedia.ai/promptcatalystfreedemo';
-
 /**
- * The reworked API. Routes are moved here one group at a time; everything not
- * listed below still goes to the legacy server above.
+ * The API, served from the same origin as the app.
  *
- * Reverting a group is a one-line change: point its calls back at `api`.
- *
- * Migrated so far:
- *   - weekly prompts (read-only static JSON, verified byte-identical)
- *   - all nine prompt-generation routes
- *
- * Still on the legacy server: auth, credits, billing, and the image and video
- * generation routes.
+ * It used to live on catalystmedia.ai, so every request was cross-origin and
+ * depended on Apache sending the right CORS headers. Serving it under /api
+ * removes that -- and removes the reason the app needed a second domain.
  */
 const NEW_API_BASE_URL = '/api';
 
@@ -111,94 +103,10 @@ const createAuthenticatedClient = (baseURL) => {
   return client;
 };
 
-const api = createAuthenticatedClient(API_BASE_URL);
-
 /** Authenticated client for routes already moved to the reworked service. */
 const promptApi = createAuthenticatedClient(NEW_API_BASE_URL);
 
 const apiService = {
-  // Authentication
-  // In api.js login function
-  loginPROD: async (email, password) => {
-    try {
-      const loginResponse = await axios.post(
-        'https://catalystmedia.ai/wp-json/simple-jwt-login/v1/auth/',
-        {
-            email,
-            password
-        },
-        {
-            withCredentials: true,
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        }
-    );
-        
-        const token = loginResponse.data.data.jwt;
-        tokenService.setToken(token);
-        
-        const premiumResponse = await promptApi.get('/test-premium');
-        
-        return {
-            token,
-            isPremium: premiumResponse.data.is_premium,
-            displayName: premiumResponse.data.display_name,
-            userId: premiumResponse.data.user_id
-        };
-    } catch (error) {
-        // Removed logging
-        
-        // Handle email verification error
-        if (error.response?.status === 403 && 
-            error.response.data?.error === 'Email verification required') {
-            throw new Error('email_verification_required');
-        }
-
-        if (error.response?.status === 400) {
-            // Extract error message from nested structure
-            let errorMessage = '';
-            
-            // Check different possible locations of the error message
-            if (error.response.data?.data?.message) {
-                errorMessage = error.response.data.data.message;
-            } else if (error.response.data?.message) {
-                errorMessage = error.response.data.message;
-            } else if (error.response.data?.data?.error) {
-                errorMessage = error.response.data.data.error;
-            } else if (typeof error.response.data?.data === 'string') {
-                errorMessage = error.response.data.data;
-            }
-            
-            // Removed logging
-
-            // Map specific error messages to error codes
-            if (errorMessage.includes('Wrong user credentials') || 
-                errorMessage.includes('invalid credentials')) {
-                throw new Error('invalid_credentials');
-            }
-            
-            if (errorMessage.includes('user not found') || 
-                errorMessage.includes('invalid username')) {
-                throw new Error('user_not_found');
-            }
-            
-            // If we have an error message but no specific mapping, use it directly
-            if (errorMessage) {
-                throw new Error(errorMessage);
-            }
-            
-            // Fallback for unknown 400 errors
-            throw new Error('invalid_credentials');
-        }
-
-        if (error.request) {
-            throw new Error('network_error');
-        }
-
-        throw new Error('unknown_error');
-    }
-},
 login: async (email, password) => {
   /**
    * Signs in against Supabase, not WordPress.
@@ -607,7 +515,7 @@ checkSubscriptionStatus: async () => {
           } 
           else if (attempts === 2) {
             // Second try: Attempt with minimal headers as fallback
-            response = await axios.get(`${API_BASE_URL}/text-to-video-status/${requestId}?${cacheBuster}`, {
+            response = await axios.get(`${NEW_API_BASE_URL}/text-to-video-status/${requestId}?${cacheBuster}`, {
               headers: {
                 'Authorization': token ? `Bearer ${token}` : undefined,
                 // Adding accept header to ensure proper response format
@@ -620,7 +528,7 @@ checkSubscriptionStatus: async () => {
           }
           else {
             // Last resort: Use fetch API directly
-            const fetchResponse = await fetch(`${API_BASE_URL}/text-to-video-status/${requestId}?${cacheBuster}`, {
+            const fetchResponse = await fetch(`${NEW_API_BASE_URL}/text-to-video-status/${requestId}?${cacheBuster}`, {
               headers: {
                 'Authorization': token ? `Bearer ${token}` : '',
                 'Accept': 'application/json'
@@ -826,9 +734,9 @@ generateAnimation: async (imageFile, prompt, movementId, duration, metadata = {}
     // Add auth token for direct request
     const token = await tokenService.ensureFreshToken();
     
-    // Try using a direct axios call with minimal headers to avoid CORS issues
+    // Direct axios call, bypassing the shared client's interceptors
     try {
-      const response = await axios.post(`${API_BASE_URL}/generate-animation`, formData, {
+      const response = await axios.post(`${NEW_API_BASE_URL}/generate-animation`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
           'Authorization': token ? `Bearer ${token}` : undefined
@@ -881,9 +789,9 @@ checkAnimationStatus: async (requestId) => {
     const token = await tokenService.ensureFreshToken();
     
     let response;
-    // Try first with direct axios to avoid potential CORS issues
+    // Direct axios call, bypassing the shared client's interceptors
     try {
-      response = await axios.get(`${API_BASE_URL}/animation-status/${requestId}?${cacheBuster}`, {
+      response = await axios.get(`${NEW_API_BASE_URL}/animation-status/${requestId}?${cacheBuster}`, {
         headers: {
           'Authorization': token ? `Bearer ${token}` : undefined
         }
