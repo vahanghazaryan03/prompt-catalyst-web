@@ -5,21 +5,16 @@ import { logger } from '../utils/logger';
 /**
  * Authentication against Supabase.
  *
- * Replaces the WordPress simple-jwt-login flows. The service accepts tokens
- * from either issuer while the migration runs, so a session obtained here works
- * against the same API as an existing WordPress session.
+ * Wraps Supabase auth so the rest of the app never imports the client
+ * directly, and so every failure arrives in one shape: an Error carrying a
+ * code, and a flag when offering to set a password is the useful next step.
  *
- * The one behaviour that genuinely changes for users: passwords did not come
- * across. WordPress stores phpass hashes and Supabase cannot accept them, so
- * every account imported from WordPress exists with no password set. Signing in
- * with an old password fails, and the fix is to set a new one.
- *
- * Google users are unaffected. Their accounts never had a password, and Supabase
- * is configured with the same Google client id the site already uses, so they
- * sign in exactly as before.
+ * Some accounts exist with no password set. Supabase reports that identically
+ * to a wrong password, and it is deliberately not separated here -- see the
+ * note on the shared message below.
  */
 
-/** Supabase returns this for both a wrong password and an account with none. */
+/** Returned for both a wrong password and an account that has none set. */
 const INVALID_CREDENTIALS = 'invalid_credentials';
 
 function describe(error) {
@@ -29,14 +24,14 @@ function describe(error) {
 
   if (code === INVALID_CREDENTIALS || /invalid login credentials/i.test(message)) {
     /**
-     * Deliberately one message for two causes. Supabase cannot tell us which,
-     * and asking it separately would mean an endpoint that reveals whether an
-     * email has an account.
+     * Deliberately one message for two causes. The provider cannot tell us
+     * which, and asking separately would mean an endpoint that reveals whether
+     * an address has an account.
      */
     return {
       code: 'invalid_credentials',
       message:
-        'That email and password did not match. If you had an account before we upgraded sign-in, set a new password to continue.',
+        'That email and password did not match. If your account has no password set, choose a new one to continue.',
       offerPasswordSetup: true,
     };
   }
@@ -92,8 +87,8 @@ const authService = {
    * Google sign-in.
    *
    * Uses the id token the Google Identity Services SDK already produces on the
-   * page, rather than a redirect flow. That keeps the existing button and popup
-   * exactly as they are, and needs no new redirect URI registered with Google.
+   * page, rather than a redirect flow. No redirect URI to register, and the
+   * button and popup stay entirely client-side.
    */
   async signInWithGoogle(idToken) {
     const { data, error } = await supabase.auth.signInWithIdToken({
@@ -110,9 +105,9 @@ const authService = {
   /**
    * Sends the email that lets someone set a password.
    *
-   * The same call serves a forgotten password and an account migrated from
-   * WordPress that never had one. It resolves the same way whether or not the
-   * address has an account, so it cannot be used to discover who is registered.
+   * Serves both a forgotten password and an account that never had one. It
+   * resolves the same way whether or not the address has an account, so it
+   * cannot be used to discover who is registered.
    */
   async requestPasswordReset(email) {
     const { error } = await supabase.auth.resetPasswordForEmail(email, {

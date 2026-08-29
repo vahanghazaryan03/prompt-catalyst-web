@@ -20,11 +20,10 @@ beforeEach(() => {
 });
 
 /**
- * Accounts imported from WordPress arrived without a password, because phpass
- * hashes cannot be carried into Supabase. Supabase reports "no password set"
- * and "wrong password" identically, and asking it apart would mean an endpoint
- * that reveals which addresses have accounts — so both have to produce one
- * message that offers a way forward.
+ * Some accounts exist with no password set. The provider reports that
+ * identically to a wrong password, and asking the two apart would mean an
+ * endpoint that reveals which addresses have accounts — so both have to
+ * produce one message that offers a way forward.
  */
 describe('sign-in failures', () => {
   it('turns invalid credentials into an offer to set a new password', async () => {
@@ -118,7 +117,7 @@ describe('Google sign-in', () => {
   /**
    * The page already holds a Google id token from the Identity Services SDK,
    * so this exchanges it directly rather than starting a redirect flow. Those
-   * accounts never had a password, so the migration is invisible to them.
+   * accounts have no password of their own, so nothing extra is asked of them.
    */
   it('exchanges the id token the page already has', async () => {
     const session = { access_token: 'token' };

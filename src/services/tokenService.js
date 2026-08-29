@@ -3,10 +3,10 @@
 /**
  * Supplies the bearer token every API call carries.
  *
- * Two issuers are live during the migration. A Supabase session takes
- * precedence when one exists; otherwise the legacy WordPress token in
- * `authToken` is used exactly as before. The API accepts both, so a user signed
- * in under either keeps working, and nobody is signed out by the switch.
+ * A Supabase session takes precedence when one exists. An older token may
+ * still be sitting in `authToken` from a previous provider; it is recognised
+ * only so that it can be retired cleanly rather than sent to an endpoint that
+ * will reject it.
  *
  * Reading the Supabase session straight out of localStorage rather than through
  * the SDK is deliberate: getToken is called synchronously all over the app, and
@@ -43,7 +43,7 @@ class TokenService {
     this.lastRefreshTime = null;
   }
 
-  /** True once the user is signed in through Supabase rather than WordPress. */
+  /** Whether the current session came from Supabase. */
   isSupabaseSession() {
     return readSupabaseSession() !== null;
   }
@@ -84,12 +84,12 @@ class TokenService {
     if (session) return session.access_token;
 
     /**
-     * Sessions issued before the move to Supabase cannot be refreshed.
+     * A session from the previous provider cannot be refreshed.
      *
-     * They were refreshed by the WordPress server, which no longer exists.
-     * Rather than call a retired host and wait for it to fail, the token is
-     * dropped here and tokenExpired fires -- the same path as any expired
-     * session, so the person simply signs in again through Supabase.
+     * The endpoint that issued and refreshed them is gone. Rather than call a
+     * retired host and wait for it to fail, the token is dropped here and
+     * tokenExpired fires -- the same path as any expired session, so the person
+     * simply signs in again.
      */
     const legacyToken = localStorage.getItem(LEGACY_TOKEN_KEY);
     if (!legacyToken) return null;

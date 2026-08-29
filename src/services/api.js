@@ -27,7 +27,7 @@ const contentApi = axios.create({
 /**
  * Builds an authenticated client.
  *
- * Both the legacy server and the reworked one need the same token handling, and
+ * Every authenticated call needs the same token handling, and
  * copying the interceptors would let the two drift apart. Note the retry
  * resolves through `client` rather than a fixed instance — the original code
  * retried through `api` by name, which would have sent a refreshed request to
@@ -103,19 +103,18 @@ const createAuthenticatedClient = (baseURL) => {
   return client;
 };
 
-/** Authenticated client for routes already moved to the reworked service. */
+/** Authenticated client for everything that requires a signed-in user. */
 const promptApi = createAuthenticatedClient(NEW_API_BASE_URL);
 
 const apiService = {
 login: async (email, password) => {
   /**
-   * Signs in against Supabase, not WordPress.
+   * Signs in against Supabase.
    *
-   * Accounts imported from WordPress have no password — phpass hashes cannot
-   * be carried across — so an existing user's old password will not work and
-   * they are asked to set a new one. authService turns that into a single
-   * message, because Supabase reports it identically to a wrong password and
-   * asking it apart would mean an endpoint that reveals who has an account.
+   * An account may exist with no password set, in which case signing in fails
+   * exactly as a wrong password does. authService turns both into one message,
+   * because separating them would mean an endpoint that reveals who has an
+   * account.
    */
   const session = await authService.signIn(email, password);
 
@@ -253,9 +252,9 @@ checkSubscriptionStatus: async () => {
   /**
    * Sends the email that lets someone set a password.
    *
-   * Serves both a forgotten password and an account migrated from WordPress
-   * that never had one. It resolves the same way whether or not the address
-   * has an account, so it cannot be used to discover who is registered.
+   * Serves both a forgotten password and an account that never had one. It
+   * resolves the same way whether or not the address has an account, so it
+   * cannot be used to discover who is registered.
    */
   forgotPassword: async (email) => {
     return authService.requestPasswordReset(email);

@@ -64,11 +64,11 @@ const MaskedGoogleButton = ({ onLoginStart, onLoginComplete, className = '' }) =
       const idToken = response.credential;
       
       // Handle the authentication process
-      const wordpressJwt = await socialAuthService.handleNewUserCreation(idToken);
+      const accessToken = await socialAuthService.handleNewUserCreation(idToken);
       const isNewUser = await socialAuthService.checkIfNewUser(idToken);
       
       // Complete the login
-      await handleSocialLogin(wordpressJwt, isNewUser);
+      await handleSocialLogin(accessToken, isNewUser);
       
       if (onLoginComplete) onLoginComplete();
       setError(null);

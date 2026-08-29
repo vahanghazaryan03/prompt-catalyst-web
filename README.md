@@ -42,10 +42,6 @@ A single-page React application covering the whole user-facing product: authenti
 
 ## How it fits together
 
-Every view is a real route, so the app is deep-linkable and the back button
-behaves. The API is served from the same origin under `/api`, which means no
-CORS layer and no second domain to keep in sync.
-
 ```
 src/
   components/   screens and UI, one file per view
@@ -55,23 +51,27 @@ src/
   utils/        pure helpers
 ```
 
-Three decisions worth calling out, because they are the ones that shaped the code:
+Every view is a real route, so the app is deep-linkable and the back button
+behaves. The API is served from the same origin under `/api`, so there is no
+CORS layer and no second domain to keep in sync.
+
+Three decisions worth calling out, because they are the ones that shaped the
+code:
 
 **Views are code-split, then prefetched.** Ten screens load on demand, so the
-first paint does not carry all of them. Splitting alone just moved the wait to
+first paint does not carry all of them. Splitting alone only moves the wait to
 the first click, so the chunks are warmed once the browser goes idle — and
 skipped entirely on a metered or 2G connection.
 
-**One bearer token, two possible issuers.** `tokenService` prefers a live
-Supabase session and falls back to a legacy token, so a provider migration did
-not sign anybody out. It refuses an expired or malformed session rather than
-sending a dead token. This is the most safety-critical logic in the client and
-it is the most heavily tested.
+**Generation is long-running, so the UI never blocks on it.** Image and video
+jobs are submitted, then polled, with progress and credit cost surfaced as the
+job moves. History is cached locally so a reload does not lose work in flight.
 
-**Failures are told apart before they are shown.** Supabase reports "wrong
-password" and "this account has no password yet" identically. Asking them apart
-server-side would mean an endpoint that reveals which addresses have accounts,
-so the client shows one honest message that offers a way forward instead.
+**Failures are told apart before they are shown.** A wrong password and an
+account that has no password set are indistinguishable from the outside, and
+asking the server to separate them would mean an endpoint that reveals which
+addresses have accounts. The client shows one honest message that offers a way
+forward instead of leaking that difference.
 
 ## Running locally
 

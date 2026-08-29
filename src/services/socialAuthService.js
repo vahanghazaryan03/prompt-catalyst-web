@@ -11,16 +11,13 @@ let lastSignIn = null;
 
 const socialAuthService = {
   /**
-   * Exchange Google ID token for WordPress JWT
+   * Exchange a Google ID token for a session
    */
   /**
    * Exchanges the Google id token for a Supabase session.
    *
-   * Supabase is configured with the same Google client id the site has always
-   * used, and the id token flow needs no redirect URI, so the button, the popup
-   * and the consent screen are unchanged from the user's point of view. Google
-   * accounts never had a password, so unlike email sign-in nothing about this
-   * migration is visible to them.
+   * The id token flow needs no redirect URI, so the button, the popup and the
+   * consent screen are entirely client-side.
    *
    * The signed-in user is remembered so checkIfNewUser can answer without a
    * second round trip.
@@ -34,10 +31,9 @@ const socialAuthService = {
   /**
    * Whether the account was created by the sign-in that just happened.
    *
-   * Only drives the welcome message. An account carrying wp_user_id came from
-   * the WordPress import and is by definition not new — which matters, because
-   * every imported account was created on the migration date and would
-   * otherwise look brand new.
+   * Only drives the welcome message. An account carrying an external id was
+   * imported rather than created here, so it is not new regardless of when its
+   * record was written.
    */
   checkIfNewUser: async () => {
     if (!lastSignIn) return false;

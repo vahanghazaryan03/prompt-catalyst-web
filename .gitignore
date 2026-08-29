@@ -27,3 +27,6 @@ yarn-error.log*
 # editor
 .vscode/
 .idea/
+
+# local editor/tooling config
+.claude/

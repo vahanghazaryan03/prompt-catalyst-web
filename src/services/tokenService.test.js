@@ -1,12 +1,11 @@
 import tokenService from './tokenService';
 
 /**
- * The bridge between two identity providers.
+ * Where every authenticated request gets its bearer token.
  *
- * Every authenticated request in the app takes its bearer token from here, and
- * for the duration of the migration two kinds of session can exist: a Supabase
- * session written by the SDK, and a WordPress token issued before the cutover.
- * Choosing wrong signs someone out, so the fallback behaviour is worth pinning.
+ * A Supabase session written by the SDK takes precedence; a token left over
+ * from a previous provider is recognised only so it can be retired cleanly.
+ * Choosing wrong signs someone out, so the fallback behaviour is pinned here.
  */
 
 const SUPABASE_KEY = 'pc-auth';
@@ -22,15 +21,15 @@ beforeEach(() => {
 });
 
 describe('token selection', () => {
-  it('uses the legacy token when there is no Supabase session', () => {
-    localStorage.setItem(LEGACY_KEY, 'legacy-wordpress-token');
+  it('falls back to a stored token when there is no Supabase session', () => {
+    localStorage.setItem(LEGACY_KEY, 'previous-provider-token');
 
-    expect(tokenService.getToken()).toBe('legacy-wordpress-token');
+    expect(tokenService.getToken()).toBe('previous-provider-token');
     expect(tokenService.isSupabaseSession()).toBe(false);
   });
 
-  it('prefers a live Supabase session over the legacy token', () => {
-    localStorage.setItem(LEGACY_KEY, 'legacy-wordpress-token');
+  it('prefers a live Supabase session over a stored token', () => {
+    localStorage.setItem(LEGACY_KEY, 'previous-provider-token');
     writeSupabaseSession({ access_token: 'supabase-token', expires_at: nowInSeconds() + 3600 });
 
     expect(tokenService.getToken()).toBe('supabase-token');
@@ -41,7 +40,7 @@ describe('token selection', () => {
     expect(tokenService.getToken()).toBeNull();
   });
 
-  it('serves a Supabase session even with no legacy token present', () => {
+  it('serves a Supabase session with nothing else stored', () => {
     writeSupabaseSession({ access_token: 'supabase-only', expires_at: nowInSeconds() + 3600 });
 
     expect(tokenService.getToken()).toBe('supabase-only');
@@ -50,31 +49,31 @@ describe('token selection', () => {
 
 describe('falling back rather than sending a dead token', () => {
   it('ignores an expired Supabase session', () => {
-    localStorage.setItem(LEGACY_KEY, 'legacy-wordpress-token');
+    localStorage.setItem(LEGACY_KEY, 'previous-provider-token');
     writeSupabaseSession({ access_token: 'stale', expires_at: nowInSeconds() - 10 });
 
-    expect(tokenService.getToken()).toBe('legacy-wordpress-token');
+    expect(tokenService.getToken()).toBe('previous-provider-token');
   });
 
   it('ignores a session inside the expiry skew, so it is not sent mid-flight', () => {
-    localStorage.setItem(LEGACY_KEY, 'legacy-wordpress-token');
+    localStorage.setItem(LEGACY_KEY, 'previous-provider-token');
     writeSupabaseSession({ access_token: 'nearly-expired', expires_at: nowInSeconds() + 30 });
 
-    expect(tokenService.getToken()).toBe('legacy-wordpress-token');
+    expect(tokenService.getToken()).toBe('previous-provider-token');
   });
 
   it('survives a corrupt session entry instead of breaking every request', () => {
-    localStorage.setItem(LEGACY_KEY, 'legacy-wordpress-token');
+    localStorage.setItem(LEGACY_KEY, 'previous-provider-token');
     localStorage.setItem(SUPABASE_KEY, '{ not json');
 
-    expect(tokenService.getToken()).toBe('legacy-wordpress-token');
+    expect(tokenService.getToken()).toBe('previous-provider-token');
   });
 
   it('ignores a session object with no access token', () => {
-    localStorage.setItem(LEGACY_KEY, 'legacy-wordpress-token');
+    localStorage.setItem(LEGACY_KEY, 'previous-provider-token');
     writeSupabaseSession({ refresh_token: 'only-a-refresh-token' });
 
-    expect(tokenService.getToken()).toBe('legacy-wordpress-token');
+    expect(tokenService.getToken()).toBe('previous-provider-token');
   });
 });
 
@@ -85,7 +84,7 @@ describe('refreshing', () => {
     await expect(tokenService.refreshToken()).resolves.toBe('supabase-token');
   });
 
-  it('does not run the legacy refresh timer for a Supabase session', () => {
+  it('does not run the fallback refresh timer for a Supabase session', () => {
     writeSupabaseSession({ access_token: 'supabase-token', expires_at: nowInSeconds() + 3600 });
 
     expect(tokenService.needsRefresh()).toBe(false);
@@ -96,11 +95,11 @@ describe('refreshing', () => {
   });
 
   /**
-   * The server that issued and refreshed these no longer exists, so the only
-   * correct outcome is to drop the session and let the user sign in again.
+   * The endpoint that issued these no longer exists, so the only correct
+   * outcome is to drop the session and let the user sign in again.
    */
-  it('drops a legacy session it can no longer refresh and announces it', async () => {
-    localStorage.setItem(LEGACY_KEY, 'legacy-wordpress-token');
+  it('drops a session it can no longer refresh and announces it', async () => {
+    localStorage.setItem(LEGACY_KEY, 'previous-provider-token');
     const expired = jest.fn();
     window.addEventListener('tokenExpired', expired);
 
@@ -113,8 +112,8 @@ describe('refreshing', () => {
 });
 
 describe('clearing', () => {
-  it('removes the legacy token', () => {
-    localStorage.setItem(LEGACY_KEY, 'legacy-wordpress-token');
+  it('removes the stored token', () => {
+    localStorage.setItem(LEGACY_KEY, 'previous-provider-token');
 
     tokenService.clearToken();
 

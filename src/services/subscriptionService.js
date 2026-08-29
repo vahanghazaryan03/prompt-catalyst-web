@@ -4,8 +4,7 @@ import tokenService from './tokenService';
 import { logger } from '../utils/logger';
 
 
-// Checkout is served by the reworked API, not by WordPress. Same request and
-// response shape as the admin-post handler it replaces.
+// Checkout is served by the API under the same origin.
 const API_URL = '/api';
 
 const subscriptionService = {

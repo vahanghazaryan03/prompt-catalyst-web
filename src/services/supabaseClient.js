@@ -2,7 +2,7 @@
 import { createClient } from '@supabase/supabase-js';
 
 /**
- * The Supabase project that will replace WordPress as the identity provider.
+ * The Supabase project backing authentication.
  *
  * The anon key is meant to be public — it identifies the project and nothing
  * else. Every rule that matters is enforced server-side.

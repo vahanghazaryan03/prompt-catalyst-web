@@ -62,13 +62,12 @@ const GoogleLoginButton = ({ onLoginStart, onLoginComplete }) => {
       const idToken = response.credential;
       
       // Use the new function to handle new user creation
-      const wordpressJwt = await socialAuthService.handleNewUserCreation(idToken);
+      const accessToken = await socialAuthService.handleNewUserCreation(idToken);
       
       // Determine if this is likely a new user (for UI feedback)
       const isNewUser = await socialAuthService.checkIfNewUser(idToken);
       
-      // Proceed with social login using the WordPress JWT
-      await handleSocialLogin(wordpressJwt, isNewUser);
+            await handleSocialLogin(accessToken, isNewUser);
       
       if (onLoginComplete) onLoginComplete();
       
