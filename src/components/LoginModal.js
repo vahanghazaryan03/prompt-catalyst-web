@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Mail, AlertCircle, EyeIcon, EyeOffIcon } from 'lucide-react';
+import { X, Mail, AlertCircle, Info, EyeIcon, EyeOffIcon } from 'lucide-react';
 import ModalLoader from './loading/ModalLoader';
 // Import our new masked Google button
 import MaskedGoogleButton from './MaskedGoogleButton';
@@ -570,6 +570,32 @@ const handleSubmit = async (e) => {
             ) : (
               <form onSubmit={handleSubmit} className="p-6 space-y-5">
                 {error && renderError(error)}
+
+                {/*
+                  Sign-in was moved to a new provider and passwords could not be
+                  carried across, so anyone who registered before the change has
+                  to set a new one. Saying so up front is kinder than letting
+                  them find out as a failed login. Google sign-in is unaffected.
+                */}
+                {isLoginView && !error && (
+                  <div className="flex items-start gap-2 bg-[var(--accent)]/10 border border-[var(--accent)]/20 text-[var(--textSecondary)] px-4 py-3 rounded-lg text-sm">
+                    <Info className="w-4 h-4 flex-shrink-0 mt-0.5 text-[var(--accent)]" />
+                    <span>
+                      We&apos;ve upgraded sign-in. If you had an account before today,{' '}
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setError('');
+                          setIsForgotPassword(true);
+                        }}
+                        className="underline hover:text-[var(--text)] transition-colors"
+                      >
+                        set a new password
+                      </button>
+                      {' '}to continue. Signing in with Google works as before.
+                    </span>
+                  </div>
+                )}
 
                 {!isLoginView && (
                   <div className="space-y-2">
