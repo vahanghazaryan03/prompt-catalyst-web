@@ -94,6 +94,16 @@ export const LoginModal = ({
   const [successMessage, setSuccessMessage] = useState('');
   const [resetEmail, setResetEmail] = useState('');
   const [error, setError] = useState('');
+
+  /**
+   * Shown only after a password sign-in has actually failed.
+   *
+   * Passwords could not be carried over from WordPress, so an account that
+   * predates the migration has none. Supabase reports that identically to a
+   * wrong password, so the offer to set one is made at the moment it becomes
+   * relevant rather than to everyone who opens the form.
+   */
+  const [showMigrationHint, setShowMigrationHint] = useState(false);
   const [showVerificationMessage, setShowVerificationMessage] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [isSocialLoginInProgress, setSocialLoginInProgress] = useState(false);
@@ -333,7 +343,11 @@ const handleSubmit = async (e) => {
       fieldSpecificErrorSet = true;
     } else if (errorMessage.includes('credentials') || 
                error.message === 'invalid_credentials' || 
+               error.code === 'invalid_credentials' ||
                errorMessage.includes('password')) {
+      if (error.offerPasswordSetup || error.code === 'invalid_credentials') {
+        setShowMigrationHint(true);
+      }
       setFieldErrors(prev => ({
         ...prev,
         password: errorMessage
@@ -577,7 +591,7 @@ const handleSubmit = async (e) => {
                   to set a new one. Saying so up front is kinder than letting
                   them find out as a failed login. Google sign-in is unaffected.
                 */}
-                {isLoginView && !error && (
+                {isLoginView && showMigrationHint && (
                   <div className="flex items-start gap-2 bg-[var(--accent)]/10 border border-[var(--accent)]/20 text-[var(--textSecondary)] px-4 py-3 rounded-lg text-sm">
                     <Info className="w-4 h-4 flex-shrink-0 mt-0.5 text-[var(--accent)]" />
                     <span>
@@ -586,6 +600,7 @@ const handleSubmit = async (e) => {
                         type="button"
                         onClick={() => {
                           setError('');
+                          setShowMigrationHint(false);
                           setIsForgotPassword(true);
                         }}
                         className="underline hover:text-[var(--text)] transition-colors"

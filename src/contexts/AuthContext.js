@@ -199,7 +199,17 @@ export const AuthProvider = ({ children }) => {
         } catch (error) {
             const errorMessage = error.message || 'unknown_error';
             toast.error(AUTH_ERROR_MESSAGES[errorMessage] || 'Login failed. Please try again.');
-            throw new Error(errorMessage); // Preserve the error code
+            /**
+             * Rethrown rather than passed on, to keep the message the callers
+             * already switch on. The auth layer also attaches a code and, for a
+             * failed password, a flag saying it is worth offering to set a new
+             * one -- both carried across, or the login form cannot tell this
+             * apart from any other failure.
+             */
+            const rethrown = new Error(errorMessage);
+            if (error.code) rethrown.code = error.code;
+            if (error.offerPasswordSetup) rethrown.offerPasswordSetup = true;
+            throw rethrown;
         } finally {
             setLoginLoading(false);
         }
